@@ -36,12 +36,17 @@ class License:
     """"""
 
     #----------------------------------------------------------------------
-    def __init__(self, frequency,licensee,
-                 number,name=None,callsign=''):
+    def __init__(self,frequency,licensee,
+                 number,name='',callsign=''):
         """Constructor"""
+
         assert type(frequency) == float
+        assert type(licensee) == str
+        assert type(number) == int
+        assert type(name) == str
+        assert type(callsign) == str
         self.frequency = frequency
-        self.location = licensee
+        self.licensee = licensee
         self.number = number
         self.name = name
         self.callsign = callsign
@@ -82,19 +87,21 @@ class License:
     #----------------------------------------------------------------------
     def kmlBasic(self):
         """returns the kml formatted output"""
-        return '<tr><td>' + self.callsign +\
+        return '<tr><td>'+ self.name +\
+               '</td><td>' + self.callsign +\
                '</td><td>' +'%0.3fMHz' % self.frequency +\
-               '</td><td>' +\
-               '</td><td>' +self.number +\
+               '</td><td>' + self.licensee +\
+               '</td><td>' +str(self.number) +\
                '</td><tr>\n'
 
     #----------------------------------------------------------------------
     def kmlRepeater(self):
         """returns the kml formatted output"""
-        return '</td><td>' +'%0.3fMHz' % self.frequency+\
+        return '<tr><td>'+ self.name +\
+               '</td><td>' +'%0.3fMHz' % self.frequency+\
                '</td><td>' +'%0.3fMHz' % self.calcInput()+\
-               '</td><td>' +\
-               '</td><td>' +self.number +\
+               '</td><td>' + self.licensee +\
+               '</td><td>' +str(self.number) +\
                '</td><tr>\n'
 
 
@@ -157,81 +164,115 @@ class Site:
                      shRepeater=True,
                      shTvRepeater=True):
         """"""
-        description = '<h1>Amateur Site</h1>'
-        if shBeacon and len(self.beacons) > 0:
-            if len(self.beacons) == 1:
-                description += '<h2>Beacon</h2>'
-            else:
-                description += '<h2>Beacons</h2>'
-            description += '<table border=1>\n'
-            description += '<tr><th>Call Sign</th><th>Frequency</th><th>Licensee</th><th>License No</th></tr>\n'
-            self.beacons.sort()
-            for beacon in self.beacons:
-                description += beacon.kmlBasic()
-            description += '</table>\n'
-        if shDigipeater and len(self.digipeaters) > 0:
-            if len(self.digipeaters) == 1:
-                description += '<h2>Digipeater</h2>'
-            else:
-                description += '<h2>Digipeaters</h2>'
-            description += '<table border=1>\n'
-            description += '<tr><th>Call Sign</th><th>Frequency</th><th>Licensee</th><th>License No</th></tr>\n'
-            self.digipeaters.sort()
-            for digipeater in self.digipeaters:
-                description += digipeater.kmlBasic()
-            description += '</table>\n'
-        if shRepeater and len(self.repeaters) > 0:
-            if len(self.repeaters) == 1:
-                description += '<h2>Repeater</h2>'
-            else:
-                description += '<h2>Repeaters</h2>'
-            description += '<table border=1>\n'
-            description += '<tr><th>Output Frequency</th><th>Input Frequency</th><th>Licensee</th><th>License No</th></tr>\n'
-            self.repeaters.sort()
-            for repeater in self.repeaters:
-                description += repeater.kmlRepeater()
-            description += '</table>\n'
-        if shTvRepeater and len(self.tvRepeaters) > 0:
-            if len(self.tvRepeaters) == 1:
-                description += '<h2>TV Repeater</h2>'
-            else:
-                description += '<h2>TV Repeaters</h2>'
-            description += '<table border=1>\n'
-            description += '<tr><th>Call Sign</th><th>Frequency</th><th>Licensee</th><th>License No</th></tr>\n'
-            self.tvRepeaters.sort()
-            for tvRepeater in self.tvRepeaters:
-                description += tvRepeater.kmlBasic()
-            description += '</table>\n'
+        if (shBeacon and len(self.beacons) > 0) or\
+           (shDigipeater and len(self.digipeaters) > 0) or\
+           (shRepeater and len(self.digipeaters) > 0) or\
+           (shTvRepeater and len(self.tvRepeaters) >0):
+            description = '<h1>Amateur Site</h1>'
+            if shBeacon and len(self.beacons) > 0:
+                if len(self.beacons) == 1:
+                    description += '<h2>Beacon</h2>'
+                else:
+                    description += '<h2>Beacons</h2>'
+                description += '<table border=1>\n'
+                description += self.kmlSimpleHeader()
+                self.beacons.sort()
+                for beacon in self.beacons:
+                    description += beacon.kmlBasic()
+                description += '</table>\n'
+            if shDigipeater and len(self.digipeaters) > 0:
+                if len(self.digipeaters) == 1:
+                    description += '<h2>Digipeater</h2>'
+                else:
+                    description += '<h2>Digipeaters</h2>'
+                description += '<table border=1>\n'
+                description += self.kmlSimpleHeader()
+                self.digipeaters.sort()
+                for digipeater in self.digipeaters:
+                    description += digipeater.kmlBasic()
+                description += '</table>\n'
+            if shRepeater and len(self.repeaters) > 0:
+                if len(self.repeaters) == 1:
+                    description += '<h2>Repeater</h2>'
+                else:
+                    description += '<h2>Repeaters</h2>'
+                description += '<table border=1>\n'
+                description += self.kmlRepeaterHeader()
+                self.repeaters.sort()
+                for repeater in self.repeaters:
+                    description += repeater.kmlRepeater()
+                description += '</table>\n'
+            if shTvRepeater and len(self.tvRepeaters) > 0:
+                if len(self.tvRepeaters) == 1:
+                    description += '<h2>TV Repeater</h2>'
+                else:
+                    description += '<h2>TV Repeaters</h2>'
+                description += '<table border=1>\n'
+                description += self.kmlSimpleHeader()
+                self.tvRepeaters.sort()
+                for tvRepeater in self.tvRepeaters:
+                    description += tvRepeater.kmlBasic()
+                description += '</table>\n'
 
-        placemark = '    <Placemark>\n'
-        placemark += '      <name>'+ self.name+'</name>\n'
-        placemark += '      <description><![CDATA['
-        placemark += description
-        placemark += ']]></description>\n'
-        placemark += '      <Point>\n'
-        placemark += '        <coordinates>'
-        placemark += '%f,%f,0' % (self.coordinates.lon,self.coordinates.lat)
-        placemark += '</coordinates>\n'
-        placemark += '      </Point>\n'
-        placemark += '    </Placemark>\n'
-        return(placemark)
+            placemark = '    <Placemark>\n'
+            placemark += '      <name>'+ self.name+'</name>\n'
+            placemark += '      <description><![CDATA['
+            placemark += description
+            placemark += ']]></description>\n'
+            placemark += '      <Point>\n'
+            placemark += '        <coordinates>'
+            placemark += '%f,%f,0' % (self.coordinates.lon,self.coordinates.lat)
+            placemark += '</coordinates>\n'
+            placemark += '      </Point>\n'
+            placemark += '    </Placemark>\n'
+            return placemark
+        else:
+            return ''
 
+    #----------------------------------------------------------------------
+    def kmlRepeaterHeader(self):
+        """"""
+        return '<tr><th rowspan=2>Name</th>'+\
+               '<th colspan=2>Frequency</th>'+\
+               '<th rowspan=2>Licensee</th>'+\
+               '<th rowspan=2>License No</th></tr>\n'+\
+               '<th>Output</th><th>Input</th>'
+    #----------------------------------------------------------------------
+    def kmlSimpleHeader(self):
+        """"""
+        return '<tr><th>Name</th><th>Call Sign</th>'+\
+               '<th>Frequency</th><th>Licensee</th>'+\
+               '<th>License No</th></tr>\n'
 
 if __name__ == "__main__":
     data_dir = os.path.join(os.path.dirname(__file__),'data')
+    callsigns_file = os.path.join(data_dir,'callsigns.csv')
     locations_file = os.path.join(data_dir,'sites.csv')
     licenses_file = os.path.join(data_dir,'licenses.csv')
+    names_file = os.path.join(data_dir,'names.csv')
     skip_file = os.path.join(data_dir,'skip.csv')
     kml_file = os.path.join(os.path.dirname(__file__),'test.kml')
 
+    callsigns = {}
+    for row in csv.reader(open(callsigns_file)):
+        if len(row) >= 2:
+            callsigns[int(row[0])] = row[1]
+
     coordinates = {}
     for row in csv.reader(open(locations_file)):
-        if row[LOCATION] != 'Location':
-            coordinates[row[2]]=Coordinate(float(row[LAT]),float(row[LON]))
+        if len(row) >= 3:
+            if row[LOCATION] != 'Location':
+                coordinates[row[2]]=Coordinate(float(row[LAT]),float(row[LON]))
 
-    skip = []
+    skip = {}
     for row in csv.reader(open(skip_file)):
-        skip.append(int(row[0]))
+        if len(row) >= 2:
+            skip[int(row[0])] = row[1]
+
+    names = {}
+    for row in csv.reader(open(names_file)):
+        if len(row) >= 2:
+            names[int(row[0])] = row[1]
 
     licencees = {}
     sites = {}
@@ -243,20 +284,37 @@ if __name__ == "__main__":
                                                   row[ADDRESS_1],
                                                   row[ADDRESS_2],
                                                   row[ADDRESS_3])
-            if row[LOCATION] not in coordinates:
-                if row[LOCATION] != 'ALL NEW ZEALAND':
-                    print 'Error coordinates for "%s" not found' % row[LOCATION]
-            elif int(row[LIC_NO]) in skip:
-                print 'Skipping Licensee No ' + row[LIC_NO]
+            licenseLocation = row[LOCATION]
+            licenseNumber = int(row[LIC_NO])
+            licenseFrequency = float(row[FREQUENCY])
+            if licenseLocation not in coordinates:
+                if licenseLocation != 'ALL NEW ZEALAND':
+                    print 'Error coordinates for "%s" not found' % licenseLocation
+
+            elif licenseNumber in skip.keys():
+                print 'Skipping Licensee No: %d for reason "%s"' % (licenseNumber,skip[licenseNumber])
             else:
-                if row[LOCATION] in sites:
-                    site = sites[row[LOCATION]]
+                if licenseNumber in callsigns.keys():
+                    licenseCallsign = callsigns[licenseNumber]
                 else:
-                    site = Site(row[LOCATION],
+                    licenseCallsign = row[CALLSIGN]
+                if licenseNumber in names.keys():
+                    licenseName = names[licenseNumber]
+                else:
+                    licenseName = ''
+                    print 'License No: %i on frequency %0.3fMHz at location "%s" does not have an associated name' % (licenseNumber,licenseFrequency,licenseLocation)
+                if licenseLocation in sites:
+                    site = sites[licenseLocation]
+                else:
+                    site = Site(licenseLocation,
                                     row[MAP_REF],
-                                    coordinates[row[LOCATION]])
+                                    coordinates[licenseLocation])
                     sites[row[LOCATION]] = site
-                license = License(float(row[FREQUENCY]),row[LICENSEE],row[LIC_NO],row[CALLSIGN])
+                license = License(licenseFrequency,
+                                  row[LICENSEE],
+                                  licenseNumber,
+                                  licenseName,
+                                  licenseCallsign)
                 licType = row[LIC_TYPE]
                 if license.frequency in [144.575,144.65]:
                     licType = 'Digipeater'
@@ -279,7 +337,10 @@ if __name__ == "__main__":
     siteNames = sites.keys()
     siteNames.sort()
     for site in siteNames:
-        kml += sites[site].kmlPlacemark()
+        kml += sites[site].kmlPlacemark(shBeacon=False,
+                                        shDigipeater=False,
+                                        shRepeater=False,
+                                        shTvRepeater=True)
     kml += '  </Folder>\n'
     kml += '</kml>'
     f = open(kml_file,mode='w')
