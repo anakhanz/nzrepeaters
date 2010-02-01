@@ -166,7 +166,7 @@ class Site:
         """"""
         if (shBeacon and len(self.beacons) > 0) or\
            (shDigipeater and len(self.digipeaters) > 0) or\
-           (shRepeater and len(self.digipeaters) > 0) or\
+           (shRepeater and len(self.repeaters) > 0) or\
            (shTvRepeater and len(self.tvRepeaters) >0):
             description = '<h1>Amateur Site</h1>'
             if shBeacon and len(self.beacons) > 0:
@@ -337,9 +337,9 @@ if __name__ == "__main__":
     siteNames = sites.keys()
     siteNames.sort()
     for site in siteNames:
-        kml += sites[site].kmlPlacemark(shBeacon=False,
-                                        shDigipeater=False,
-                                        shRepeater=False,
+        kml += sites[site].kmlPlacemark(shBeacon=True,
+                                        shDigipeater=True,
+                                        shRepeater=True,
                                         shTvRepeater=True)
     kml += '  </Folder>\n'
     kml += '</kml>'
