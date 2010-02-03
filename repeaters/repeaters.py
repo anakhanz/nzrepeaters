@@ -23,7 +23,14 @@
 
 import csv
 import logging
+import optparse
 import os
+
+__version__ = '0.1pre'
+
+USAGE = """%s [options]
+NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
+http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
 
 # Column numbers in cordinates file
 LAT = 0
@@ -199,7 +206,6 @@ class Site:
         assert type(beacon) == type(License(1.1,'',1))
         self.beacons.append(beacon)
 
-    #----------------------------------------------------------------------
     def addDigipeater(self,digipeater):
         '''
         Adds the given digipeater license to the site
@@ -207,7 +213,6 @@ class Site:
         assert type(digipeater) == type(License(1.1,'',1))
         self.digipeaters.append(digipeater)
 
-    #----------------------------------------------------------------------
     def addRepeater(self,repeater):
         '''
         Adds the given repeater license to the site
@@ -215,7 +220,6 @@ class Site:
         assert type(repeater) == type(License(1.1,'',1))
         self.repeaters.append(repeater)
 
-    #----------------------------------------------------------------------
     def addTvRepeater(self,tvRepeater):
         '''
         Adds the given TV repeater license to the site
@@ -223,14 +227,15 @@ class Site:
         assert type(tvRepeater) == type(License(1.1,'',1))
         self.tvRepeaters.append(tvRepeater)
 
-    #----------------------------------------------------------------------
     def kmlPlacemark(self,
                      shBeacon=True,
                      shDigipeater=True,
                      shRepeater=True,
                      shTvRepeater=True):
         '''
-        Returns a kml placemark for the site containing the requested information or an empty string if there are no licenses to display in the requested informaton.
+        Returns a kml placemark for the site containing the requested
+        information or an empty string if there are no licenses to display
+        in the requested informaton.
 
         Keyword Arguments:
         shBeacon     - Show beacons in the information
@@ -312,7 +317,7 @@ class Site:
                '<th rowspan=2>Licensee</th>'+\
                '<th rowspan=2>License No</th></tr>\n'+\
                '<th>Output</th><th>Input</th>'
-    #----------------------------------------------------------------------
+
     def htmlSimpleHeader(self):
         '''
         Returns a html table header for a simple license.
@@ -322,6 +327,26 @@ class Site:
                '<th>License No</th></tr>\n'
 
 def main():
+    parser = optparse.OptionParser(usage=USAGE, version=("NZ Repeaters "+__version__))
+    parser.add_option('-v','--verbose',action='store_true',dest='verbose',
+                            help="Verbose logging")
+    parser.add_option('-d','--debug',action='store_true',dest='debug',
+                            help='Debug level logging')
+    parser.add_option('-q','--quiet',action='store_true',dest='quiet',
+                            help='Only critical logging')
+
+    (options, args) = parser.parse_args()
+
+    if options.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif options.verbose:
+        logging.basicConfig(level=logging.INFO)
+    elif options.quiet:
+        logging.basicConfig(level=logging.CRITICAL)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
+
     data_dir = os.path.join(os.path.dirname(__file__),'data')
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
     locations_file = os.path.join(data_dir,'sites.csv')
@@ -471,6 +496,5 @@ def generateKml(fileName,
     f.close()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     main()
 
