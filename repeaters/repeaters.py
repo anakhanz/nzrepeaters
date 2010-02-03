@@ -247,6 +247,7 @@ class Site:
            (shDigipeater and len(self.digipeaters) > 0) or\
            (shRepeater and len(self.repeaters) > 0) or\
            (shTvRepeater and len(self.tvRepeaters) >0):
+            logging.debug('Creating placemark for: %s' % self.name)
             description = '<h1>Amateur Site</h1>'
             if shBeacon and len(self.beacons) > 0:
                 if len(self.beacons) == 1:
@@ -257,6 +258,7 @@ class Site:
                 description += self.htmlSimpleHeader()
                 self.beacons.sort()
                 for beacon in self.beacons:
+                    logging.debug('creating row for beacon %i' % beacon.number)
                     description += beacon.htmlBasic()
                 description += '</table>\n'
             if shDigipeater and len(self.digipeaters) > 0:
@@ -268,6 +270,7 @@ class Site:
                 description += self.htmlSimpleHeader()
                 self.digipeaters.sort()
                 for digipeater in self.digipeaters:
+                    logging.debug('creating row for digipeater %i' % digipeater.number)
                     description += digipeater.htmlBasic()
                 description += '</table>\n'
             if shRepeater and len(self.repeaters) > 0:
@@ -279,6 +282,7 @@ class Site:
                 description += self.htmlRepeaterHeader()
                 self.repeaters.sort()
                 for repeater in self.repeaters:
+                    logging.debug('creating row for repeater %i' % repeater.number)
                     description += repeater.htmlRepeater()
                 description += '</table>\n'
             if shTvRepeater and len(self.tvRepeaters) > 0:
@@ -290,6 +294,7 @@ class Site:
                 description += self.htmlSimpleHeader()
                 self.tvRepeaters.sort()
                 for tvRepeater in self.tvRepeaters:
+                    logging.debug('creating row for tv repeater %i' % tvRepeater.number)
                     description += tvRepeater.htmlBasic()
                 description += '</table>\n'
 
@@ -305,6 +310,7 @@ class Site:
             placemark += '      </Point>\n'
             placemark += '    </Placemark>\n'
         else:
+            logging.debug('Skiping creatingempty  placemark for: %s' % self.name)
             placemark=''
         return placemark
 
@@ -330,10 +336,38 @@ def main():
     parser = optparse.OptionParser(usage=USAGE, version=("NZ Repeaters "+__version__))
     parser.add_option('-v','--verbose',action='store_true',dest='verbose',
                             help="Verbose logging")
-    parser.add_option('-d','--debug',action='store_true',dest='debug',
+    parser.add_option('-D','--debug',action='store_true',dest='debug',
                             help='Debug level logging')
     parser.add_option('-q','--quiet',action='store_true',dest='quiet',
                             help='Only critical logging')
+
+    parser.add_option('-k','--kml',
+                      action='store',
+                      type='string',
+                      dest='kmlfilename',
+                      default='xxxnonexxx',
+                      help='Output to kml file')
+
+    parser.add_option('-b','--beacon',
+                      action='store_true',
+                      dest='beacon',
+                      default=False,
+                      help='Include digipeaters in the generated file')
+    parser.add_option('-d','--digi',
+                      action='store_true',
+                      dest='digi',
+                      default=False,
+                      help='Include digipeaters in the generated file')
+    parser.add_option('-r','--repeater',
+                      action='store_true',
+                      dest='repeater',
+                      default=False,
+                      help='Include digipeaters in the generated file')
+    parser.add_option('-t','--tv',
+                      action='store_true',
+                      dest='tv',
+                      default=False,
+                      help='Include digipeaters in the generated file')
 
     (options, args) = parser.parse_args()
 
@@ -346,6 +380,11 @@ def main():
     else:
         logging.basicConfig(level=logging.WARNING)
 
+    if options.kmlfilename == 'xxxnonexxx':
+        parser.error('The kml filename must be defined otherwise no output will be generated')
+
+    if not (options.beacon or options.digi or options.repeater or options.tv):
+        parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated')
 
     data_dir = os.path.join(os.path.dirname(__file__),'data')
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
@@ -353,7 +392,6 @@ def main():
     licenses_file = os.path.join(data_dir,'licenses.csv')
     names_file = os.path.join(data_dir,'names.csv')
     skip_file = os.path.join(data_dir,'skip.csv')
-    kml_file = os.path.join(os.path.dirname(__file__),'nz_repeaters.kml')
 
     callsigns = readCallsigns(callsigns_file)
     coordinates = readCordinates(locations_file)
@@ -361,7 +399,14 @@ def main():
     skip = readSkip(skip_file)
     sites, licensees = readLicences(licenses_file,callsigns,coordinates,names,skip)
 
-    generateKml(kml_file, sites)
+    if options.kmlfilename != 'xxxnonexxx':
+        logging.debug('exporting kmlfile %s' % options.kmlfilename)
+        generateKml(options.kmlfilename,
+                    sites,
+                    options.beacon,
+                    options.digi,
+                    options.repeater,
+                    options.tv)
 
 def readCallsigns(fileName):
     '''
