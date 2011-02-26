@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 ## NZ Repeater list builder
-## URLs: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
-## Copyright (C) 2010, Rob Wallace rob[at]wallace[dot]gen[dot]nz
+## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
+## Copyright (C) 2011, Rob Wallace rob[at]wallace[dot]gen[dot]nz
 ## Builds lists of NZ repeaters from the license information avaliable from the
 ## RSM's smart system.
 ##
@@ -25,28 +25,43 @@ import csv
 import logging
 import optparse
 import os
+import sqlite3
+import sys
 
-__version__ = '0.1pre'
+import topo50
+__version__ = '0.2'
 
 USAGE = """%s [options]
 NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
 http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
 
-# Column numbers in cordinates file
-LAT = 0
-LON = 1
+def nztmToTopo50(easting, northing, highPrecisioin=False):
+    for key in topo50.east_max.keys():
+        if easting >= topo50.east_min[key] and easting < topo50.east_max[key]:
+            eastSheet = key
+            break
+    for key in topo50.north_max.keys():
+        if northing >= topo50.north_min[key] and northing < topo50.north_max[key]:
+            northSheet = key
+    easting = float(easting % 100000) / 100.0
+    northing = float(northing % 100000) / 100.0
+    if highPrecisioin:
+        easting = '%0.2f' % easting
+        if len(easting) == 4:
+            easting = '00' + easting
+        elif len(easting) == 5:
+            easting = '0' + easting
+        northing = '%0.2f' % northing
+        if len(northing) == 4:
+            northing = '00' + northing
+        elif len(northing) == 5:
+            northing = '0' + northing
+    else:
 
-# Column numbers in the licaenses file
-CALLSIGN = 0
-FREQUENCY = 1
-LOCATION = 2
-MAP_REF = 3
-LICENSEE = 4
-ADDRESS_1 = 5
-ADDRESS_2 = 6
-ADDRESS_3 = 8
-LIC_TYPE = 9
-LIC_NO = 10
+        easting = '%03.0f' % easting
+        northing = '%03.0f' % northing
+
+    return northSheet + eastSheet + ' ' + easting + ' ' + northing
 
 class Coordinate:
     '''
@@ -86,10 +101,10 @@ class License:
         callsign - Callsign for the license
         '''
         assert type(frequency) == float
-        assert type(licensee) == str
+        assert type(licensee) == str or type(licensee) == unicode
         assert type(number) == int
-        assert type(name) == str
-        assert type(callsign) == str
+        assert type(name) == str or type(name) == unicode
+        assert type(callsign) == str or type(callsign) == unicode or callsign == None
         self.frequency = frequency
         self.licensee = licensee
         self.number = number
@@ -137,8 +152,12 @@ class License:
         as follows:
         | Name | Callsign | Frequency | Licensee | Number |
         '''
+        if self.callsign is None:
+            callsign = ''
+        else:
+            callsign = self.callsign
         return '<tr><td>'+ self.name +\
-               '</td><td>' + self.callsign +\
+               '</td><td>' + callsign +\
                '</td><td>' +'%0.3fMHz' % self.frequency +\
                '</td><td>' + self.licensee +\
                '</td><td>' +str(self.number) +\
@@ -148,7 +167,7 @@ class License:
         '''
         Returns an HTML table row containig the license information including
         input frequency for a repeater, formatted as follows:
-        | Name | Callsign | Output Freq | Input Freq | Licensee | Number |
+        | Name | Output Freq | Input Freq | Licensee | Number |
         '''
         return '<tr><td>'+ self.name +\
                '</td><td>' +'%0.3fMHz' % self.frequency+\
@@ -164,10 +183,10 @@ class Licensee:
     '''
     def __init__(self, name, address1, address2, address3):
         """Constructor"""
-        assert type(name) == str
-        assert type(address1) == str
-        assert type(address2) == str
-        assert type(address3) == str
+        assert type(name) == str or type(name) == unicode
+        assert type(address1) == str or type(address1) == unicode or address1 == None
+        assert type(address2) == str or type(address2) == unicode or address2 == None
+        assert type(address3) == str or type(address3) == unicode or address3 == None
         self.name = name
         self.address1 = address1
         self.address2 = address2
@@ -187,8 +206,8 @@ class Site:
         mapRef      - The NZMS260 map refference for the site
         coordinates - A cordinate object containing th ecordinates for the site
         '''
-        assert type(name) == str
-        assert type(mapRef) == str
+        assert type(name) == str or type(name) == unicode
+        assert type(mapRef) == str or type(mapRef) == unicode
         assert type(coordinates) == type(Coordinate(1.0,1.0))
 
         self.name = name
@@ -368,6 +387,11 @@ def main():
                       dest='tv',
                       default=False,
                       help='Include digipeaters in the generated file')
+    parser.add_option('-a','--all',
+                      action='store_true',
+                      dest='allTypes',
+                      default=False,
+                      help='Include all types in the generated file')
 
     (options, args) = parser.parse_args()
 
@@ -383,21 +407,26 @@ def main():
     if options.kmlfilename == 'xxxnonexxx':
         parser.error('The kml filename must be defined otherwise no output will be generated')
 
+    if options.allTypes:
+        options.beacon = True
+        options.digi = True
+        options.repeater = True
+        options.tv = True
+
     if not (options.beacon or options.digi or options.repeater or options.tv):
         parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated')
 
-    data_dir = os.path.join(os.path.dirname(__file__),'data')
+    data_dir = os.path.join(module_path(),'data')
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
     locations_file = os.path.join(data_dir,'sites.csv')
-    licenses_file = os.path.join(data_dir,'licenses.csv')
+    licenses_file = os.path.join(data_dir,'prism.sqlite')
     names_file = os.path.join(data_dir,'names.csv')
     skip_file = os.path.join(data_dir,'skip.csv')
 
     callsigns = readCallsigns(callsigns_file)
-    coordinates = readCordinates(locations_file)
     names = readNames(names_file)
     skip = readSkip(skip_file)
-    sites, licensees = readLicences(licenses_file,callsigns,coordinates,names,skip)
+    sites, licensees = readLicences(licenses_file,callsigns,names,skip)
 
     if options.kmlfilename != 'xxxnonexxx':
         logging.debug('exporting kmlfile %s' % options.kmlfilename)
@@ -407,6 +436,21 @@ def main():
                     options.digi,
                     options.repeater,
                     options.tv)
+
+def we_are_frozen():
+    """Returns whether we are frozen via py2exe.
+    This will affect how we find out where we are located."""
+
+    return hasattr(sys, "frozen")
+
+def module_path():
+    """ This will get us the program's directory,
+    even if we are frozen using py2exe"""
+
+    if we_are_frozen():
+        return os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding( )))
+
+    return os.path.dirname(unicode(__file__, sys.getfilesystemencoding( )))
 
 def readCallsigns(fileName):
     '''
@@ -418,18 +462,6 @@ def readCallsigns(fileName):
         if len(row) >= 2:
             callsigns[int(row[0])] = row[1]
     return callsigns
-
-def readCordinates(fileName):
-    '''
-    Reads cordinates and their associates site names from the given csv file
-    and returns them as a dictionary indexed by the site name
-    '''
-    coordinates = {}
-    for row in csv.reader(open(fileName)):
-        if len(row) >= 3:
-            if row[LOCATION] != 'Location':
-                coordinates[row[2]]=Coordinate(float(row[LAT]),float(row[LON]))
-    return coordinates
 
 def readSkip(fileName):
     '''
@@ -453,7 +485,7 @@ def readNames(fileName):
             names[int(row[0])] = row[1]
     return names
 
-def readLicences(fileName,callsigns,coordinates,names,skip):
+def readLicences(fileName,callsigns,names,skip):
     '''
     Reads the license information fromt he gioven file and returns two
     dictionaries:
@@ -464,57 +496,80 @@ def readLicences(fileName,callsigns,coordinates,names,skip):
     sites = {}
     licensees = {}
 
-    for row in csv.reader(open(fileName)):
-        if row[CALLSIGN] != 'Callsign':
-            if row[LICENSEE] not in licensees:
-                licensees[row[LICENSEE]]=Licensee(row[LICENSEE],
-                                                  row[ADDRESS_1],
-                                                  row[ADDRESS_2],
-                                                  row[ADDRESS_3])
-            licenseLocation = row[LOCATION]
-            licenseNumber = int(row[LIC_NO])
-            licenseFrequency = float(row[FREQUENCY])
-            if licenseLocation not in coordinates:
-                if licenseLocation != 'ALL NEW ZEALAND':
-                    logging.error('Error coordinates for "%s" not found' % licenseLocation)
+    con = sqlite3.connect(fileName)
+    con.row_factory = sqlite3.Row
+    c = con.cursor()
+    c.execute("""
+SELECT l.licenceid, l.licencenumber, l.callsign, l.licencetype,
+       c.name, c.address1, c.address2, c.address3,
+       s.frequency,
+       lo.locationid, lo.locationname
+FROM licence l, clientname c, spectrum s, transmitconfiguration t, location lo
+WHERE c.clientid = l.clientid
+  AND s.licenceid = l.licenceid
+  AND t.licenceid = l.licenceid
+  AND t.locationid = lo.locationid
+  AND l.licencetype  LIKE "Amateur%"
+  AND l.licencenumber NOT NULL
+ORDER BY l.licencenumber;""")
+    rows = c.fetchall()
+    for row in rows:
+        if row['name'] not in licensees:
+            licensees[row['name']]=Licensee(row['name'],
+                                              row['address1'],
+                                              row['address2'],
+                                              row['address3'])
+        licenseLocation = row['locationname']
+        licenseNumber = int(row['licencenumber'])
+        licenseFrequency = float(row['frequency'])
+        licenseCallsign = row['callsign']
 
-            elif licenseNumber in skip.keys():
-                logging.info('Skipping Licensee No: %d for reason "%s"' % (licenseNumber,skip[licenseNumber]))
-            else:
-                if licenseNumber in callsigns.keys():
+        if licenseLocation == 'ALL NEW ZEALAND':
+            logging.info('Skipping Licensee No: %d because it has the location "ALL NEW ZEALAND"' % licenseNumber)
+        elif licenseNumber in skip.keys():
+            logging.info('Skipping Licensee No: %d for reason "%s"' % (licenseNumber,skip[licenseNumber]))
+        else:
+            if licenseNumber in callsigns.keys():
+                if licenseCallsign != callsigns[licenseNumber]:
+                    logging.info('License No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenseNumber, row['callsign'], callsigns[licenseNumber]))
                     licenseCallsign = callsigns[licenseNumber]
-                else:
-                    licenseCallsign = row[CALLSIGN]
-                if licenseNumber in names.keys():
-                    licenseName = names[licenseNumber]
-                else:
-                    licenseName = ''
-                    logging.info('License No: %i on frequency %0.3fMHz at location "%s" does not have an associated name' % (licenseNumber,licenseFrequency,licenseLocation))
-                if licenseLocation in sites:
-                    site = sites[licenseLocation]
-                else:
-                    site = Site(licenseLocation,
-                                    row[MAP_REF],
-                                    coordinates[licenseLocation])
-                    sites[row[LOCATION]] = site
-                license = License(licenseFrequency,
-                                  row[LICENSEE],
-                                  licenseNumber,
-                                  licenseName,
-                                  licenseCallsign)
-                licType = row[LIC_TYPE]
-                if license.frequency in [144.575,144.65]:
-                    licType = 'Digipeater'
-                if licType == 'Beacon':
-                    site.addBeacon(license)
-                elif licType == 'Digipeater':
-                    site.addDigipeater(license)
-                elif licType == 'Repeater':
-                    site.addRepeater(license)
-                elif licType == 'TV Repeater':
-                    site.addTvRepeater(license)
-                else:
-                    logging.error('Unsupported Linense type "%s"' % row[LIC_TYPE])
+            if licenseNumber in names.keys():
+                licenseName = names[licenseNumber]
+            else:
+                licenseName = ''
+                logging.info('License No: %i on frequency %0.3fMHz at location "%s" does not have an associated name' % (licenseNumber,licenseFrequency,licenseLocation))
+            if licenseLocation in sites:
+                site = sites[licenseLocation]
+            else:
+                c.execute("SELECT locationid FROM location WHERE locationname = ?", (licenseLocation,))
+                locationId = c.fetchone()[0]
+                c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'LAT/LONG (NZGD1949)'", (locationId,))
+                coord = c.fetchone()
+                c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'NZTM2000'", (locationId,))
+                mapRef = c.fetchone()
+                site = Site(licenseLocation,
+                                nztmToTopo50(mapRef['easting'],mapRef['northing']),
+                                Coordinate(coord['northing'],coord['easting']))
+                sites[licenseLocation] = site
+            license = License(licenseFrequency,
+                              row['name'],
+                              licenseNumber,
+                              licenseName,
+                              licenseCallsign)
+            licType = row['licencetype']
+            if license.frequency in [144.575,144.65] and licType != 'Amateur Digipeater':
+                logging.info('License No: %i has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenseNumber,licType))
+                licType = 'Amateur Digipeater'
+            if licType == 'Amateur Beacon':
+                site.addBeacon(license)
+            elif licType == 'Amateur Digipeater':
+                site.addDigipeater(license)
+            elif licType == 'Amateur Repeater':
+                site.addRepeater(license)
+            elif licType == 'Amateur TV Repeater':
+                site.addTvRepeater(license)
+            else:
+                logging.error('Unsupported Linense type "%s"' % row[LIC_TYPE])
     return sites, licensees
 
 def generateKml(fileName,
