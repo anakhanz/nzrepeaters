@@ -1,3 +1,7 @@
-data/prism.sqlite
-data/prism.sqlite.bak
-/*.wpr
+repeaters/data/prism.sqlite
+repeaters/data/prism.sqlite.bak
+*.pyc
+*.wpr
+# Output files
+*.kml
+*.kmz
