@@ -1,0 +1,230 @@
+# Name | Branch | Trustee 1 | Trustee 2 | Note
+
+# 6M Repeaters
+55700,"Alexandra",61,"ZL4THT","ZL4GP",
+168992,"Auckland",66,"ZL1TGC","ZL1BK",
+207722,"Cass Peak",'CA',"ZL2BCF","ZL3TMB",
+
+# 2M Repeaters
+70440,"Rotorua Linear",33,"ZL1JP","ZL1BWC",
+155626,"Kapiti Voice and Data",69,"ZL2GO","ZL4VV",
+101944,"Opunake",87,"ZL2QP","ZL2ADU",Linked to Egmont 705"
+101945,"Brynderwyn",28,,,"N"
+159316,"Ward",22,"ZL2BK","ZL2WD","Linked to Golden Bay 7375, Picton 7225 and Blenheim 695"
+173091,"Tararua Voice and Data",6,"ZL2KA","ZL2KG","Linked to ??"
+207722,"Canterbury","CA","ZL2BCF","ZL3TMB","Linked to Tekapo 680, IRLP 6900"
+223698,"Raglan",81,"ZL1TAT","ZL1THG",
+221227,"Manawatu",20,"ZL2FX","ZL2WD",
+155262,"Auclkand",86,"ZL1BFB","ZL1TRH",
+215881,"Invercargill",37,"ZL4OX","ZL4CSS",
+97610,"Auckland",66,"ZL1TGC","ZL1BK",
+59676,"Timaru",34,"ZL3GL","ZL3OZ",
+70745,"Whangarei",28,,,"N"
+215875,"Wharite",6,"ZL2KA","ZL2KG","Linked to Hawkes Bay 870"
+179005,"Dunedin",30,"ZL4JH","ZL4GR",
+146394,"Auckland",66,"ZL1TGC","ZL1SLO","IRLP 6950"
+70235,"Hawkes Bay",13,"ZL2AJ","ZL2DW",
+97688,"Motueka",24,"ZL2BCG","ZL2ASF",
+97572,"Oamaru",64,"ZL4DB","ZL4SN",
+178951,"Bay of Islands",84,"ZL1IU","ZL1RS",
+215876,"Taupo",60,"ZL1BU","ZL1KU",
+177895,"Titahi Bay",42,"ZL2TKY","ZL2AZ",
+55719,"Westport",62,,,"N"
+174756,"Mount Grey",35,"ZL4FZ",,
+178982,"Balclutha",,"ZL4TL","ZL4AM",
+179006,"Akatere",78,,"N Linked ??",
+97509,"Taihape",23,"ZL2KC","ZL2ADL",
+216083,"Tauranga",39,"ZL1TAJ","ZL1BVA",
+55400,"Poverty Bay",11,"ZL2TRG","ZL2HC","IRLP 6105"
+63842,"Masterton",46,"ZL2BA","ZL4JS",
+209563,"Murchison",26,"ZL2BCA","ZL2RP",
+59677,"Tekapo",34,"ZL3GL","ZL3OZ","Linked to Canterbury 6525"
+97941,"Invercargill",37,"ZL4OX","ZL4CSS",
+101956,"Arowhana",11,"ZL2TRG","ZL2HC",
+102102,"Kapiti",69,"ZL2GO","ZL4VV",
+55698,"Queenstown",75,"ZL4JW",,"Under Construction, Linked to Dunedin 665"
+146393,"Auckland",66,"ZL1JD","ZL1UET",
+55399,"Gisborne",11,"ZL2TRG","ZL2HC",
+97512,"Whanganui",48,"ZL2THO","ZL1BNB",
+66594,"Kaikoura",22,"ZL2BK","ZL2WD",
+178981,"Dunedin",30,"ZL4JH","ZL4GR",
+54120,"Waikato",81,"ZL1TAT","ZL1THG","IRLP 6549"
+66590,"Blenheim",22,"ZL2BK","ZL2WD","Linked to Golden Bay 7375, Picton 7225 and Ward 560"
+55721,"Greymouth",49,"ZL3ADH","ZL3TY",
+59678,"Waitaki",34,"ZL3GL","ZL3OZ",
+55687,"Gore",8,"ZL4TCS",ZL4GL,
+217532,"Tairua",85,"ZL1AAF","ZL1BCJ",
+209643,"North Canterbury",68,"ZL3AI","ZL4WX",
+50616,"Edgecumbe",67,"ZL1CAY","ZL1OW","IRLP 6394"
+102112,"Lower Hutt",18,ZL2TVM","ZL2TWS",
+55700,"Alexandra",61,"ZL4THT","ZL4GP",
+223037,"Nelson",26,"ZL2BCA","ZL2RP",
+59684,"Egmont",87,"ZL2AFE","ZL2UFN",Linked to Opunake 540"
+216482,"Christchurch",05,,,"N"
+217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
+116876,"Colonial Knob Voice and Data 7075",74,"ZL3TC","ZL4JY",
+55694,"Far North",78,,,"Linked to Doubtless Bay 7225"
+216134,"Belmont",74,"ZL3TC","ZL2TVM",
+221225,"Manawatu",20,"ZL2FX","ZL2WS",
+97452,"Taummaraunui",38,"ZL1UTH","ZL1TIG",
+207721,"Southern Wairarapa",82,"ZL2BLM","ZL2SJ",
+101961,"Westport",62,,,"N"
+225965,"Te Puke",53,"ZL1MOF","ZL1TAJ",
+63840,"Pariwhariki",46,"ZL2BA","ZL4JS",
+224527,"New Plymouth",27,"ZL2BR","ZL2BZH",
+65587,"Nelson",26,"ZL2BCA","ZL2RP",
+159308,"Doubtless Bay",78,,,"N Linked to Far North 710"
+215880,"Hairini",55,"ZL4SQ","ZL1SJ",
+159304,"Picton",22,"ZL2BK","ZL2WD","Linked to Golden Bay 7375, Blenheim 695 and Ward 560"
+55711,"Napier",25,"ZL2TC","ZL2DW","IRLP 6793"
+207982,"Canterbury",5,,,"N"
+97461,"Kakaramea",38,"ZL1UTH","ZL1TIG",
+175650,"Whakatanae",51,"ZL1NI","ZL1BCW",
+215878,"Clime",63,"ZL2HM","ZL2BRG","IRLP 6931"
+137509,"Ponga",86,"ZL1BFB","ZL1TRH",
+63839,"Barton",46,"ZL2BA","ZL4JS",
+174755,"Rotorua",33,"ZL1JP","ZL1BWC",
+215191,"Rewa",46,"ZL2BA","ZL4JS",
+101964,"Waitomo",55,"ZL4SQ","ZL1JH",
+175649,"Golden Bay",22,"ZL2BCG","ZL2VBO","Linked to Picton 7225, Blenheim 695 and Ward 560"
+# 70CM Repeaters
+220891,"Hawkes Bay VoIP",13,"ZL2AJ","ZL2DW","VoIP, Simplex"
+177645,"Wairarapa",46,"ZL2BA","ZL4JS",
+207837,"Mosgiel",30,"ZL4JH","ZL4GR","Simplex"
+156052,"Ponga",86,"ZL1BFB","ZL1TRH",
+207838,"Dunedin",30,"ZL4JH","ZL4GR","Linked to Queenstown 685, Simplex"
+174211,"Christchurch","CA","ZL3MJS","ZL3TMB",
+174209,"Taraponui",25,"ZL2TC","ZL2DW",
+163360,"Lower Hutt",18,"ZL2TVM","ZL2TWS",
+163368,"Blenheim",22,"ZL2BK"," ZL2WD",
+97640,"Auckland",66,"ZL1TGC","ZL1BK",
+214479,"New Plymouth",27,"ZL2BR","ZL2BZH","C"
+178784,"Cass Peak",56,"ZL3VI","ZL2BCF",
+221224,"Manawatu",20,"ZL2FX","ZL2WD",
+225963,"Te Puke",53,"ZL1MOF","ZL1TAJ",
+161729,"Greymouth",49,"ZL3ADH","ZL3TY","Linked to North Canterbury 6975"
+137508,"Manurewa",86,"ZL1UET","ZL1BFB",
+177365,"Hunua",,"ZL1BNQ","ZL1AVR",
+215879,"Climie",63,"ZL2HM","ZL2BRG",
+97542,"Taihape",23,"ZL2KC","ZL2ADL",
+143017,"Oamaru",64,"ZL4DB","ZL4SN",
+97953,"Invercargill",37,"ZL4OX","ZL4CSS",
+179142,"Whangarei",28,,,"N"
+70240,"Hawkes Bay",13,"ZL2AJ","ZL2DW","Linked to Wharite Voice & Data 960"
+101995,"Waitomo",55,"ZL4SQ","ZL1HJ",
+101996,"Egmont",87,"ZL2AFE","ZL2UFN",
+207984,"Timaru",34,"ZL3GL","ZL3OZ",
+207588,"Tauranga",39,"ZL1TAJ","ZL1BVA",
+102127,"Kapiti",69,"ZL2GO","ZL4VV",
+224760,"Nelson",26,"ZL2BCA","ZL2RP",
+213219,"Hawkes Bay",13,"ZL2AJ","ZL2DW",
+179120,"Mt Victoria",74,"ZL3TC","ZL2TVM",
+207488,"Gisborne",11,"ZL2TRG","ZL2CC",
+221215,"Ngaio",74,"ZL3TC","ZL2SX",
+179114,"Wharite Voice and Data",6,"ZL2KA","ZL2KG","Linked to Hawkes Bay 879"
+
+# 70CM National System Repeaters
+177228,"Kaimai National System",81,"ZL1GWP","ZL3GR",
+177306,"Mt Erin National System",25,"ZL2TC","ZL2DW",
+179219,"Blue Duck National System",5,,,"N"
+177646,"Balclutha National System",35,"ZL4AS","ZL4TL",
+177300,"Doubtless Bay National System",78,,,"N"
+177331,"Egmont National System",74,"ZL2KG","ZL4JY",
+177318,"Waitaki National System",34,"ZL3GL","ZL3OZ",
+177303,"Brynderwyn National System ",28,,,"N"
+225932,"Wairarapa National System",46,"ZL2BA","ZL4JS","C"
+209686,"Murchison National System",26,"ZL2BCA","ZL2RP",
+209735,"Taupo National System",74,"ZL1BU","ZL2KG",
+177326,"Auckland National System",66,"ZL1TGC","ZL1BK",
+177887,"Gisborne National System",11,"ZL2TRG","ZL2HC",
+177650,"Wanganui National System",48,"ZL2AN","ZL1BNB",
+177239,"Belmont National System",74,"ZL3TC","ZL2TVM",
+211465,"Greymouth National System",49,"ZL3ADH","ZL3TY",
+177321,"Christchurch National System",5,,,"N"
+179142,"Whangarei National System",28,,,"N"
+177329,"Rotorua National System",33,"ZL1PJ","ZL1BWC",
+177653,"Rangitoto National System",55,"ZL4SQ","ZL1HJ",
+207983,"Kapiti National System",69,"ZL2GO","ZL4VV",
+223033,"Nelson National System",26,"ZL2BCA","ZL2RP",
+177304,"Dunedin National System",30,"ZL4JH","ZL4GR",
+177299,"Bay of Islands National System",84,"ZL1IU","ZL1RS",
+177232,"Hamilton National System",81,"ZL1TAT","ZL1THG",
+177234,"Edgecumbe National System",67,"ZL1CAY","ZL1OW",
+177324,"Wharite National System ",74,"ZL2KG","ZL3TC",
+
+
+# 23CM Repeaters
+177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
+169950,"Auckland",66,"ZL1TGC","ZL1JD",
+
+#DATA (AND VOICE) REPEATERS
+101943,"Kaimai Data",81,"ZL1TAT","ZL1THG",
+207725,"Whangarei Data",28,,,"N"
+21587,"Climie Data",63,"ZL2HM","ZL2BRG",
+101946,"Auckland Data",66,"ZL1TGC","ZL1BK",
+177983,"Hawkins Hill Data",74,"ZL3TC","ZL2TVM",
+
+#APRS BULLETIN BOARDS DIGIPEATERS & D-STAR
+174404,"Western Suburbs",O3,"ZL1VRR","ZL1RCA",
+207909,"Whitford APRS",66,"ZL1WTT","ZL1VFO",
+221036,"Taupo APRS",60,"ZL1BU","ZL1KU",
+224331,"Te Kapua APRS",,"ZL2CC",,
+218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
+221226,"Manawatu  APRS",20,"ZL2FX","ZL2MAX",
+220125,"Forest Lakes Road APRS",,ZL2KG","ZL4SJ",
+221323,"Nelson APRS",26,"ZL2BCA","ZL2RP",
+221396,"Wairarapa APRS",46,"ZL2BA","ZL4JS",
+221246,"Murchison APRS",26,"ZL2BCA","ZL2RP",
+221145,"Marlborough APRS",22,"ZL2BK","ZL2WD",
+221142,"Kaikoura APRS",22,"ZL2BK","ZL2WD",
+176536,"Christchurch APRS",O5,,,"N"
+175652,"Timaru APRS",34,"ZL3GL","ZL3OZ",
+209773,"North Shore",29,"ZL1AUW","ZL1TGC",
+209786,"Te Puke",53,"ZL1MOF",,
+207996,"Hamilton",12,"ZL1PK","ZL1GWP",
+116673,"Waitomo",81,"ZL1GWP","ZL1AMW",
+104127,"Kapiti",69,"ZL2GO","ZL4VV",
+161728,"Greymouth",,"ZL3TY","ZL3ADH",
+102079,"Timaru",34,"ZL3GL","ZL3OZ",
+207927,"Dunedin",30,"ZL4JH","ZL4GR",
+178983,"Dunedin",30,"ZL4JH","ZL4GR",
+101942,"Gore",8,"ZL4TCS","ZL4GL",
+220631,"Innes Road Data",,"ZL3BCC",,
+217242,"North Shore (9k6)",29,"ZL1AUW","ZL1TGC",
+209772,"North Shore (1k2)",29,"ZL1AUW","ZL1TGC",
+222944,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
+222945,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
+222946,"Auckland D-Star Data",86,"ZL1WO","ZL1BFB","D-Star Data"
+
+#BEACONS
+Callsign Station Name Frequency MED Site Name Topo50 Map Ref Branch Trustee 1 Trustee 2
+202338,"International Beacon Project, NCDX",46,"ZL2FC",,
+202338,"International Beacon Project, NCDX",46,"ZL2FC",,
+202338,"International Beacon Project, NCDX",46,"ZL2FC",,
+202338,"International Beacon Project, NCDX",46,"ZL2FC",,
+202338,"International Beacon Project, NCDX",46,"ZL2FC",,
+215940,"Upper Hutt 10m",63,"ZL2HM","ZL2BRG",
+83591,"Gtreymouth 6m",49,"ZL3TY","ZL3ADH",
+70236,"Hawkes Bay 6m",25,"ZL2TC","ZL2DW",
+215939,"Upper Hutt 6m",63,"ZL2HM","ZL2BRG",
+202048,"Blenheim 6m",22,"ZL2BK","ZL2WD",
+215921,"Auckland 2m",66,"ZL1QF","ZL1WTT",
+224659,"Waikato 2m",81,"ZL1THG","ZL1UJG","C"
+155254,"Hawkins Hill 2m",74,"ZL3TC","ZL2TVM",
+59673,"Christchurch 2m",5,,,"N"
+158611,"Hokitika 2m",49,"ZL3TY","ZL3ADH",
+59682,"New Plymouth 2m",27,"ZL2BR","ZL2BZH",
+55710,"Hawkes Bay 2 m",25,"ZL2TC","ZL2DW",
+215920,"Auckland 70 cm",66,"ZL1QF","ZL1WTT",
+224660,"Waikato 70cm",81,"ZL1THG","ZL1UJG","C"
+155265,"Hawkins Hill 70cm",74,"ZL3TC","ZL2TVM",
+155265,"Christchurch 70cm",5,,,"N"
+59679,"New Plymouth 70cm",27,"ZL2BR","ZL2BZH",
+177985,"Lower Hutt 32cm",74,"ZL2TAR","ZL2TAK",
+224661,"Waikato 23cm",81,"ZL1THG","ZL1UJG","C"
+155267,"Hawkins Hill 23cm",74,"ZL3TC","ZL2TVM",
+177888,"Lower Hutt 12cm",18,"ZL2TVM","ZL2TWS",
+221252,"Waikato 12cm",81,"ZL1THG","ZL1UJG",
+202076,"Muriwai 5cm",74,"ZL1TBG","ZL1AVZ",
+177974,"Hawkins Hill 3cm",74,"ZL3TC","ZL2TVM",
+178031,"Hawkins Hill 12mm",74,"ZL3TC","ZL2TVM",

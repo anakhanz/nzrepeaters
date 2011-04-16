@@ -34,6 +34,24 @@ import zipfile
 import topo50
 __version__ = '0.2'
 
+LICENSE_TYPES = ['',
+                 'Amateur Beacon',
+                 'Amateur Digipeater',
+                 'Amateur Repeater',
+                 'Amateur TV Repeater']
+
+# Columns in info array
+I_NAME = 0
+I_BRANCH = 1
+I_TRUSTEE1 = 2
+I_TRUSTEE2 = 3
+I_NOTE = 4
+# Columns in skip array
+S_FREQ = 0
+S_NOTE = 1
+
+
+
 USAGE = """%s [options]
 NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
 http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
@@ -85,18 +103,13 @@ class Coordinate:
         self.lat = lat
         self.lon = lon
 
-LICENSE_TYPES = ['',
-                 'Amateur Beacon',
-                 'Amateur Digipeater',
-                 'Amateur Repeater',
-                 'Amateur TV Repeater']
-
 class License:
     '''
     Amateur radio license
     '''
     def __init__(self,licType,frequency,site,licensee,
-                 number,name='',callsign='', ctcss=None):
+                 number,name='',branch='',trustee1='',trustee2='',
+                 note='',callsign='', ctcss=None):
         '''
         Constructor for a license - creates the license
 
@@ -106,8 +119,13 @@ class License:
         site      - Site name
         licensee  - Name of the License
         number    - License number
+
         Keyword Arguments:
         name     - Name for the licence
+        branch   - NZART Branch that owns license
+        trustee1 - Repeater trustee 1
+        trustee2 - Repeater trustee 2
+        note     - Note containing misc info about the repeater
         callsign - Callsign for the license
         ctcss    - CTCSS Tone squelch frequency
         '''
@@ -118,6 +136,10 @@ class License:
         assert type(licensee) == str or type(licensee) == unicode
         assert type(number) == int
         assert type(name) == str or type(name) == unicode
+        assert type(branch) == str or type(branch) == unicode
+        assert type(trustee1) == str or type(trustee1) == unicode
+        assert type(trustee2) == str or type(trustee2) == unicode
+        assert type(note) == str or type(note) == unicode
         assert type(callsign) == str or type(callsign) == unicode or callsign == None
         assert type(ctcss) == float or ctcss == None
         self.licType = licType
@@ -126,6 +148,10 @@ class License:
         self.licensee = licensee
         self.number = number
         self.name = name
+        self.branch = branch
+        self.trustee1 = trustee1
+        self.trustee2 = trustee2
+        self.note = note
         self.callsign = callsign
         self.ctcss = ctcss
 
@@ -169,7 +195,8 @@ class License:
             offset = -20.0
 
         else:
-            logging.error('Error no offset calculation for %fMHz' % self.frequency)
+            logging.error('Error no offset calculation for No: %i %s %fMHz' % (
+                           self.number, self.name, self.frequency))
             offset = 0
         return self.frequency + offset
 
@@ -185,11 +212,17 @@ class License:
         else:
             return self.name
 
+    def trustees(self):
+        if self.trustee2 == '':
+            return self.trustee1
+        else:
+            return self.trustee1 + '<br>' + self.trustee2
+
     def htmlBasicRow(self):
         '''
         Returns an HTML table row containig the license information, formatted
         as follows:
-        | Name | Callsign | Frequency | Licensee | Number |
+        | Name | Callsign | Frequency | Branch | Trustees | Notes | Licensee | Number |
         '''
         if self.callsign is None:
             callsign = ''
@@ -198,6 +231,9 @@ class License:
         return '<tr><td>'+ self.formatName() +\
                '</td><td>' + callsign +\
                '</td><td>' +'%0.3fMHz' % self.frequency +\
+               '</td><td>' + self.branch +\
+               '</td><td>' + self.trustees() +\
+               '</td><td>' + self.note +\
                '</td><td>' + self.licensee +\
                '</td><td>' +str(self.number) +\
                '</td><tr>\n'
@@ -206,7 +242,7 @@ class License:
         '''
         Returns an HTML table row containig the license information including
         input frequency for a repeater, formatted as follows:
-        | Name | Output Freq | Input Freq | CTCSS | Licensee | Number |
+        | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licensee | Number |
         '''
         if self.ctcss is None:
             ctcss = 'None'
@@ -216,6 +252,9 @@ class License:
                '</td><td>' +'%0.3fMHz' % self.frequency+\
                '</td><td>' +'%0.3fMHz' % self.calcInput()+\
                '</td><td>' +'%s' % ctcss+\
+               '</td><td>' + self.branch +\
+               '</td><td>' + self.trustees() +\
+               '</td><td>' + self.note +\
                '</td><td>' + self.licensee +\
                '</td><td>' +str(self.number) +\
                '</td><tr>\n'
@@ -239,6 +278,9 @@ class License:
         if self.callsign != None:
             description += '<tr><td colspan=%i><b>Callsign</b></td><td>%s</td></tr>' % (colSpan, self.callsign)
         description += '<tr><td colspan=%i><b>Type</b></td><td>%s</td></tr>' % (colSpan, self.licType)
+        description += '<tr><td colspan=%i><b>Branch</b></td><td>%s</td></tr>' % (colSpan, self.branch)
+        description += '<tr><td colspan=%i><b>Trustees</b></td><td>%s</td></tr>' % (colSpan, self.trustees())
+        description += '<tr><td colspan=%i><b>Notes</b></td><td>%s</td></tr>' % (colSpan, self.note)
         description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
         description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
         description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
@@ -251,6 +293,7 @@ class License:
         placemark += '      <description><![CDATA['
         placemark += description
         placemark += ']]></description>\n'
+        placemark += '      <styleUrl>#msn_placemark_square</styleUrl>\n'
         placemark += '      <Point>\n'
         placemark += '        <coordinates>'
         placemark += '%f,%f,0' % (site.coordinates.lon,site.coordinates.lat)
@@ -369,6 +412,7 @@ class Site:
             placemark += '      <description><![CDATA['
             placemark += description
             placemark += ']]></description>\n'
+            placemark += '      <styleUrl>#msn_placemark_square</styleUrl>\n'
             placemark += '      <Point>\n'
             placemark += '        <coordinates>'
             placemark += '%f,%f,0' % (self.coordinates.lon,self.coordinates.lat)
@@ -389,6 +433,9 @@ class Site:
             description += '<tr><th rowspan=2>Name</th>'+\
                            '<th colspan=2>Frequency</th>'+\
                            '<th rowspan=2>CTCSS</th>'+\
+                           '<th rowspan=2>Branch</th>'+\
+                           '<th rowspan=2>Trustees</th>'+\
+                           '<th rowspan=2>Notes</th>'+\
                            '<th rowspan=2>Licensee</th>'+\
                            '<th rowspan=2>License No</th></tr>\n'+\
                            '<th>Output</th><th>Input</th>'
@@ -407,8 +454,9 @@ class Site:
             self.htmlDescriptionTitle(items, text)
             description += '<table border=1>\n'
             description += '<tr><th>Name</th><th>Call Sign</th>'+\
-                           '<th>Frequency</th><th>Licensee</th>'+\
-                           '<th>License No</th></tr>\n'
+                           '<th>Frequency</th><th>Branch</th>'+\
+                           '<th>Trustees</th><th>Notes</th>'+\
+                           '<th>Licensee</th><th>License No</th></tr>\n'
             items.sort()
             for item in items:
                 logging.debug('creating row for beacon %i' % item.number)
@@ -449,6 +497,21 @@ def readFloatCsv(fileName):
             ret[int(row[0])] = float(row[1])
     return ret
 
+def readRowCsv(fileName,length):
+    '''
+    Reads a rows from the from the given csv file and returns them as a
+    dictionary indexed by the license number (first item) without the first
+    item in the array.
+    '''
+    ret = {}
+    for row in csv.reader(open(fileName)):
+        if len(row) == length:
+            ret[int(row[0])] = row[1:]
+        elif len(row) > 1:
+            logging.error('Row of bad length read')
+            logging.error(row)
+    return ret
+
 def readTextCsv(fileName):
     '''
     Reads a set of text values associated with license numbers from the given csv
@@ -460,14 +523,29 @@ def readTextCsv(fileName):
             ret[int(row[0])] = row[1]
     return ret
 
-def readLicences(fileName,callsigns,ctcss,names,skip,
+def readLicences(fileName,callsigns,ctcss,info,skip,
                  vhf,uhf,
                  shBeacon,shDigipeater,shRepeater,shTvRepeater):
     '''
-    Reads the license information fromt he gioven file and returns two
-    dictionaries:
+    Reads the license information fromt he given database file and returns
+    the dictionaries below
 
+    Arguments:
+    fileName     - Filename to use for DB
+    callsigns    - A dictionary of callsigns indexed by Linense number
+    ctcss        - A dictionary of ctcss tones indexed by Linense number
+    info         - A dictionary of additional info indexed by Linense number
+    skip         - A dictionary of callsigns licenses to skip by Linense number
+    vhf          - Include VHF licenses ?
+    uhf          - Include UHF licenses ?
+    shBeacon     - Include beacons ?
+    shDigipeater - Include digis ?
+    shRepeater   - Include repeaters ?
+    shTvRepeater - Include TV repeaters ?
+
+    Returns:
     sites     - A list of sites and their associated licenses
+    licenses  - A list of licenses
     licensees - A list of the named licensees and their details
     '''
     sites = {}
@@ -495,7 +573,7 @@ WHERE c.clientid = l.clientid
     elif (not vhf) and uhf:
         sql += "\n  AND s.frequency > 148.0"
 
-    sql +="\nORDER BY l.licencenumber;"
+    sql +="\nORDER BY s.frequency, l.licencenumber;"
 
     logging.info(sql)
     c.execute(sql)
@@ -511,20 +589,29 @@ WHERE c.clientid = l.clientid
         licenseFrequency = float(row['frequency'])
         licenseCallsign = row['callsign']
 
+        skipping = False
         if licenseLocation == 'ALL NEW ZEALAND':
             logging.info('Skipping Licensee No: %d because it has the location "ALL NEW ZEALAND"' % licenseNumber)
+            skipping = True
         elif licenseNumber in skip.keys():
-            logging.info('Skipping Licensee No: %d for reason "%s"' % (licenseNumber,skip[licenseNumber]))
-        else:
+            skipFreq = float(skip[licenseNumber][S_FREQ])
+            if skipFreq == 0.0 or skipFreq == licenseFrequency:
+                logging.info('Skipping Licensee No: %d, frequency %0.3f for reason "%s"' % (
+                             licenseNumber,
+                             licenseFrequency,
+                             skip[licenseNumber][S_NOTE]))
+        if not skipping:
+            if licenseNumber in info.keys():
+                    licenseName = info[licenseNumber][I_NAME]
+            else:
+                skipping = True
+                logging.info('License No: %i on frequency %0.3fMHz at location "%s" does not have an info record name' % (licenseNumber,licenseFrequency,licenseLocation))
+
+        if not skipping:
             if licenseNumber in callsigns.keys():
                 if licenseCallsign != callsigns[licenseNumber]:
                     logging.info('License No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenseNumber, row['callsign'], callsigns[licenseNumber]))
                     licenseCallsign = callsigns[licenseNumber]
-            if licenseNumber in names.keys():
-                licenseName = names[licenseNumber]
-            else:
-                licenseName = ''
-                logging.info('License No: %i on frequency %0.3fMHz at location "%s" does not have an associated name' % (licenseNumber,licenseFrequency,licenseLocation))
             if licenseLocation in sites:
                 site = sites[licenseLocation]
             else:
@@ -540,7 +627,7 @@ WHERE c.clientid = l.clientid
                 sites[licenseLocation] = site
             licType = row['licencetype']
             if licenseFrequency in [144.575,144.65] and licType != 'Amateur Digipeater':
-                logging.error('License No: %i has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenseNumber,licType))
+                logging.error('License No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenseNumber,licenseName,licenseFrequency,licType))
                 licType = 'Amateur Digipeater'
             license = License(licType,
                               licenseFrequency,
@@ -548,6 +635,10 @@ WHERE c.clientid = l.clientid
                               row['name'],
                               licenseNumber,
                               licenseName,
+                              info[licenseNumber][I_BRANCH],
+                              info[licenseNumber][I_TRUSTEE1],
+                              info[licenseNumber][I_TRUSTEE2],
+                              info[licenseNumber][I_NOTE],
                               licenseCallsign)
             if licenseNumber in ctcss.keys():
                 license.setCtcss(ctcss[licenseNumber])
@@ -601,7 +692,7 @@ def generateKmlLicense(fileName,
     kml += '    <name>Amateur Licenses</name>\n'
     for t in LICENSE_TYPES:
         if kmlByType[t] != "":
-            kml += '    <Folder><name>%ss\n</name>' % t
+            kml += '    <Folder><name>%ss</name>\n' % t
             kml += kmlByType[t]
             kml += '    </Folder>\n'
     kml += kmlFooter()
@@ -612,11 +703,43 @@ def generateKmlLicense(fileName,
 def kmlHeader():
     header = '<?xml version="1.0" encoding="UTF-8"?>\n'
     header += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
-    header += '  <Folder>\n'
+    header += '<Document>\n'
+    header += '''  <StyleMap id="msn_placemark_square">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#sn_placemark_square</styleUrl>
+    </Pair>
+    <Pair>
+      <key>highlight</key>
+      <styleUrl>#sh_placemark_square_highlight</styleUrl>
+    </Pair>
+  </StyleMap>
+  <Style id="sh_placemark_square_highlight">
+    <IconStyle>
+      <scale>1.2</scale>
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/shapes/placemark_square_highlight.png</href>
+      </Icon>
+    </IconStyle>
+    <ListStyle>
+    </ListStyle>
+  </Style>
+  <Style id="sn_placemark_square">
+    <IconStyle>
+      <scale>1.2</scale>
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/shapes/placemark_square.png</href>
+      </Icon>
+    </IconStyle>
+    <ListStyle>
+    </ListStyle>
+  </Style>\n'''
+    #header += '  <Folder>\n'
     return header
 
 def kmlFooter():
-    footer = '  </Folder>\n'
+    #footer = '  </Folder>\n'
+    footer = '</Document>\n'
     footer += '</kml>'
     return footer
 
@@ -728,17 +851,16 @@ def main():
     data_dir = os.path.join(module_path(),'data')
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
     ctcss_file = os.path.join(data_dir,'ctcss.csv')
-    locations_file = os.path.join(data_dir,'sites.csv')
     licenses_file = os.path.join(data_dir,'prism.sqlite')
-    names_file = os.path.join(data_dir,'names.csv')
+    info_file = os.path.join(data_dir,'info.csv')
     skip_file = os.path.join(data_dir,'skip.csv')
 
     callsigns = readTextCsv(callsigns_file)
     ctcss = readFloatCsv(ctcss_file)
-    names = readTextCsv(names_file)
-    skip = readTextCsv(skip_file)
+    info = readRowCsv(info_file,6)
+    skip = readRowCsv(skip_file,3)
     sites, licenses, licensees = readLicences(licenses_file,callsigns,ctcss,
-                                              names,skip,
+                                              info,skip,
                                               options.vhf,options.uhf,
                                               options.beacon,options.digi,
                                               options.repeater,options.tv)
