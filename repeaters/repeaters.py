@@ -4,21 +4,21 @@
 ## NZ Repeater list builder
 ## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
 ## Copyright (C) 2011, Rob Wallace rob[at]wallace[dot]gen[dot]nz
-## Builds lists of NZ repeaters from the license information avaliable from the
+## Builds lists of NZ repeaters from the licence information avaliable from the
 ## RSM's smart system.
 ##
 ## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 3 of the License, or
+## it under the terms of the GNU General Public Licence as published by
+## the Free Software Foundation; either version 3 of the Licence, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-## GNU General Public License for more details.
+## GNU General Public Licence for more details.
 ##
-## You should have received a copy of the GNU General Public License
-## along with this program. If not, see <http://www.gnu.org/licenses/>.
+## You should have received a copy of the GNU General Public Licence
+## along with this program. If not, see <http://www.gnu.org/licences/>.
 
 
 import csv
@@ -34,7 +34,7 @@ import zipfile
 import topo50
 __version__ = '0.2'
 
-LICENSE_TYPES = ['',
+LICENCE_TYPES = ['',
                  'Amateur Beacon',
                  'Amateur Digipeater',
                  'Amateur Repeater',
@@ -103,37 +103,37 @@ class Coordinate:
         self.lat = lat
         self.lon = lon
 
-class License:
+class Licence:
     '''
-    Amateur radio license
+    Amateur radio licence
     '''
-    def __init__(self,licType,frequency,site,licensee,
+    def __init__(self,licType,frequency,site,licencee,
                  number,name='',branch='',trustee1='',trustee2='',
                  note='',callsign='', ctcss=None):
         '''
-        Constructor for a license - creates the license
+        Constructor for a licence - creates the licence
 
         Arguments:
-        licType   - Type of License (Repeater, Beacon etc)
-        frequency - Frequency for the license
+        licType   - Type of Licence (Repeater, Beacon etc)
+        frequency - Frequency for the licence
         site      - Site name
-        licensee  - Name of the License
-        number    - License number
+        licencee  - Name of the Licence
+        number    - Licence number
 
         Keyword Arguments:
         name     - Name for the licence
-        branch   - NZART Branch that owns license
+        branch   - NZART Branch that owns licence
         trustee1 - Repeater trustee 1
         trustee2 - Repeater trustee 2
         note     - Note containing misc info about the repeater
-        callsign - Callsign for the license
+        callsign - Callsign for the licence
         ctcss    - CTCSS Tone squelch frequency
         '''
         assert type(licType) == str or type(licType) == unicode
-        assert licType in LICENSE_TYPES
+        assert licType in LICENCE_TYPES
         assert type(frequency) == float
         assert type(site) == str or type(site) == unicode
-        assert type(licensee) == str or type(licensee) == unicode
+        assert type(licencee) == str or type(licencee) == unicode
         assert type(number) == int
         assert type(name) == str or type(name) == unicode
         assert type(branch) == str or type(branch) == unicode
@@ -145,7 +145,7 @@ class License:
         self.licType = licType
         self.frequency = frequency
         self.site = site
-        self.licensee = licensee
+        self.licencee = licencee
         self.number = number
         self.name = name
         self.branch = branch
@@ -157,13 +157,13 @@ class License:
 
     def setCallsign(self,callsign):
         '''
-        Sets theh callsign associated with the license.
+        Sets theh callsign associated with the licence.
         '''
         self.callsign = callsign
 
     def setCtcss(self,ctcss):
         '''
-        Sets theh CTCSS tone frequency associated with the license.
+        Sets theh CTCSS tone frequency associated with the licence.
         '''
         self.ctcss = ctcss
 
@@ -220,9 +220,9 @@ class License:
 
     def htmlBasicRow(self):
         '''
-        Returns an HTML table row containig the license information, formatted
+        Returns an HTML table row containig the licence information, formatted
         as follows:
-        | Name | Callsign | Frequency | Branch | Trustees | Notes | Licensee | Number |
+        | Name | Callsign | Frequency | Branch | Trustees | Notes | Licencee | Number |
         '''
         if self.callsign is None:
             callsign = ''
@@ -234,15 +234,15 @@ class License:
                '</td><td>' + self.branch +\
                '</td><td>' + self.trustees() +\
                '</td><td>' + self.note +\
-               '</td><td>' + self.licensee +\
+               '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
                '</td><tr>\n'
 
     def htmlRepeaterRow(self):
         '''
-        Returns an HTML table row containig the license information including
+        Returns an HTML table row containig the licence information including
         input frequency for a repeater, formatted as follows:
-        | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licensee | Number |
+        | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licencee | Number |
         '''
         if self.ctcss is None:
             ctcss = 'None'
@@ -255,13 +255,13 @@ class License:
                '</td><td>' + self.branch +\
                '</td><td>' + self.trustees() +\
                '</td><td>' + self.note +\
-               '</td><td>' + self.licensee +\
+               '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
                '</td><tr>\n'
 
     def kmlPlacemark(self, site):
         '''
-        Returns a kml placemark for the license.
+        Returns a kml placemark for the licence.
 
         Keyword Arguments:
         '''
@@ -284,8 +284,8 @@ class License:
         description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
         description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
         description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
-        description += '<tr><td colspan=%i><b>License Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
-        description += '<tr><td colspan=%i><b>Licensee</b></td><td>%s</td></tr>' % (colSpan, self.licensee)
+        description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
+        description += '<tr><td colspan=%i><b>Licencee</b></td><td>%s</td></tr>' % (colSpan, self.licencee)
         description += '</table>'
 
         placemark = '    <Placemark>\n'
@@ -303,9 +303,9 @@ class License:
         return placemark
 
 
-class Licensee:
+class Licencee:
     '''
-    Licensee for a amateur radio licenses
+    Licencee for a amateur radio licences
     '''
     def __init__(self, name, address1, address2, address3):
         """Constructor"""
@@ -321,7 +321,7 @@ class Licensee:
 
 class Site:
     '''
-    Amateur radio site containing the licenses associated with it.
+    Amateur radio site containing the licences associated with it.
     '''
     def __init__(self,name,mapRef,coordinates):
         '''
@@ -346,30 +346,30 @@ class Site:
 
     def addBeacon(self,beacon):
         '''
-        Adds the given beacon license to the site
+        Adds the given beacon licence to the site
         '''
-        assert type(beacon) == type(License('',1.1,'','',1))
+        assert type(beacon) == type(Licence('',1.1,'','',1))
         self.beacons.append(beacon)
 
     def addDigipeater(self,digipeater):
         '''
-        Adds the given digipeater license to the site
+        Adds the given digipeater licence to the site
         '''
-        assert type(digipeater) == type(License('',1.1,'','',1))
+        assert type(digipeater) == type(Licence('',1.1,'','',1))
         self.digipeaters.append(digipeater)
 
     def addRepeater(self,repeater):
         '''
-        Adds the given repeater license to the site
+        Adds the given repeater licence to the site
         '''
-        assert type(repeater) == type(License('',1.1,'','',1))
+        assert type(repeater) == type(Licence('',1.1,'','',1))
         self.repeaters.append(repeater)
 
     def addTvRepeater(self,tvRepeater):
         '''
-        Adds the given TV repeater license to the site
+        Adds the given TV repeater licence to the site
         '''
-        assert type(tvRepeater) == type(License('',1.1,'','',1))
+        assert type(tvRepeater) == type(Licence('',1.1,'','',1))
         self.tvRepeaters.append(tvRepeater)
 
     def kmlPlacemark(self,
@@ -379,7 +379,7 @@ class Site:
                      shTvRepeater=True):
         '''
         Returns a kml placemark for the site containing the requested
-        information or an empty string if there are no licenses to display
+        information or an empty string if there are no licences to display
         in the requested informaton.
 
         Keyword Arguments:
@@ -436,8 +436,8 @@ class Site:
                            '<th rowspan=2>Branch</th>'+\
                            '<th rowspan=2>Trustees</th>'+\
                            '<th rowspan=2>Notes</th>'+\
-                           '<th rowspan=2>Licensee</th>'+\
-                           '<th rowspan=2>License No</th></tr>\n'+\
+                           '<th rowspan=2>Licencee</th>'+\
+                           '<th rowspan=2>Licence No</th></tr>\n'+\
                            '<th>Output</th><th>Input</th>'
             items.sort()
             for item in items:
@@ -456,7 +456,7 @@ class Site:
             description += '<tr><th>Name</th><th>Call Sign</th>'+\
                            '<th>Frequency</th><th>Branch</th>'+\
                            '<th>Trustees</th><th>Notes</th>'+\
-                           '<th>Licensee</th><th>License No</th></tr>\n'
+                           '<th>Licencee</th><th>Licence No</th></tr>\n'
             items.sort()
             for item in items:
                 logging.debug('creating row for beacon %i' % item.number)
@@ -488,8 +488,8 @@ def module_path():
 
 def readFloatCsv(fileName):
     '''
-    Reads a set of float values associated with license numbers from the given csv
-    file and returns them as a dictionary indexed by the license number.
+    Reads a set of float values associated with licence numbers from the given csv
+    file and returns them as a dictionary indexed by the licence number.
     '''
     ret = {}
     for row in csv.reader(open(fileName)):
@@ -500,7 +500,7 @@ def readFloatCsv(fileName):
 def readRowCsv(fileName,length):
     '''
     Reads a rows from the from the given csv file and returns them as a
-    dictionary indexed by the license number (first item) without the first
+    dictionary indexed by the licence number (first item) without the first
     item in the array.
     '''
     ret = {}
@@ -514,8 +514,8 @@ def readRowCsv(fileName,length):
 
 def readTextCsv(fileName):
     '''
-    Reads a set of text values associated with license numbers from the given csv
-    file and returns them as a dictionary indexed by the license number.
+    Reads a set of text values associated with licence numbers from the given csv
+    file and returns them as a dictionary indexed by the licence number.
     '''
     ret = {}
     for row in csv.reader(open(fileName)):
@@ -527,7 +527,7 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
                  vhf,uhf,
                  shBeacon,shDigipeater,shRepeater,shTvRepeater):
     '''
-    Reads the license information fromt he given database file and returns
+    Reads the licence information fromt he given database file and returns
     the dictionaries below
 
     Arguments:
@@ -535,22 +535,22 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
     callsigns    - A dictionary of callsigns indexed by Linense number
     ctcss        - A dictionary of ctcss tones indexed by Linense number
     info         - A dictionary of additional info indexed by Linense number
-    skip         - A dictionary of callsigns licenses to skip by Linense number
-    vhf          - Include VHF licenses ?
-    uhf          - Include UHF licenses ?
+    skip         - A dictionary of callsigns licences to skip by Linense number
+    vhf          - Include VHF licences ?
+    uhf          - Include UHF licences ?
     shBeacon     - Include beacons ?
     shDigipeater - Include digis ?
     shRepeater   - Include repeaters ?
     shTvRepeater - Include TV repeaters ?
 
     Returns:
-    sites     - A list of sites and their associated licenses
-    licenses  - A list of licenses
-    licensees - A list of the named licensees and their details
+    sites     - A list of sites and their associated licences
+    licences  - A list of licences
+    licencees - A list of the named licencees and their details
     '''
     sites = {}
-    licenses = {}
-    licensees = {}
+    licences = {}
+    licencees = {}
 
     con = sqlite3.connect(fileName)
     con.row_factory = sqlite3.Row
@@ -579,79 +579,79 @@ WHERE c.clientid = l.clientid
     c.execute(sql)
     rows = c.fetchall()
     for row in rows:
-        if row['name'] not in licensees:
-            licensees[row['name']]=Licensee(row['name'],
+        if row['name'] not in licencees:
+            licencees[row['name']]=Licencee(row['name'],
                                               row['address1'],
                                               row['address2'],
                                               row['address3'])
-        licenseLocation = row['locationname']
-        licenseNumber = int(row['licencenumber'])
-        licenseFrequency = float(row['frequency'])
-        licenseCallsign = row['callsign']
+        licenceLocation = row['locationname']
+        licenceNumber = int(row['licencenumber'])
+        licenceFrequency = float(row['frequency'])
+        licenceCallsign = row['callsign']
 
         skipping = False
-        if licenseLocation == 'ALL NEW ZEALAND':
-            logging.info('Skipping Licensee No: %d because it has the location "ALL NEW ZEALAND"' % licenseNumber)
+        if licenceLocation == 'ALL NEW ZEALAND':
+            logging.info('Skipping Licencee No: %d because it has the location "ALL NEW ZEALAND"' % licenceNumber)
             skipping = True
-        elif licenseNumber in skip.keys():
-            skipFreq = float(skip[licenseNumber][S_FREQ])
-            if skipFreq == 0.0 or skipFreq == licenseFrequency:
-                logging.info('Skipping Licensee No: %d, frequency %0.3f for reason "%s"' % (
-                             licenseNumber,
-                             licenseFrequency,
-                             skip[licenseNumber][S_NOTE]))
+        elif licenceNumber in skip.keys():
+            skipFreq = float(skip[licenceNumber][S_FREQ])
+            if skipFreq == 0.0 or skipFreq == licenceFrequency:
+                logging.info('Skipping Licencee No: %d, frequency %0.3f for reason "%s"' % (
+                             licenceNumber,
+                             licenceFrequency,
+                             skip[licenceNumber][S_NOTE]))
         if not skipping:
-            if licenseNumber in info.keys():
-                    licenseName = info[licenseNumber][I_NAME]
+            if licenceNumber in info.keys():
+                    licenceName = info[licenceNumber][I_NAME]
             else:
                 skipping = True
-                logging.info('License No: %i on frequency %0.3fMHz at location "%s" does not have an info record name' % (licenseNumber,licenseFrequency,licenseLocation))
+                logging.info('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record name' % (licenceNumber,licenceFrequency,licenceLocation))
 
         if not skipping:
-            if licenseNumber in callsigns.keys():
-                if licenseCallsign != callsigns[licenseNumber]:
-                    logging.info('License No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenseNumber, row['callsign'], callsigns[licenseNumber]))
-                    licenseCallsign = callsigns[licenseNumber]
-            if licenseLocation in sites:
-                site = sites[licenseLocation]
+            if licenceNumber in callsigns.keys():
+                if licenceCallsign != callsigns[licenceNumber]:
+                    logging.info('Licence No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenceNumber, row['callsign'], callsigns[licenceNumber]))
+                    licenceCallsign = callsigns[licenceNumber]
+            if licenceLocation in sites:
+                site = sites[licenceLocation]
             else:
-                c.execute("SELECT locationid FROM location WHERE locationname = ?", (licenseLocation,))
+                c.execute("SELECT locationid FROM location WHERE locationname = ?", (licenceLocation,))
                 locationId = c.fetchone()[0]
                 c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'LAT/LONG (NZGD1949)'", (locationId,))
                 coord = c.fetchone()
                 c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'NZTM2000'", (locationId,))
                 mapRef = c.fetchone()
-                site = Site(licenseLocation,
+                site = Site(licenceLocation,
                                 nztmToTopo50(mapRef['easting'],mapRef['northing']),
                                 Coordinate(coord['northing'],coord['easting']))
-                sites[licenseLocation] = site
+                sites[licenceLocation] = site
             licType = row['licencetype']
-            if licenseFrequency in [144.575,144.65] and licType != 'Amateur Digipeater':
-                logging.error('License No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenseNumber,licenseName,licenseFrequency,licType))
+            if licenceFrequency in [144.575,144.65] and licType != 'Amateur Digipeater':
+                logging.error('Licence No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
                 licType = 'Amateur Digipeater'
-            license = License(licType,
-                              licenseFrequency,
-                              licenseLocation,
+            licence = Licence(licType,
+                              licenceFrequency,
+                              licenceLocation,
                               row['name'],
-                              licenseNumber,
-                              licenseName,
-                              info[licenseNumber][I_BRANCH],
-                              info[licenseNumber][I_TRUSTEE1],
-                              info[licenseNumber][I_TRUSTEE2],
-                              info[licenseNumber][I_NOTE],
-                              licenseCallsign)
-            if licenseNumber in ctcss.keys():
-                license.setCtcss(ctcss[licenseNumber])
+                              licenceNumber,
+                              licenceName,
+                              info[licenceNumber][I_BRANCH],
+                              info[licenceNumber][I_TRUSTEE1],
+                              info[licenceNumber][I_TRUSTEE2],
+                              info[licenceNumber][I_NOTE],
+                              licenceCallsign)
+            if licenceNumber in ctcss.keys():
+                licence.setCtcss(ctcss[licenceNumber])
             if licType == 'Amateur Beacon' and shBeacon:
-                site.addBeacon(license)
+                site.addBeacon(licence)
             elif licType == 'Amateur Digipeater' and shDigipeater:
-                site.addDigipeater(license)
+                site.addDigipeater(licence)
             elif licType == 'Amateur Repeater' and shRepeater:
-                site.addRepeater(license)
+                site.addRepeater(licence)
             elif licType == 'Amateur TV Repeater' and shTvRepeater:
-                site.addTvRepeater(license)
-            licenses[licenseName] = (license)
-    return sites, licenses, licensees
+                site.addTvRepeater(licence)
+            licences[licenceName] = (licence)
+    return sites, licences, licencees
 
 def generateKmlSite(fileName,
                 sites,
@@ -673,24 +673,24 @@ def generateKmlSite(fileName,
     f.write(kml)
     f.close()
 
-def generateKmlLicense(fileName,
-                       licenses,
+def generateKmlLicence(fileName,
+                       licences,
                        sites,
                        shBeacon=True,
                        shDigipeater=True,
                        shRepeater=True,
                        shTvRepeater=True):
 
-    licenseNames = licenses.keys()
-    licenseNames.sort()
+    licenceNames = licences.keys()
+    licenceNames.sort()
     kmlByType={}
-    for t in LICENSE_TYPES:
+    for t in LICENCE_TYPES:
         kmlByType[t]=''
-    for license in licenseNames:
-        kmlByType[licenses[license].licType] += licenses[license].kmlPlacemark(sites[licenses[license].site])
+    for licence in licenceNames:
+        kmlByType[licences[licence].licType] += licences[licence].kmlPlacemark(sites[licences[licence].site])
     kml = kmlHeader()
-    kml += '    <name>Amateur Licenses</name>\n'
-    for t in LICENSE_TYPES:
+    kml += '    <name>Amateur Licences</name>\n'
+    for t in LICENCE_TYPES:
         if kmlByType[t] != "":
             kml += '    <Folder><name>%ss</name>\n' % t
             kml += kmlByType[t]
@@ -772,11 +772,11 @@ def main():
                       default=False,
                       help='Output information by site')
 
-    parser.add_option('-l','--license',
+    parser.add_option('-l','--licence',
                       action='store_true',
-                      dest='license',
+                      dest='licence',
                       default=False,
-                      help='Output information by license')
+                      help='Output information by licence')
 
     parser.add_option('-b','--beacon',
                       action='store_true',
@@ -828,11 +828,11 @@ def main():
     if options.kmlfilename == 'xxxnonexxx' and options.kmzfilename == 'xxxnonexxx':
         parser.error('The either a kml or kmz filename must be defined otherwise no output will be generated')
 
-    if options.license and options.site:
-        parser.error('Only one of site or license may be specified')
-    elif not (options.license or options.site):
-        print 'Neither site or license defined using license'
-        options.license = True
+    if options.licence and options.site:
+        parser.error('Only one of site or licence may be specified')
+    elif not (options.licence or options.site):
+        print 'Neither site or licence defined using licence'
+        options.licence = True
 
     if options.allTypes:
         options.beacon = True
@@ -851,7 +851,7 @@ def main():
     data_dir = os.path.join(module_path(),'data')
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
     ctcss_file = os.path.join(data_dir,'ctcss.csv')
-    licenses_file = os.path.join(data_dir,'prism.sqlite')
+    licences_file = os.path.join(data_dir,'prism.sqlite')
     info_file = os.path.join(data_dir,'info.csv')
     skip_file = os.path.join(data_dir,'skip.csv')
 
@@ -859,7 +859,7 @@ def main():
     ctcss = readFloatCsv(ctcss_file)
     info = readRowCsv(info_file,6)
     skip = readRowCsv(skip_file,3)
-    sites, licenses, licensees = readLicences(licenses_file,callsigns,ctcss,
+    sites, licences, licencees = readLicences(licences_file,callsigns,ctcss,
                                               info,skip,
                                               options.vhf,options.uhf,
                                               options.beacon,options.digi,
@@ -878,10 +878,10 @@ def main():
                             options.digi,
                             options.repeater,
                             options.tv)
-        if options.license:
+        if options.licence:
             logging.debug('exporting kmlfile %s by site' % options.kmlfilename)
-            generateKmlLicense(options.kmlfilename,
-                               licenses,
+            generateKmlLicence(options.kmlfilename,
+                               licences,
                                sites,
                                options.beacon,
                                options.digi,
