@@ -218,6 +218,29 @@ class Licence:
         else:
             return self.trustee1 + '<br>' + self.trustee2
 
+    def csvLine(self, site):
+        csv = '"%s"' % self.name
+        csv += ',"%i"' % self.number
+        csv += ',"%s"' % self.licType
+        csv += ',"%s"' % self.callsign
+        csv += ',"%f"' % self.frequency
+        csv += ',"%s"' % self.branch
+        csv += ',"%s"' % self.trustee1
+        csv += ',"%s"' % self.trustee2
+        csv += ',"%s"' % self.note
+        csv += ',"%s"' % self.licencee
+        if self.ctcss == None:
+            csv += ','
+        else:
+            csv += ',"%0.1f"' % self.ctcss
+        csv += ',"%s"' % self.site
+        csv += ',"%s"' % site.mapRef
+        csv += ',"%s"' % site.coordinates.lat
+        csv += ',"%f"' % site.coordinates.lon
+        csv += '\n'
+        return csv
+
+
     def htmlBasicRow(self):
         '''
         Returns an HTML table row containig the licence information, formatted
@@ -372,40 +395,26 @@ class Site:
         assert type(tvRepeater) == type(Licence('',1.1,'','',1))
         self.tvRepeaters.append(tvRepeater)
 
-    def kmlPlacemark(self,
-                     shBeacon=True,
-                     shDigipeater=True,
-                     shRepeater=True,
-                     shTvRepeater=True):
+    def kmlPlacemark(self):
         '''
         Returns a kml placemark for the site containing the requested
         information or an empty string if there are no licences to display
         in the requested informaton.
-
-        Keyword Arguments:
-        shBeacon     - Show beacons in the information
-        shDigipeater - Show digipeaters in the information
-        shRepeater   - Show repeaters in the information
-        shTvRepeater - Show TV repeaters in the information
         '''
-        if (shBeacon and len(self.beacons) > 0) or\
-           (shDigipeater and len(self.digipeaters) > 0) or\
-           (shRepeater and len(self.repeaters) > 0) or\
-           (shTvRepeater and len(self.tvRepeaters) >0):
+        if (len(self.beacons) > 0) or\
+           (len(self.digipeaters) > 0) or\
+           (len(self.repeaters) > 0) or\
+           (len(self.tvRepeaters) >0):
             logging.debug('Creating placemark for: %s' % self.name)
             description = '<h1>Amateur Site</h1>'
             description += '<table border=1>'
             description += '<tr><td><b>Map Reference</b></td><td>%s</td></tr>' % self.mapRef
             description += '<tr><td><b>Coordinates</b></td><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
             description += '</table>'
-            if shBeacon:
-                description += self.htmlSimpleDescription(self.beacons,'Beacon')
-            if shDigipeater:
-                description += self.htmlSimpleDescription(self.digipeaters, 'Digipeater')
-            if shRepeater:
-                description += self.htmlRepeaterDescription(self.repeaters, 'Repeater')
-            if shTvRepeater:
-                description += self.htmlRepeaterDescription(self.tvRepeaters, 'TV Repeater')
+            description += self.htmlSimpleDescription(self.beacons,'Beacon')
+            description += self.htmlSimpleDescription(self.digipeaters, 'Digipeater')
+            description += self.htmlRepeaterDescription(self.repeaters, 'Repeater')
+            description += self.htmlRepeaterDescription(self.tvRepeaters, 'TV Repeater')
 
             placemark = '    <Placemark>\n'
             placemark += '      <name>'+ self.name+'</name>\n'
@@ -653,33 +662,30 @@ WHERE c.clientid = l.clientid
             licences[licenceName] = (licence)
     return sites, licences, licencees
 
-def generateKmlSite(fileName,
-                sites,
-                shBeacon=True,
-                shDigipeater=True,
-                shRepeater=True,
-                shTvRepeater=True):
-    kml = kmlHeader()
-    kml += '    <name>Amateur Sites</name>\n'
-    siteNames = sites.keys()
-    siteNames.sort()
-    for site in siteNames:
-        kml += sites[site].kmlPlacemark(shBeacon=shBeacon,
-                                        shDigipeater=shDigipeater,
-                                        shRepeater=shRepeater,
-                                        shTvRepeater=shTvRepeater)
-    kml += kmlFooter()
-    f = open(fileName,mode='w')
+def generateCsv(filename,licences,sites):
+
+    licenceNames = licences.keys()
+    licenceNames.sort()
+
+    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS","Site Name","Map reference","Latitude","Longitude"\n'
+    for licence in licenceNames:
+        csv += licences[licence].csvLine(sites[licences[licence].site])
+    f = open(filename,mode='w')
+    f.write(csv)
+    f.close()
+
+def generateKml(filename, licences, sites, bySite):
+    if bySite:
+        logging.debug('exporting kmlfile %s by site' % filename)
+        kml = generateKmlSite(sites)
+    else:
+        logging.debug('exporting kmlfile %s by site' % filename)
+        kml = generateKmlLicence(licences,sites)
+    f = open(filename,mode='w')
     f.write(kml)
     f.close()
 
-def generateKmlLicence(fileName,
-                       licences,
-                       sites,
-                       shBeacon=True,
-                       shDigipeater=True,
-                       shRepeater=True,
-                       shTvRepeater=True):
+def generateKmlLicence(licences,sites):
 
     licenceNames = licences.keys()
     licenceNames.sort()
@@ -696,9 +702,29 @@ def generateKmlLicence(fileName,
             kml += kmlByType[t]
             kml += '    </Folder>\n'
     kml += kmlFooter()
-    f = open(fileName,mode='w')
-    f.write(kml)
-    f.close()
+    return kml
+
+def generateKmlSite(sites):
+    kml = kmlHeader()
+    kml += '    <name>Amateur Sites</name>\n'
+    siteNames = sites.keys()
+    siteNames.sort()
+    for site in siteNames:
+        kml += sites[site].kmlPlacemark()
+    kml += kmlFooter()
+    return kml
+
+def generateKmz(filename, licences, sites, bySite):
+    logging.debug('exporting kmlfile %s' % filename)
+    tempDir = tempfile.mkdtemp()
+    kmlFilename = os.path.join(tempDir,'doc.kml')
+    generateKml(kmlFilename, licences, sites, bySite)
+    archive = zipfile.ZipFile(filename,
+                              mode='w',
+                              compression=zipfile.ZIP_DEFLATED)
+    archive.write(kmlFilename, os.path.basename(kmlFilename).encode("utf_8"))
+    archive.close()
+    shutil.rmtree(tempDir)
 
 def kmlHeader():
     header = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -766,6 +792,13 @@ def main():
                       default='xxxnonexxx',
                       help='Output to kmz file overides kml output specification')
 
+    parser.add_option('-c','--csv',
+                      action='store',
+                      type='string',
+                      dest='csvfilename',
+                      default='xxxnonexxx',
+                      help='Output to csv file, may be in addition to other output types')
+
     parser.add_option('-s','--site',
                       action='store_true',
                       dest='site',
@@ -826,7 +859,7 @@ def main():
         logging.basicConfig(level=logging.WARNING)
 
     if options.kmlfilename == 'xxxnonexxx' and options.kmzfilename == 'xxxnonexxx':
-        parser.error('The either a kml or kmz filename must be defined otherwise no output will be generated')
+        parser.error('Atleast one output file type must be defined or no output will be generated')
 
     if options.licence and options.site:
         parser.error('Only one of site or licence may be specified')
@@ -864,40 +897,15 @@ def main():
                                               options.vhf,options.uhf,
                                               options.beacon,options.digi,
                                               options.repeater,options.tv)
-    if options.kmzfilename != 'xxxnonexxx':
-        logging.debug('exporting kmlfile %s' % options.kmlfilename)
-        tempDir = tempfile.mkdtemp()
-        options.kmlfilename = os.path.join(tempDir,'doc.kml')
+
+    if options.csvfilename != 'xxxnonexxx':
+        generateCsv(options.csvfilename, licences, sites)
 
     if options.kmlfilename != 'xxxnonexxx':
-        if options.site:
-            logging.debug('exporting kmlfile %s by site' % options.kmlfilename)
-            generateKmlSite(options.kmlfilename,
-                            sites,
-                            options.beacon,
-                            options.digi,
-                            options.repeater,
-                            options.tv)
-        if options.licence:
-            logging.debug('exporting kmlfile %s by site' % options.kmlfilename)
-            generateKmlLicence(options.kmlfilename,
-                               licences,
-                               sites,
-                               options.beacon,
-                               options.digi,
-                               options.repeater,
-                               options.tv)
+        generateKml(options.kmlfilename, licences, sites, options.site)
 
     if options.kmzfilename != 'xxxnonexxx':
-        archive = zipfile.ZipFile(options.kmzfilename,
-                                  mode='w',
-                                  compression=zipfile.ZIP_DEFLATED)
-        archive.write(options.kmlfilename, os.path.basename(options.kmlfilename).encode("utf_8"))
-        archive.close()
-        shutil.rmtree(tempDir)
-    logging.debug('Done')
-
+        generateKmz(options.kmzfilename, licences, sites, options.site)
 
 if __name__ == "__main__":
     main()
-
