@@ -62,7 +62,7 @@
 59684,"Egmont",87,"ZL2AFE","ZL2UFN",Linked to Opunake 540"
 216482,"Christchurch",05,,,"N"
 217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
-116876,"Colonial Knob Voice and Data 7075",74,"ZL3TC","ZL4JY",
+116876,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode analogue voice and Digital Voice P25  NAC 293"
 55694,"Far North",78,,,"Linked to Doubtless Bay 7225"
 216134,"Belmont",74,"ZL3TC","ZL2TVM",
 221225,"Manawatu",20,"ZL2FX","ZL2WS",
@@ -87,6 +87,8 @@
 215191,"Rewa",46,"ZL2BA","ZL4JS",
 101964,"Waitomo",55,"ZL4SQ","ZL1JH",
 175649,"Golden Bay",22,"ZL2BCG","ZL2VBO","Linked to Picton 7225, Blenheim 695 and Ward 560"
+227865,"Tauranga",88,"ZL1MK","ZL1IE",
+
 # 70CM Repeaters
 220891,"Hawkes Bay VoIP",13,"ZL2AJ","ZL2DW","VoIP, Simplex"
 177645,"Wairarapa",46,"ZL2BA","ZL4JS",
@@ -171,7 +173,7 @@
 224331,"Te Kapua APRS",,"ZL2CC",,
 218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
 221226,"Manawatu  APRS",20,"ZL2FX","ZL2MAX",
-220125,"Forest Lakes Road APRS",,ZL2KG","ZL4SJ",
+220125,"Forest Lakes Road APRS",74,ZL2KG","ZL4SJ",
 221323,"Nelson APRS",26,"ZL2BCA","ZL2RP",
 221396,"Wairarapa APRS",46,"ZL2BA","ZL4JS",
 221246,"Murchison APRS",26,"ZL2BCA","ZL2RP",
@@ -218,7 +220,7 @@ Callsign Station Name Frequency MED Site Name Topo50 Map Ref Branch Trustee 1 Tr
 215920,"Auckland 70 cm",66,"ZL1QF","ZL1WTT",
 224660,"Waikato 70cm",81,"ZL1THG","ZL1UJG","C"
 155265,"Hawkins Hill 70cm",74,"ZL3TC","ZL2TVM",
-155265,"Christchurch 70cm",5,,,"N"
+59675,"Christchurch 70cm",5,,,"N"
 59679,"New Plymouth 70cm",27,"ZL2BR","ZL2BZH",
 177985,"Lower Hutt 32cm",74,"ZL2TAR","ZL2TAK",
 224661,"Waikato 23cm",81,"ZL1THG","ZL1UJG","C"
