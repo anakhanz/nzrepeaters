@@ -533,7 +533,7 @@ def readTextCsv(fileName):
     return ret
 
 def readLicences(fileName,callsigns,ctcss,info,skip,
-                 vhf,uhf,
+                 fMin,fMax,
                  shBeacon,shDigipeater,shRepeater,shTvRepeater):
     '''
     Reads the licence information fromt he given database file and returns
@@ -545,8 +545,8 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
     ctcss        - A dictionary of ctcss tones indexed by Linense number
     info         - A dictionary of additional info indexed by Linense number
     skip         - A dictionary of callsigns licences to skip by Linense number
-    vhf          - Include VHF licences ?
-    uhf          - Include UHF licences ?
+    fMin         - minimum frequency to include
+    fMax         - maximum frequency to include
     shBeacon     - Include beacons ?
     shDigipeater - Include digis ?
     shRepeater   - Include repeaters ?
@@ -577,10 +577,10 @@ WHERE c.clientid = l.clientid
   AND l.licencenumber NOT NULL
   AND l.licencetype  LIKE "Amateur%"
 '''
-    if vhf and (not uhf):
-        sql += "\n  AND s.frequency <= 148.0"
-    elif (not vhf) and uhf:
-        sql += "\n  AND s.frequency > 148.0"
+    if fMin != None:
+        sql += "\n  AND s.frequency >= %f" % fMin
+    if fMax != None:
+        sql += "\n  AND s.frequency <= %f" % fMax
 
     sql +="\nORDER BY s.frequency, l.licencenumber;"
 
@@ -635,7 +635,7 @@ WHERE c.clientid = l.clientid
                                 Coordinate(coord['northing'],coord['easting']))
                 sites[licenceLocation] = site
             licType = row['licencetype']
-            if licenceFrequency in [144.575,144.65] and licType != 'Amateur Digipeater':
+            if licenceFrequency in [144.575,144.65,144.7] and licType != 'Amateur Digipeater':
                 logging.error('Licence No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
                 licType = 'Amateur Digipeater'
             licence = Licence(licType,
@@ -782,21 +782,21 @@ def main():
                       action='store',
                       type='string',
                       dest='kmlfilename',
-                      default='xxxnonexxx',
+                      default=None,
                       help='Output to kml file kmz output will overide kml output')
 
     parser.add_option('-z','--kmz',
                       action='store',
                       type='string',
                       dest='kmzfilename',
-                      default='xxxnonexxx',
+                      default=None,
                       help='Output to kmz file overides kml output specification')
 
     parser.add_option('-c','--csv',
                       action='store',
                       type='string',
                       dest='csvfilename',
-                      default='xxxnonexxx',
+                      default=None,
                       help='Output to csv file, may be in addition to other output types')
 
     parser.add_option('-s','--site',
@@ -836,6 +836,18 @@ def main():
                       dest='allTypes',
                       default=False,
                       help='Include all types in the generated file')
+    parser.add_option('-f','--minfreq',
+                      action='store',
+                      type='float',
+                      dest='minFreq',
+                      default=None,
+                      help='Filter out all below the specified frequency')
+    parser.add_option('-F','--maxfreq',
+                      action='store',
+                      type='float',
+                      dest='maxFreq',
+                      default=None,
+                      help='Filter out all above the specified frequency')
     parser.add_option('-V','--VHF',
                       action='store_true',
                       dest='vhf',
@@ -858,7 +870,9 @@ def main():
     else:
         logging.basicConfig(level=logging.WARNING)
 
-    if options.kmlfilename == 'xxxnonexxx' and options.kmzfilename == 'xxxnonexxx':
+    if options.kmlfilename == None and\
+       options.kmzfilename == None and\
+       options.csvfilename == None:
         parser.error('Atleast one output file type must be defined or no output will be generated')
 
     if options.licence and options.site:
@@ -874,12 +888,10 @@ def main():
         options.tv = True
 
     if not (options.beacon or options.digi or options.repeater or options.tv):
-        parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated')
+        parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated.')
 
-    # If neither UHF or VHF are selecdted, select both
-    if not(options.vhf or options.uhf):
-        options.vhf = True
-        options.uhf = True
+    if options.minFreq > options.maxFreq:
+        parser.error('The maximum frequency must be greater than the minimum frequency.')
 
     data_dir = os.path.join(module_path(),'data')
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
@@ -894,17 +906,20 @@ def main():
     skip = readRowCsv(skip_file,3)
     sites, licences, licencees = readLicences(licences_file,callsigns,ctcss,
                                               info,skip,
-                                              options.vhf,options.uhf,
+                                              options.minFreq,options.maxFreq,
                                               options.beacon,options.digi,
                                               options.repeater,options.tv)
 
-    if options.csvfilename != 'xxxnonexxx':
+    if len(licences) == 0:
+        parser.error('The selected options have excluded all licences, no output will be generated!')
+
+    if options.csvfilename != None:
         generateCsv(options.csvfilename, licences, sites)
 
-    if options.kmlfilename != 'xxxnonexxx':
+    if options.kmlfilename != None:
         generateKml(options.kmlfilename, licences, sites, options.site)
 
-    if options.kmzfilename != 'xxxnonexxx':
+    if options.kmzfilename != None:
         generateKmz(options.kmzfilename, licences, sites, options.site)
 
 if __name__ == "__main__":
