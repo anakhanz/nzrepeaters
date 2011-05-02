@@ -88,6 +88,7 @@
 101964,"Waitomo",55,"ZL4SQ","ZL1JH",
 175649,"Golden Bay",22,"ZL2BCG","ZL2VBO","Linked to Picton 7225, Blenheim 695 and Ward 560"
 227865,"Tauranga",88,"ZL1MK","ZL1IE",
+227633,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
 
 # 70CM Repeaters
 220891,"Hawkes Bay VoIP",13,"ZL2AJ","ZL2DW","VoIP, Simplex"
@@ -124,6 +125,8 @@
 207488,"Gisborne",11,"ZL2TRG","ZL2CC",
 221215,"Ngaio",74,"ZL3TC","ZL2SX",
 179114,"Wharite Voice and Data",6,"ZL2KA","ZL2KG","Linked to Hawkes Bay 879"
+227635,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
+
 
 # 70CM National System Repeaters
 177228,"Kaimai National System",81,"ZL1GWP","ZL3GR",
