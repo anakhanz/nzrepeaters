@@ -653,13 +653,16 @@ WHERE c.clientid = l.clientid
                 licence.setCtcss(ctcss[licenceNumber])
             if licType == 'Amateur Beacon' and shBeacon:
                 site.addBeacon(licence)
+                licences[licenceName] = (licence)
             elif licType == 'Amateur Digipeater' and shDigipeater:
                 site.addDigipeater(licence)
+                licences[licenceName] = (licence)
             elif licType == 'Amateur Repeater' and shRepeater:
                 site.addRepeater(licence)
+                licences[licenceName] = (licence)
             elif licType == 'Amateur TV Repeater' and shTvRepeater:
                 site.addTvRepeater(licence)
-            licences[licenceName] = (licence)
+                licences[licenceName] = (licence)
     return sites, licences, licencees
 
 def generateCsv(filename,licences,sites):
