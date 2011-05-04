@@ -40,6 +40,11 @@ LICENCE_TYPES = ['',
                  'Amateur Repeater',
                  'Amateur TV Repeater']
 
+STYLE_MAP = {'Amateur Beacon':'#msn_beacon',
+                 'Amateur Digipeater':'#msn_digipeater',
+                 'Amateur Repeater':'#msn_repeater',
+                 'Amateur TV Repeater':'#msn_repeater'}
+
 # Columns in info array
 I_NAME = 0
 I_BRANCH = 1
@@ -316,7 +321,8 @@ class Licence:
         placemark += '      <description><![CDATA['
         placemark += description
         placemark += ']]></description>\n'
-        placemark += '      <styleUrl>#msn_placemark_square</styleUrl>\n'
+        placemark += '      <open>0</open>'
+        placemark += '      <styleUrl>' + STYLE_MAP[self.licType] + '</styleUrl>\n'
         placemark += '      <Point>\n'
         placemark += '        <coordinates>'
         placemark += '%f,%f,0' % (site.coordinates.lon,site.coordinates.lat)
@@ -421,7 +427,7 @@ class Site:
             placemark += '      <description><![CDATA['
             placemark += description
             placemark += ']]></description>\n'
-            placemark += '      <styleUrl>#msn_placemark_square</styleUrl>\n'
+            placemark += '      <styleUrl>#msn_site</styleUrl>\n'
             placemark += '      <Point>\n'
             placemark += '        <coordinates>'
             placemark += '%f,%f,0' % (self.coordinates.lon,self.coordinates.lat)
@@ -733,17 +739,18 @@ def kmlHeader():
     header = '<?xml version="1.0" encoding="UTF-8"?>\n'
     header += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
     header += '<Document>\n'
-    header += '''  <StyleMap id="msn_placemark_square">
+    header += '''
+  <StyleMap id="msn_site">
     <Pair>
       <key>normal</key>
-      <styleUrl>#sn_placemark_square</styleUrl>
+      <styleUrl>#sn_site</styleUrl>
     </Pair>
     <Pair>
       <key>highlight</key>
-      <styleUrl>#sh_placemark_square_highlight</styleUrl>
+      <styleUrl>#sh_site_highlight</styleUrl>
     </Pair>
   </StyleMap>
-  <Style id="sh_placemark_square_highlight">
+  <Style id="sh_site_highlight">
     <IconStyle>
       <scale>1.2</scale>
       <Icon>
@@ -753,7 +760,7 @@ def kmlHeader():
     <ListStyle>
     </ListStyle>
   </Style>
-  <Style id="sn_placemark_square">
+  <Style id="sn_site">
     <IconStyle>
       <scale>1.2</scale>
       <Icon>
@@ -762,12 +769,126 @@ def kmlHeader():
     </IconStyle>
     <ListStyle>
     </ListStyle>
-  </Style>\n'''
-    #header += '  <Folder>\n'
+  </Style>
+  <StyleMap id="msn_beacon">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#sn_beacon</styleUrl>
+    </Pair>
+    <Pair>
+    <key>highlight</key>
+      <styleUrl>#sh_beacon</styleUrl>
+    </Pair>
+  </StyleMap>
+  <Style id="sn_beacon">
+      <IconStyle>
+        <scale>1.1</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank.png</href>
+        </Icon>
+        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+    <ItemIcon>
+      <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank-lv.png</href>
+    </ItemIcon>
+  </ListStyle>
+  </Style>
+  <Style id="sh_beacon">
+    <IconStyle>
+      <scale>1.3</scale>
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank.png</href>
+      </Icon>
+      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+      <ItemIcon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank-lv.png</href>
+      </ItemIcon>
+    </ListStyle>
+  </Style>
+  <StyleMap id="msn_repeater">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#sn_repeater</styleUrl>
+    </Pair>
+    <Pair>
+    <key>highlight</key>
+      <styleUrl>#sh_repeater</styleUrl>
+    </Pair>
+  </StyleMap>
+  <Style id="sn_repeater">
+      <IconStyle>
+        <scale>1.1</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href>
+        </Icon>
+        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+    <ItemIcon>
+      <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png</href>
+    </ItemIcon>
+  </ListStyle>
+  </Style>
+  <Style id="sh_repeater">
+    <IconStyle>
+      <scale>1.3</scale>
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href>
+      </Icon>
+      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+      <ItemIcon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png</href>
+      </ItemIcon>
+    </ListStyle>
+  </Style>
+
+  <StyleMap id="msn_digipeater">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#sn_digipeater</styleUrl>
+    </Pair>
+    <Pair>
+    <key>highlight</key>
+      <styleUrl>#sh_digipeater</styleUrl>
+    </Pair>
+  </StyleMap>
+  <Style id="sn_digipeater">
+      <IconStyle>
+        <scale>1.1</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank.png</href>
+        </Icon>
+        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+    <ItemIcon>
+      <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
+    </ItemIcon>
+  </ListStyle>
+  </Style>
+  <Style id="sh_digipeater">
+    <IconStyle>
+      <scale>1.3</scale>
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank.png</href>
+      </Icon>
+      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+      <ItemIcon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
+      </ItemIcon>
+    </ListStyle>
+  </Style>
+'''
     return header
 
 def kmlFooter():
-    #footer = '  </Folder>\n'
     footer = '</Document>\n'
     footer += '</kml>'
     return footer
