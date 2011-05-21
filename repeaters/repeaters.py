@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-## NZ Repeater list builder
+## NZ Repeater list/map builder
 ## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
 ## Copyright (C) 2011, Rob Wallace rob[at]wallace[dot]gen[dot]nz
 ## Builds lists of NZ repeaters from the licence information avaliable from the
@@ -31,8 +31,10 @@ import sys
 import tempfile
 import zipfile
 
-import topo50
-__version__ = '0.2'
+from mapping.nz_coords import nztmToTopo50
+
+#import topo50
+__version__ = '0.1'
 
 LICENCE_TYPES = ['',
                  'Amateur Beacon',
@@ -60,34 +62,6 @@ S_NOTE = 1
 USAGE = """%s [options]
 NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
 http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
-
-def nztmToTopo50(easting, northing, highPrecisioin=False):
-    for key in topo50.east_max.keys():
-        if easting >= topo50.east_min[key] and easting < topo50.east_max[key]:
-            eastSheet = key
-            break
-    for key in topo50.north_max.keys():
-        if northing >= topo50.north_min[key] and northing < topo50.north_max[key]:
-            northSheet = key
-    easting = float(easting % 100000) / 100.0
-    northing = float(northing % 100000) / 100.0
-    if highPrecisioin:
-        easting = '%0.2f' % easting
-        if len(easting) == 4:
-            easting = '00' + easting
-        elif len(easting) == 5:
-            easting = '0' + easting
-        northing = '%0.2f' % northing
-        if len(northing) == 4:
-            northing = '00' + northing
-        elif len(northing) == 5:
-            northing = '0' + northing
-    else:
-
-        easting = '%03.0f' % easting
-        northing = '%03.0f' % northing
-
-    return northSheet + eastSheet + ' ' + easting + ' ' + northing
 
 class Coordinate:
     '''
@@ -264,7 +238,7 @@ class Licence:
                '</td><td>' + self.note +\
                '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
-               '</td><tr>\n'
+               '</td></tr>\n'
 
     def htmlRepeaterRow(self):
         '''
@@ -285,7 +259,7 @@ class Licence:
                '</td><td>' + self.note +\
                '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
-               '</td><tr>\n'
+               '</td></tr>\n'
 
     def kmlPlacemark(self, site):
         '''
@@ -453,7 +427,7 @@ class Site:
                            '<th rowspan=2>Notes</th>'+\
                            '<th rowspan=2>Licencee</th>'+\
                            '<th rowspan=2>Licence No</th></tr>\n'+\
-                           '<th>Output</th><th>Input</th>'
+                           '<tr><th>Output</th><th>Input</th></tr>'
             items.sort()
             for item in items:
                 logging.debug('creating row for repeater %i' % item.number)
@@ -907,14 +881,14 @@ def main():
                       type='string',
                       dest='kmlfilename',
                       default=None,
-                      help='Output to kml file kmz output will overide kml output')
+                      help='Output to kml file, may be in addition to other output types')
 
     parser.add_option('-z','--kmz',
                       action='store',
                       type='string',
                       dest='kmzfilename',
                       default=None,
-                      help='Output to kmz file overides kml output specification')
+                      help='Output to kmz file, may be in addition to other output types')
 
     parser.add_option('-c','--csv',
                       action='store',
@@ -972,16 +946,6 @@ def main():
                       dest='maxFreq',
                       default=None,
                       help='Filter out all above the specified frequency')
-    parser.add_option('-V','--VHF',
-                      action='store_true',
-                      dest='vhf',
-                      default=False,
-                      help='Include VHF repeaters/digipetears/beacons in the output (if neither VHF or UHF are specified both will be included)')
-    parser.add_option('-U','--UHF',
-                      action='store_true',
-                      dest='uhf',
-                      default=False,
-                      help='Include UHF repeaters/digipetears/beacons in the output (if neither VHF or UHF are specified both will be included)')
 
     (options, args) = parser.parse_args()
 
@@ -1002,7 +966,7 @@ def main():
     if options.licence and options.site:
         parser.error('Only one of site or licence may be specified')
     elif not (options.licence or options.site):
-        print 'Neither site or licence defined using licence'
+        print 'Neither site or licence output specified creating output by licence'
         options.licence = True
 
     if options.allTypes:

@@ -1,7 +1,20 @@
 repeaters/data/prism.sqlite
 repeaters/data/prism.sqlite.bak
 *.pyc
+*.swp
 *.wpr
+*.wpu
 # Output files
 *.kml
 *.kmz
+# Build
+MANIFEST
+build/lib/*
+build/scripts*/*
+*.exe
+*.tar.gz
+*.zip
+*.pyd
+*.dll
+build/bdist.*/*
+

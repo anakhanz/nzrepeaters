@@ -1,0 +1,5 @@
+include COPYING
+include README.txt
+recursive-include repeaters *.py
+recursive-include repeaters/data *.csv *.sqlite
+recursive-include mapping *.py
