@@ -21,9 +21,9 @@ Data sources
 The data included with this software comes from two sources:
 
 The technical data is sourced form the RSM's SMART system, if this is
-ioncorrect please notify the owner of the licence and ask them to submit a
-form 10 to get it corrected (Note: if the licencee is NZART please conttact the
-branch not NZART itself).  The actual data from smart is as folows:
+incorrect please notify the owner of the licence and ask them to submit a
+form 10 to get it corrected (Note: if the licencee is NZART please contact the
+branch not NZART itself).  The actual data from SMART is as follows:
  * Frequency (the input frequency for repeaters is calculated)
  * Type
  * Site Name
