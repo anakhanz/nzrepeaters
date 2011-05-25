@@ -594,7 +594,7 @@ WHERE c.clientid = l.clientid
                     licenceName = info[licenceNumber][I_NAME]
             else:
                 skipping = True
-                logging.info('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record name' % (licenceNumber,licenceFrequency,licenceLocation))
+                logging.error('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
 
         if not skipping:
             if licenceNumber in callsigns.keys():
@@ -633,25 +633,27 @@ WHERE c.clientid = l.clientid
                 licence.setCtcss(ctcss[licenceNumber])
             if licType == 'Amateur Beacon' and shBeacon:
                 site.addBeacon(licence)
-                licences[licenceName] = (licence)
+                licences[licenceNumber] = (licence)
             elif licType == 'Amateur Digipeater' and shDigipeater:
                 site.addDigipeater(licence)
-                licences[licenceName] = (licence)
+                licences[licenceNumber] = (licence)
             elif licType == 'Amateur Repeater' and shRepeater:
                 site.addRepeater(licence)
-                licences[licenceName] = (licence)
+                licences[licenceNumber] = (licence)
             elif licType == 'Amateur TV Repeater' and shTvRepeater:
                 site.addTvRepeater(licence)
-                licences[licenceName] = (licence)
+                licences[licenceNumber] = (licence)
     return sites, licences, licencees
 
 def generateCsv(filename,licences,sites):
 
-    licenceNames = licences.keys()
-    licenceNames.sort()
+    def sortKey(item):
+        return (licences[item].name, licences[item].frequency)
+
+    licenceNos = sorted(licences.keys(), key=sortKey)
 
     csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS","Site Name","Map reference","Latitude","Longitude"\n'
-    for licence in licenceNames:
+    for licence in licenceNos:
         csv += licences[licence].csvLine(sites[licences[licence].site])
     f = open(filename,mode='w')
     f.write(csv)
@@ -670,12 +672,15 @@ def generateKml(filename, licences, sites, bySite):
 
 def generateKmlLicence(licences,sites):
 
-    licenceNames = licences.keys()
-    licenceNames.sort()
+    def sortKey(item):
+        return (licences[item].name, licences[item].frequency)
+
+    licenceNos = sorted(licences.keys(), key=sortKey)
+
     kmlByType={}
     for t in LICENCE_TYPES:
         kmlByType[t]=''
-    for licence in licenceNames:
+    for licence in licenceNos:
         kmlByType[licences[licence].licType] += licences[licence].kmlPlacemark(sites[licences[licence].site])
     kml = kmlHeader()
     kml += '    <name>Amateur Licences</name>\n'
