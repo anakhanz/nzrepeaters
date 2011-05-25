@@ -62,7 +62,7 @@
 59684,"Egmont",87,"ZL2AFE","ZL2UFN",Linked to Opunake 540"
 216482,"Christchurch",05,,,"N"
 217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
-116876,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode analogue voice and Digital Voice P25  NAC 293"
+228006,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode Analogue Voice and Digital Voice P25  NAC 293"
 55694,"Far North",78,,,"Linked to Doubtless Bay 7225"
 216134,"Belmont",74,"ZL3TC","ZL2TVM",
 221225,"Manawatu",20,"ZL2FX","ZL2WS",
@@ -158,7 +158,6 @@
 177234,"Edgecumbe National System",67,"ZL1CAY","ZL1OW",
 177324,"Wharite National System ",74,"ZL2KG","ZL3TC",
 
-
 # 23CM Repeaters
 177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
 169950,"Auckland",66,"ZL1TGC","ZL1JD",
@@ -185,6 +184,7 @@
 221142,"Kaikoura APRS",22,"ZL2BK","ZL2WD",
 176536,"Christchurch APRS",O5,,,"N"
 175652,"Timaru APRS",34,"ZL3GL","ZL3OZ",
+228051,"Taumarunui APRS",60,,,
 209773,"North Shore",29,"ZL1AUW","ZL1TGC",
 209786,"Te Puke",53,"ZL1MOF",,
 207996,"Hamilton",12,"ZL1PK","ZL1GWP",
