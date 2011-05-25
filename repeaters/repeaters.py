@@ -585,6 +585,7 @@ WHERE c.clientid = l.clientid
         elif licenceNumber in skip.keys():
             skipFreq = float(skip[licenceNumber][S_FREQ])
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
+                skipping = True
                 logging.info('Skipping Licencee No: %d, frequency %0.3f for reason "%s"' % (
                              licenceNumber,
                              licenceFrequency,
