@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "NZ Repeaters"
-!define PRODUCT_VERSION "0.1"
+!define PRODUCT_VERSION "0.1.1"
 !define PRODUCT_PUBLISHER "Rob Wallace"
 !define PRODUCT_WEB_SITE "http://projects.wallace.gen.nz/projects/nzrepeaters"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\rpt.exe"
