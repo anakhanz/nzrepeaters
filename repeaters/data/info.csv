@@ -1,9 +1,9 @@
 # Name | Branch | Trustee 1 | Trustee 2 | Note
 
 # 6M Repeaters
-55700,"Alexandra",61,"ZL4THT","ZL4GP",
+104137,"Alexandra",61,"ZL4THT","ZL4GP",
 168992,"Auckland",66,"ZL1TGC","ZL1BK",
-207722,"Cass Peak",'CA',"ZL2BCF","ZL3TMB",
+163358,"Cass Peak",'CA',"ZL2BCF","ZL3TMB",
 
 # 2M Repeaters
 70440,"Rotorua Linear",33,"ZL1JP","ZL1BWC",
@@ -91,6 +91,12 @@
 227633,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
 225629,"Rodney",71,,,"N"
 
+# STSP
+159314,"Branch 12 STSP",12,"ZL1PK","ZL1GWP",
+97689,"Branch 22 STSP",22,"ZL2PK","ZL2WD",
+102234,"Branch 5 STSP",5,,,"N"
+177366,"Branch 26 STSP",26,"ZL2BCA","ZL2RP",
+
 # 70CM Repeaters
 220891,"Hawkes Bay VoIP",13,"ZL2AJ","ZL2DW","VoIP, Simplex"
 177645,"Wairarapa",46,"ZL2BA","ZL4JS",
@@ -147,7 +153,7 @@
 177239,"Belmont National System",74,"ZL3TC","ZL2TVM",
 211465,"Greymouth National System",49,"ZL3ADH","ZL3TY",
 177321,"Christchurch National System",5,,,"N"
-179142,"Whangarei National System",28,,,"N"
+177302,"Whangarei National System",28,,,"N"
 177329,"Rotorua National System",33,"ZL1PJ","ZL1BWC",
 177653,"Rangitoto National System",55,"ZL4SQ","ZL1HJ",
 207983,"Kapiti National System",69,"ZL2GO","ZL4VV",
@@ -165,7 +171,7 @@
 #DATA (AND VOICE) REPEATERS
 101943,"Kaimai Data",81,"ZL1TAT","ZL1THG",
 207725,"Whangarei Data",28,,,"N"
-21587,"Climie Data",63,"ZL2HM","ZL2BRG",
+215877,"Climie Data",63,"ZL2HM","ZL2BRG",
 101946,"Auckland Data",66,"ZL1TGC","ZL1BK",
 177983,"Hawkins Hill Data",74,"ZL3TC","ZL2TVM",
 
@@ -185,6 +191,7 @@
 176536,"Christchurch APRS",O5,,,"N"
 175652,"Timaru APRS",34,"ZL3GL","ZL3OZ",
 228051,"Taumarunui APRS",60,,,
+224689,"Gisborne APRS",11,"ZL2TRG","ZL2HC",
 209773,"North Shore",29,"ZL1AUW","ZL1TGC",
 209786,"Te Puke",53,"ZL1MOF",,
 207996,"Hamilton",12,"ZL1PK","ZL1GWP",
