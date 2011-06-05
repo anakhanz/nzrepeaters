@@ -56,7 +56,10 @@ I_NOTE = 4
 # Columns in skip array
 S_FREQ = 0
 S_NOTE = 1
-
+# Columns in links array
+L_END1 = 0
+L_END2 = 1
+L_NAME = 2
 
 
 USAGE = """%s [options]
@@ -67,7 +70,7 @@ class Coordinate:
     '''
     Cordinate
     '''
-    def __init__(self, lat, lon):
+    def __init__(self, lat=0.0, lon=0.0):
         '''
         Constructor for a cordinate
 
@@ -81,6 +84,12 @@ class Coordinate:
         assert -180.0 <= lon <= 180.0
         self.lat = lat
         self.lon = lon
+
+    def kml(self):
+        '''
+        Returns the coordinates in the correct format for kml files
+        '''
+        return '%f,%f' % (self.lon, self.lat)
 
 class Licence:
     '''
@@ -299,7 +308,7 @@ class Licence:
         placemark += '      <styleUrl>' + STYLE_MAP[self.licType] + '</styleUrl>\n'
         placemark += '      <Point>\n'
         placemark += '        <coordinates>'
-        placemark += '%f,%f,0' % (site.coordinates.lon,site.coordinates.lat)
+        placemark += '%s,0' % (site.coordinates.kml())
         placemark += '</coordinates>\n'
         placemark += '      </Point>\n'
         placemark += '    </Placemark>\n'
@@ -320,6 +329,44 @@ class Licencee:
         self.address1 = address1
         self.address2 = address2
         self.address3 = address3
+
+class Link:
+    '''
+    Link between Licences
+    '''
+    def __init__(self, name="", end1=Coordinate(0.0,0.0), end2=Coordinate(0.0,0.0)):
+        '''
+        Link construtor
+
+        Arguments:
+        name - name of the link
+        end1 - coordinates for the first end of the link
+        end2 - coordinates for the second end of the link
+        '''
+        assert type(name) == str or type(name) == unicode
+        assert type(end1) == type(Coordinate())
+        assert type(end2) == type(Coordinate())
+        self.name = name
+        self.end1 = end1
+        self.end2 = end2
+
+    def kmlPlacemark(self):
+        '''
+        Returns a kml placemark (line) for the link
+        '''
+        placemark = '    <Placemark>\n'
+        placemark += '      <name>%s</name>\n' % self.name
+        #placemark += '      <description>description</description>\n'
+        placemark += '      <styleUrl>#repeaterLink</styleUrl>\n'
+        placemark += '      <LineString>\n'
+        placemark += '        <extrude>0</extrude>\n'
+        placemark += '        <tessellate>1</tessellate>\n'
+        placemark += '        <altitudeMode>clampToGround</altitudeMode>\n'
+        placemark += '        <coordinates> %s %s</coordinates>\n' % (self.end1.kml(), self.end2.kml())
+        placemark += '      </LineString>\n'
+        placemark += '    </Placemark>\n'
+
+        return placemark
 
 
 class Site:
@@ -404,7 +451,7 @@ class Site:
             placemark += '      <styleUrl>#msn_site</styleUrl>\n'
             placemark += '      <Point>\n'
             placemark += '        <coordinates>'
-            placemark += '%f,%f,0' % (self.coordinates.lon,self.coordinates.lat)
+            placemark += '%s,0' % (self.coordinates.kml())
             placemark += '</coordinates>\n'
             placemark += '      </Point>\n'
             placemark += '    </Placemark>\n'
@@ -646,6 +693,36 @@ WHERE c.clientid = l.clientid
                 licences[licenceNumber] = (licence)
     return sites, licences, licencees
 
+def readLinks(fileName, licences, sites):
+    '''
+    Reads the licence information from the given csv file and returns
+    a list of the links
+
+    Arguments:
+    fileName     - Filename to use for DB
+    licences     - A dictionary of licences indexed by Linense number
+    sites        - A dictionary of sites indexed by site name
+
+    Returns:
+    links     - A list of links
+    '''
+    links = []
+
+    for row in csv.reader(open(fileName)):
+        if len(row) >= 3:
+            name = row[L_NAME]
+            end1 = int(row[L_END1])
+            end2 = int(row[L_END2])
+            if (end1 in licences.keys()) and (end2 in licences.keys()):
+                links.append(Link(name,
+                                  sites[licences[end1].site].coordinates,
+                                  sites[licences[end2].site].coordinates))
+            else:
+                logging.info('Skipping link %s end licence numbers  %i and %i as one or more licences is missing' % (
+                                name, end1, end2))
+    return links
+
+
 def generateCsv(filename,licences,sites):
 
     def sortKey(item):
@@ -660,18 +737,18 @@ def generateCsv(filename,licences,sites):
     f.write(csv)
     f.close()
 
-def generateKml(filename, licences, sites, bySite):
+def generateKml(filename, licences, sites, links, bySite):
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
         kml = generateKmlSite(sites)
     else:
         logging.debug('exporting kmlfile %s by site' % filename)
-        kml = generateKmlLicence(licences,sites)
+        kml = generateKmlLicence(licences, sites, links)
     f = open(filename,mode='w')
     f.write(kml)
     f.close()
 
-def generateKmlLicence(licences,sites):
+def generateKmlLicence(licences,sites,links):
 
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
@@ -690,6 +767,11 @@ def generateKmlLicence(licences,sites):
             kml += '    <Folder><name>%ss</name>\n' % t
             kml += kmlByType[t]
             kml += '    </Folder>\n'
+    if len(links) > 0:
+        kml += '    <Folder><name>Links</name>\n'
+        for link in links:
+            kml += link.kmlPlacemark()
+        kml += '    </Folder>\n'
     kml += kmlFooter()
     return kml
 
@@ -703,11 +785,11 @@ def generateKmlSite(sites):
     kml += kmlFooter()
     return kml
 
-def generateKmz(filename, licences, sites, bySite):
+def generateKmz(filename, licences, sites, links, bySite):
     logging.debug('exporting kmlfile %s' % filename)
     tempDir = tempfile.mkdtemp()
     kmlFilename = os.path.join(tempDir,'doc.kml')
-    generateKml(kmlFilename, licences, sites, bySite)
+    generateKml(kmlFilename, licences, sites, bySite, links)
     archive = zipfile.ZipFile(filename,
                               mode='w',
                               compression=zipfile.ZIP_DEFLATED)
@@ -864,6 +946,12 @@ def kmlHeader():
         <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
       </ItemIcon>
     </ListStyle>
+  </Style>
+  <Style id="repeaterLink">
+    <LineStyle>
+      <color>FF5AFD82</color>
+      <width>4</width>
+    </LineStyle>
   </Style>
 '''
     return header
