@@ -32,7 +32,7 @@
 55719,"Westport",62,,,"N"
 174756,"Mount Grey",35,"ZL4FZ",,
 178982,"Balclutha",,"ZL4TL","ZL4AM",
-179006,"Akatere",78,,"N Linked ??",
+179006,"Akatere",78,,"N Linked to Doubtless Bay 7225 and Far North 710",
 97509,"Taihape",23,"ZL2KC","ZL2ADL",
 216083,"Tauranga",39,"ZL1TAJ","ZL1BVA",
 55400,"Poverty Bay",11,"ZL2TRG","ZL2HC","IRLP 6105"
@@ -63,7 +63,7 @@
 216482,"Christchurch",05,,,"N"
 217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
 228006,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode Analogue Voice and Digital Voice P25  NAC 293"
-55694,"Far North",78,,,"Linked to Doubtless Bay 7225"
+55694,"Far North",78,,,"Linked to Doubtless Bay 7225 and Akatere 6775"
 216134,"Belmont",74,"ZL3TC","ZL2TVM",
 221225,"Manawatu",20,"ZL2FX","ZL2WS",
 97452,"Taummaraunui",38,"ZL1UTH","ZL1TIG",
@@ -73,7 +73,7 @@
 63840,"Pariwhariki",46,"ZL2BA","ZL4JS",
 224527,"New Plymouth",27,"ZL2BR","ZL2BZH",
 65587,"Nelson",26,"ZL2BCA","ZL2RP",
-159308,"Doubtless Bay",78,,,"N Linked to Far North 710"
+159308,"Doubtless Bay",78,,,"N Linked to Far North 710 and Akatere 6775"
 215880,"Hairini",55,"ZL4SQ","ZL1SJ",
 159304,"Picton",22,"ZL2BK","ZL2WD","Linked to Golden Bay 7375, Blenheim 695 and Ward 560"
 55711,"Napier",25,"ZL2TC","ZL2DW","IRLP 6793"
@@ -157,6 +157,8 @@
 177329,"Rotorua National System",33,"ZL1PJ","ZL1BWC",
 177653,"Rangitoto National System",55,"ZL4SQ","ZL1HJ",
 207983,"Kapiti National System",69,"ZL2GO","ZL4VV",
+177364,"Saddle Hill National System",,,,
+#"Mercury Bay under construction"
 223033,"Nelson National System",26,"ZL2BCA","ZL2RP",
 177304,"Dunedin National System",30,"ZL4JH","ZL4GR",
 177299,"Bay of Islands National System",84,"ZL1IU","ZL1RS",
@@ -208,6 +210,12 @@
 222944,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
 222945,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
 222946,"Auckland D-Star Data",86,"ZL1WO","ZL1BFB","D-Star Data"
+
+#Unknown APRS
+224637,"TE AHIOTEATUA APRS",,,,
+224739,"OBSERVATORY HILL APRS",,,,
+225647,"TE AWAPUTAHI APRS",,,,
+226413,"PUKEMOREMORE APRS",,,,
 
 #BEACONS
 Callsign Station Name Frequency MED Site Name Topo50 Map Ref Branch Trustee 1 Trustee 2
