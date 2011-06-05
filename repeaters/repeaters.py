@@ -203,12 +203,6 @@ class Licence:
         else:
             return self.name
 
-    def trustees(self):
-        if self.trustee2 == '':
-            return self.trustee1
-        else:
-            return self.trustee1 + '<br>' + self.trustee2
-
     def csvLine(self, site):
         csv = '"%s"' % self.name
         csv += ',"%i"' % self.number
@@ -246,7 +240,7 @@ class Licence:
                '</td><td>' + callsign +\
                '</td><td>' +'%0.3fMHz' % self.frequency +\
                '</td><td>' + self.branch +\
-               '</td><td>' + self.trustees() +\
+               '</td><td>' + self.htmlTrustees() +\
                '</td><td>' + self.note +\
                '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
@@ -267,11 +261,17 @@ class Licence:
                '</td><td>' +'%0.3fMHz' % self.calcInput()+\
                '</td><td>' +'%s' % ctcss+\
                '</td><td>' + self.branch +\
-               '</td><td>' + self.trustees() +\
+               '</td><td>' + self.htmlTrustees() +\
                '</td><td>' + self.note +\
                '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
                '</td></tr>\n'
+
+    def htmlTrustees(self):
+        if self.trustee2 == '':
+            return self.trustee1
+        else:
+            return self.trustee1 + '<br>' + self.trustee2
 
     def kmlPlacemark(self, site):
         '''
