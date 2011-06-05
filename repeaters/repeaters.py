@@ -181,6 +181,9 @@ class Licence:
             offset = 20.0
         elif 1240.0 <= self.frequency <1300.0:
             offset = -20.0
+        # Simplex repeaters eg VoIP
+        elif 'simplex' in self.note.lower():
+            offset = 0.0
 
         else:
             logging.error('Error no offset calculation for No: %i %s %fMHz' % (
