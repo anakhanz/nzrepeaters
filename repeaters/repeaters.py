@@ -277,7 +277,8 @@ class Licence:
         '''
         Returns a kml placemark for the licence.
 
-        Keyword Arguments:
+        Keyword Argument:
+        site - Site information for printing twith the licence
         '''
         description = '<table border=1>'
         if self.licType in ['Amateur Repeater','Amateur TV Repeater']:
@@ -293,7 +294,7 @@ class Licence:
             description += '<tr><td colspan=%i><b>Callsign</b></td><td>%s</td></tr>' % (colSpan, self.callsign)
         description += '<tr><td colspan=%i><b>Type</b></td><td>%s</td></tr>' % (colSpan, self.licType)
         description += '<tr><td colspan=%i><b>Branch</b></td><td>%s</td></tr>' % (colSpan, self.branch)
-        description += '<tr><td colspan=%i><b>Trustees</b></td><td>%s</td></tr>' % (colSpan, self.trustees())
+        description += '<tr><td colspan=%i><b>Trustees</b></td><td>%s</td></tr>' % (colSpan, self.htmlTrustees())
         description += '<tr><td colspan=%i><b>Notes</b></td><td>%s</td></tr>' % (colSpan, self.note)
         description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
         description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
@@ -317,13 +318,20 @@ class Licence:
         placemark += '    </Placemark>\n'
         return placemark
 
-
 class Licencee:
     '''
     Licencee for a amateur radio licences
     '''
     def __init__(self, name, address1, address2, address3):
-        """Constructor"""
+        '''
+        Licencee constructor
+
+        Arguments:
+        name     - Name of the licencee
+        address1 - First line of the address
+        address2 - Second line of the address
+        address3 - Third line of the address
+        '''
         assert type(name) == str or type(name) == unicode
         assert type(address1) == str or type(address1) == unicode or address1 == None
         assert type(address2) == str or type(address2) == unicode or address2 == None
@@ -564,9 +572,10 @@ def readTextCsv(fileName):
 
 def readLicences(fileName,callsigns,ctcss,info,skip,
                  fMin,fMax,
-                 shBeacon,shDigipeater,shRepeater,shTvRepeater):
+                 shBeacon,shDigipeater,shRepeater,shTvRepeater,
+                 include,exclude):
     '''
-    Reads the licence information fromt he given database file and returns
+    Reads the licence information from the given database file and returns
     the dictionaries below
 
     Arguments:
@@ -581,6 +590,8 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
     shDigipeater - Include digis ?
     shRepeater   - Include repeaters ?
     shTvRepeater - Include TV repeaters ?
+    include      - Filter licences to only include those tha have this in their name
+    exclude      - Filter licences to exclude those tha have this in their name
 
     Returns:
     sites     - A list of sites and their associated licences
@@ -605,8 +616,7 @@ WHERE c.clientid = l.clientid
   AND t.licenceid = l.licenceid
   AND t.locationid = lo.locationid
   AND l.licencenumber NOT NULL
-  AND l.licencetype  LIKE "Amateur%"
-'''
+  AND l.licencetype  LIKE "Amateur%"'''
     if fMin != None:
         sql += "\n  AND s.frequency >= %f" % fMin
     if fMax != None:
@@ -636,9 +646,10 @@ WHERE c.clientid = l.clientid
             skipFreq = float(skip[licenceNumber][S_FREQ])
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
                 skipping = True
-                logging.info('Skipping Licencee No: %d, frequency %0.3f for reason "%s"' % (
+                logging.info('Skipping Licencee No: %d, frequency %0.3f at location %s for reason "%s"' % (
                              licenceNumber,
                              licenceFrequency,
+                             licenceLocation,
                              skip[licenceNumber][S_NOTE]))
         if not skipping:
             if licenceNumber in info.keys():
@@ -646,6 +657,11 @@ WHERE c.clientid = l.clientid
             else:
                 skipping = True
                 logging.error('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
+
+        if include != None:
+            skipping = skipping or (include not in licenceName)
+        if exclude != None:
+            skipping = skipping or (exclude in licenceName)
 
         if not skipping:
             if licenceNumber in callsigns.keys():
@@ -667,7 +683,7 @@ WHERE c.clientid = l.clientid
                 sites[licenceLocation] = site
             licType = row['licencetype']
             if licenceFrequency in [144.575,144.65,144.7] and licType != 'Amateur Digipeater':
-                logging.error('Licence No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
+                logging.info('Licence No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
                 licType = 'Amateur Digipeater'
             licence = Licence(licType,
                               licenceFrequency,
@@ -1043,6 +1059,18 @@ def main():
                       dest='maxFreq',
                       default=None,
                       help='Filter out all above the specified frequency')
+    parser.add_option('-i','--include',
+                      action='store',
+                      type='string',
+                      dest='include',
+                      default=None,
+                      help='Filter licences to only include licences that contain [include] in their name')
+    parser.add_option('-e','--exclude',
+                      action='store',
+                      type='string',
+                      dest='exclude',
+                      default=None,
+                      help='Filter licences to exclude licences that contain [exclude] in their name')
 
     (options, args) = parser.parse_args()
 
@@ -1082,6 +1110,7 @@ def main():
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
     ctcss_file = os.path.join(data_dir,'ctcss.csv')
     licences_file = os.path.join(data_dir,'prism.sqlite')
+    links_file = os.path.join(data_dir,'links.csv')
     info_file = os.path.join(data_dir,'info.csv')
     skip_file = os.path.join(data_dir,'skip.csv')
 
@@ -1093,19 +1122,22 @@ def main():
                                               info,skip,
                                               options.minFreq,options.maxFreq,
                                               options.beacon,options.digi,
-                                              options.repeater,options.tv)
+                                              options.repeater,options.tv,
+                                              options.include,options.exclude)
+    links = readLinks(links_file,licences,sites)
+
 
     if len(licences) == 0:
         parser.error('The selected options have excluded all licences, no output will be generated!')
 
     if options.csvfilename != None:
-        generateCsv(options.csvfilename, licences, sites)
+        generateCsv(options.csvfilename, licences, sites, links)
 
     if options.kmlfilename != None:
-        generateKml(options.kmlfilename, licences, sites, options.site)
+        generateKml(options.kmlfilename, licences, sites, links, options.site)
 
     if options.kmzfilename != None:
-        generateKmz(options.kmzfilename, licences, sites, options.site)
+        generateKmz(options.kmzfilename, licences, sites, links, options.site)
 
 if __name__ == "__main__":
     main()
