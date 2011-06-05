@@ -573,7 +573,7 @@ def readTextCsv(fileName):
 def readLicences(fileName,callsigns,ctcss,info,skip,
                  fMin,fMax,
                  shBeacon,shDigipeater,shRepeater,shTvRepeater,
-                 include,exclude):
+                 include,exclude,branch):
     '''
     Reads the licence information from the given database file and returns
     the dictionaries below
@@ -592,6 +592,7 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
     shTvRepeater - Include TV repeaters ?
     include      - Filter licences to only include those tha have this in their name
     exclude      - Filter licences to exclude those tha have this in their name
+    branch       - Filter licences to only include those allocated to this branch
 
     Returns:
     sites     - A list of sites and their associated licences
@@ -662,6 +663,9 @@ WHERE c.clientid = l.clientid
             skipping = skipping or (include not in licenceName)
         if exclude != None:
             skipping = skipping or (exclude in licenceName)
+
+        if branch != None:
+            skipping = skipping or (branch != info[licenceNumber][I_BRANCH])
 
         if not skipping:
             if licenceNumber in callsigns.keys():
@@ -1071,6 +1075,12 @@ def main():
                       dest='exclude',
                       default=None,
                       help='Filter licences to exclude licences that contain [exclude] in their name')
+    parser.add_option('-B','--branch',
+                      action='store',
+                      type='string',
+                      dest='branch',
+                      default=None,
+                      help='Filter licences to only include those from the selected branch')
 
     (options, args) = parser.parse_args()
 
@@ -1123,7 +1133,8 @@ def main():
                                               options.minFreq,options.maxFreq,
                                               options.beacon,options.digi,
                                               options.repeater,options.tv,
-                                              options.include,options.exclude)
+                                              options.include,options.exclude,
+                                              options.branch)
     links = readLinks(links_file,licences,sites)
 
 
