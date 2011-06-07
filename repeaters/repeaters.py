@@ -66,6 +66,67 @@ USAGE = """%s [options]
 NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
 http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
 
+def calcBand(f):
+    for band in bands:
+        if band.fIsIn(f):
+            return band.name
+    logging.error('Band for %0.3f not found' % f)
+    return 'Band Not Found'
+
+class band:
+    '''
+    Band
+    '''
+    def __init__(self,name,minF,maxF):
+        '''
+        Constructor for band
+
+        Arguments:
+        name -
+        minF -
+        maxF -
+        '''
+        assert type(name) == str or type(name) == unicode
+        assert type(minF) == float
+        assert type(maxF) == float
+        assert minF < maxF
+        self.name = name
+        self.minF = minF
+        self.maxF = maxF
+
+    def fIsIn(self,f):
+        '''
+        Returns if the given frequency is within the band limits
+        '''
+        assert type(f) == float
+        return f >= self.minF and f <= self.maxF
+
+bands = [band('1800 meters',0.13,0.19),
+         band('600 meters',0.505,0.515),
+         band('160 meters',1.8,1.95),
+         band('80 meters',3.5,3.9),
+         band('40 meters',7.0,7.3),
+         band('30 meters',10.1,10.150),
+         band('20 meters',14.0,14.35),
+         band('17 meters',18.068,18.168),
+         band('15 meters',21.0,21.450),
+         band('12 meters',24.890,24.990),
+         band('11 meters',26.950,27.3),
+         band('10 meters',28.0,29.7),
+         band('6 meters',50.0,54.0),
+         band('2 meters',144.0,148.0),
+         band('70 cm',430.0,440.0),
+         band('32 cm',921.0,929.0),
+         band('23 cm',1240.0,1300.0),
+         band('12 cm',2396.0,2450.0),
+         band('9 cm',3300.0,3410.0),
+         band('5 cm',5650.0,5850.0),
+         band('3 cm',10000.0,10500.0),
+         band('1.2 cm',24000.0,24250.0),
+         band('6 mm',47000.0,47200.0),
+         band('4 mm',75000.0,81000.0)]
+
+
 class Coordinate:
     '''
     Cordinate
@@ -154,6 +215,12 @@ class Licence:
         Sets theh CTCSS tone frequency associated with the licence.
         '''
         self.ctcss = ctcss
+
+    def band(self):
+        '''
+        Return the band name
+        '''
+        return calcBand(self.frequency)
 
     def calcInput(self):
         '''
@@ -323,7 +390,6 @@ class Licence:
         placemark += '      <description><![CDATA['
         placemark += description
         placemark += ']]></description>\n'
-        placemark += '      <open>0</open>'
         placemark += '      <styleUrl>' + STYLE_MAP[self.licType] + '</styleUrl>\n'
         placemark += '      <Point>\n'
         placemark += '        <coordinates>'
@@ -792,19 +858,28 @@ def generateKmlLicence(licences,sites,links):
         return (licences[item].name, licences[item].frequency)
 
     licenceNos = sorted(licences.keys(), key=sortKey)
-
     kmlByType={}
     for t in LICENCE_TYPES:
-        kmlByType[t]=''
+        kmlByType[t]={}
     for licence in licenceNos:
-        kmlByType[licences[licence].licType] += licences[licence].kmlPlacemark(sites[licences[licence].site])
+        l = licences[licence]
+        t = l.licType
+        b = l.band()
+        if b not in kmlByType[t].keys():
+            kmlByType[t][b] = ""
+        kmlByType[t][b] += licences[licence].kmlPlacemark(sites[licences[licence].site])
     kml = kmlHeader()
-    kml += '    <name>Amateur Licences</name>\n'
+    kml += '    <name>Amateur Licences</name><open>1</open>\n'
     for t in LICENCE_TYPES:
-        if kmlByType[t] != "":
-            kml += '    <Folder><name>%ss</name>\n' % t
-            kml += kmlByType[t]
-            kml += '    </Folder>\n'
+        if len(kmlByType[t]) > 0:
+            kml += '    <Folder><name>%ss</name><open>1</open>\n' % t
+            for b in bands:
+                if b.name in kmlByType[t].keys():
+                    kml += '    <Folder><name>%s</name><open>0</open>\n' % b.name
+                    kml += kmlByType[t][b.name]
+                    kml += '    </Folder>\n'
+            kml += '    </Folder>'
+
     if len(links) > 0:
         kml += '    <Folder><name>Links</name>\n'
         for link in links:
