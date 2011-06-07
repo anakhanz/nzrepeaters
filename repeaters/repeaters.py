@@ -719,7 +719,7 @@ WHERE c.clientid = l.clientid
                 licence.setCtcss(ctcss[licenceNumber])
             if licType == 'Amateur Beacon' and shBeacon:
                 site.addBeacon(licence)
-                licences[licenceNumber] = (licence)
+                licences['%i_%0.3f' % (licenceNumber,licenceFrequency)] = (licence)
             elif licType == 'Amateur Digipeater' and shDigipeater:
                 site.addDigipeater(licence)
                 licences[licenceNumber] = (licence)
