@@ -239,7 +239,7 @@ class Licence:
         return '<tr><td>'+ self.formatName() +\
                '</td><td>' + callsign +\
                '</td><td>' +'%0.3fMHz' % self.frequency +\
-               '</td><td>' + self.branch +\
+               '</td><td>' + self.htmlBranch() +\
                '</td><td>' + self.htmlTrustees() +\
                '</td><td>' + self.note +\
                '</td><td>' + self.licencee +\
@@ -260,12 +260,27 @@ class Licence:
                '</td><td>' +'%0.3fMHz' % self.frequency+\
                '</td><td>' +'%0.3fMHz' % self.calcInput()+\
                '</td><td>' +'%s' % ctcss+\
-               '</td><td>' + self.branch +\
+               '</td><td>' + self.htmlBranch() +\
                '</td><td>' + self.htmlTrustees() +\
                '</td><td>' + self.note +\
                '</td><td>' + self.licencee +\
                '</td><td>' +str(self.number) +\
                '</td></tr>\n'
+
+    def htmlBranch(self):
+        try:
+            b = int(self.branch)
+            if b < 50:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branch-list-data-01-to-49/'
+            else:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branch-list-data-50-to-99/'
+            br = '%02i' % b
+            brl = br
+        except:
+            url = 'http://www.nzart.org.nz/branches/branch-data/branch-list-data-50-to-99/'
+            br = self.branch
+            brl = 'Af'
+        return '<a href="%s#%s">%s</a>' % (url, brl, br)
 
     def htmlTrustees(self):
         if self.trustee2 == '':
@@ -293,7 +308,7 @@ class Licence:
         if self.callsign != None:
             description += '<tr><td colspan=%i><b>Callsign</b></td><td>%s</td></tr>' % (colSpan, self.callsign)
         description += '<tr><td colspan=%i><b>Type</b></td><td>%s</td></tr>' % (colSpan, self.licType)
-        description += '<tr><td colspan=%i><b>Branch</b></td><td>%s</td></tr>' % (colSpan, self.branch)
+        description += '<tr><td colspan=%i><b>Branch</b></td><td>%s</td></tr>' % (colSpan, self.htmlBranch())
         description += '<tr><td colspan=%i><b>Trustees</b></td><td>%s</td></tr>' % (colSpan, self.htmlTrustees())
         description += '<tr><td colspan=%i><b>Notes</b></td><td>%s</td></tr>' % (colSpan, self.note)
         description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
