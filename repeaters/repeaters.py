@@ -293,7 +293,7 @@ class Licence:
         return csv
 
 
-    def htmlBasicRow(self):
+    def htmlBasicRow(self,site=None):
         '''
         Returns an HTML table row containig the licence information, formatted
         as follows:
@@ -303,17 +303,21 @@ class Licence:
             callsign = ''
         else:
             callsign = self.callsign
-        return '<tr><td>'+ self.formatName() +\
-               '</td><td>' + callsign +\
-               '</td><td>' +'%0.3fMHz' % self.frequency +\
-               '</td><td>' + self.htmlBranch() +\
-               '</td><td>' + self.htmlTrustees() +\
-               '</td><td>' + self.note +\
-               '</td><td>' + self.licencee +\
-               '</td><td>' +str(self.number) +\
-               '</td></tr>\n'
+        row =  '<tr><td>'+ self.formatName()
+        row += '</td><td>' + callsign
+        row += '</td><td>' +'%0.3fMHz' % self.frequency
+        if site != None:
+            row += '</td><td>' + site.name
+            row += '</td><td>' + site.mapRef
+        row += '</td><td>' + self.htmlBranch()
+        row += '</td><td>' + self.htmlTrustees()
+        row += '</td><td>' + self.note
+        row += '</td><td>' + self.licencee
+        row += '</td><td>' +str(self.number)
+        row += '</td></tr>\n'
+        return row
 
-    def htmlRepeaterRow(self):
+    def htmlRepeaterRow(self,site=None):
         '''
         Returns an HTML table row containig the licence information including
         input frequency for a repeater, formatted as follows:
@@ -323,16 +327,20 @@ class Licence:
             ctcss = 'None'
         else:
             ctcss = '%0.1fHz' % self.ctcss
-        return '<tr><td>'+ self.formatName() +\
-               '</td><td>' +'%0.3fMHz' % self.frequency+\
-               '</td><td>' +'%0.3fMHz' % self.calcInput()+\
-               '</td><td>' +'%s' % ctcss+\
-               '</td><td>' + self.htmlBranch() +\
-               '</td><td>' + self.htmlTrustees() +\
-               '</td><td>' + self.note +\
-               '</td><td>' + self.licencee +\
-               '</td><td>' +str(self.number) +\
-               '</td></tr>\n'
+        row =  '<tr><td>'+ self.formatName()
+        row += '</td><td>' +'%0.3fMHz' % self.frequency
+        row += '</td><td>' +'%0.3fMHz' % self.calcInput()
+        if site != None:
+            row += '</td><td>' + site.name
+            row += '</td><td>' + site.mapRef
+        row += '</td><td>' +'%s' % ctcss
+        row += '</td><td>' + self.htmlBranch()
+        row += '</td><td>' + self.htmlTrustees()
+        row += '</td><td>' + self.note
+        row += '</td><td>' + self.licencee
+        row += '</td><td>' +str(self.number)
+        row += '</td></tr>\n'
+        return row
 
     def htmlBranch(self):
         try:
@@ -520,25 +528,12 @@ class Site:
         information or an empty string if there are no licences to display
         in the requested informaton.
         '''
-        if (len(self.beacons) > 0) or\
-           (len(self.digipeaters) > 0) or\
-           (len(self.repeaters) > 0) or\
-           (len(self.tvRepeaters) >0):
-            logging.debug('Creating placemark for: %s' % self.name)
-            description = '<h1>Amateur Site</h1>'
-            description += '<table border=1>'
-            description += '<tr><td><b>Map Reference</b></td><td>%s</td></tr>' % self.mapRef
-            description += '<tr><td><b>Coordinates</b></td><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
-            description += '</table>'
-            description += self.htmlSimpleDescription(self.beacons,'Beacon')
-            description += self.htmlSimpleDescription(self.digipeaters, 'Digipeater')
-            description += self.htmlRepeaterDescription(self.repeaters, 'Repeater')
-            description += self.htmlRepeaterDescription(self.tvRepeaters, 'TV Repeater')
-
+        desc = self.htmlDescription()
+        if len(desc) > 0:
             placemark = '    <Placemark>\n'
             placemark += '      <name>'+ self.name+'</name>\n'
             placemark += '      <description><![CDATA['
-            placemark += description
+            placemark += desc
             placemark += ']]></description>\n'
             placemark += '      <styleUrl>#msn_site</styleUrl>\n'
             placemark += '      <Point>\n'
@@ -552,21 +547,42 @@ class Site:
             placemark=''
         return placemark
 
+    def html(self):
+        ret = ''
+        desc = self.htmlDescription()
+        if len(desc) > 0:
+            ret += '<a id="%s"> </a>' % self.name
+            ret +='<h1>'+self.name+'</h1>\n'
+            ret += desc
+        return ret
+
+    def htmlDescription(self):
+        description = ""
+        if (len(self.beacons) > 0) or\
+           (len(self.digipeaters) > 0) or\
+           (len(self.repeaters) > 0) or\
+           (len(self.tvRepeaters) >0):
+            logging.debug('Creating placemark for: %s' % self.name)
+            #description += '<h2>Amateur Site</h2>'
+            description += '<table border="1">'
+            description += '<tr><td><b>Map Reference</b></td><td>%s</td></tr>' % self.mapRef
+            description += '<tr><td><b>Coordinates</b></td><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
+            description += '</table>'
+            description += self.htmlSimpleDescription(self.beacons,'Beacon')
+            description += self.htmlSimpleDescription(self.digipeaters, 'Digipeater')
+            description += self.htmlRepeaterDescription(self.repeaters, 'Repeater')
+            description += self.htmlRepeaterDescription(self.tvRepeaters, 'TV Repeater')
+        return description
+
+    def htmlNameLink(self):
+        return '<a href="#%s">%s</a><br>' % (self.name, self.name)
+
     def htmlRepeaterDescription(self, items, text):
         if len(items) == 0:
             return ""
         else:
             description = self.htmlDescriptionTitle(items, text)
-            description += '<table border=1>\n'
-            description += '<tr><th rowspan=2>Name</th>'+\
-                           '<th colspan=2>Frequency</th>'+\
-                           '<th rowspan=2>CTCSS</th>'+\
-                           '<th rowspan=2>Branch</th>'+\
-                           '<th rowspan=2>Trustees</th>'+\
-                           '<th rowspan=2>Notes</th>'+\
-                           '<th rowspan=2>Licencee</th>'+\
-                           '<th rowspan=2>Licence No</th></tr>\n'+\
-                           '<tr><th>Output</th><th>Input</th></tr>'
+            description += htmlRepeaterHeader()
             items.sort()
             for item in items:
                 logging.debug('creating row for repeater %i' % item.number)
@@ -580,11 +596,7 @@ class Site:
         else:
             description = self.htmlDescriptionTitle(items, text)
             self.htmlDescriptionTitle(items, text)
-            description += '<table border=1>\n'
-            description += '<tr><th>Name</th><th>Call Sign</th>'+\
-                           '<th>Frequency</th><th>Branch</th>'+\
-                           '<th>Trustees</th><th>Notes</th>'+\
-                           '<th>Licencee</th><th>Licence No</th></tr>\n'
+            description += htmlSimpleHeader()
             items.sort()
             for item in items:
                 logging.debug('creating row for beacon %i' % item.number)
@@ -594,9 +606,9 @@ class Site:
 
     def htmlDescriptionTitle(self, items, text):
         if len(items) == 1:
-            title = '<h2>' + text + '</h2>'
+            title = '<h3>' + text + '</h3>'
         else:
-            title = '<h2>' + text + 's</h2>'
+            title = '<h3>' + text + 's</h3>'
         return title
 
 def we_are_frozen():
@@ -841,6 +853,75 @@ def generateCsv(filename,licences,sites):
     f.write(csv)
     f.close()
 
+def generateHtml(filename, licences, sites, links, bySite):
+    if bySite:
+        logging.debug('exporting htmlfile %s by site' % filename)
+        html = generateHtmlSite(sites)
+    else:
+        logging.debug('exporting htmfile %s by site' % filename)
+        html= generateHtmlLicence(licences, sites, links)
+    f = open(filename,mode='w')
+    f.write(html)
+    f.close()
+
+def generateHtmlLicence(licences,sites,links):
+
+    def sortKey(item):
+        return (licences[item].name, licences[item].frequency)
+
+    licenceNos = sorted(licences.keys(), key=sortKey)
+    htmlByType={}
+    for t in LICENCE_TYPES:
+        htmlByType[t]={}
+    for licence in licenceNos:
+        l = licences[licence]
+        t = l.licType
+        b = l.band()
+        if b not in htmlByType[t].keys():
+            htmlByType[t][b] = ""
+        if "Repeater" in t:
+            htmlByType[t][b] += licences[licence].htmlRepeaterRow(sites[licences[licence].site])
+        else:
+            htmlByType[t][b] += licences[licence].htmlBasicRow(sites[licences[licence].site])
+    header = htmlHeader('Amateur Licences')
+    header += '<h1>Amateur Licences</h1>'
+    header += '<ul>'
+    html = ''
+    for t in LICENCE_TYPES:
+        if len(htmlByType[t]) > 0:
+            header += '<li><a href="#%s">%ss</a></li>\n' % (t, t)
+            header += '<ul>\n'
+            html += '<a id="%s"></a>' % (t)
+            html += '    <h2>%ss</h2>\n' % t
+            for b in bands:
+                if b.name in htmlByType[t].keys():
+                    header += '<li><a href="#%s_%s">%s</a></li>' % (t ,b.name ,b.name)
+                    html += '<a id="%s_%s"></a>' % (t ,b.name)
+                    html += '<h3>%s</h3>' % b.name
+                    if "Repeater" in t:
+                        html += htmlRepeaterHeader(True)
+                    else:
+                        html += htmlSimpleHeader(True)
+                    html += htmlByType[t][b.name]
+                    html += '</table>\n'
+            header += '</ul>'
+    header += '</ul>'
+
+    return header+html
+
+def generateHtmlSite(sites):
+    html = htmlHeader('Amateur Sites')
+    html += '<h1>Amateur Sites</h1>'
+    siteNames = sites.keys()
+    siteNames.sort()
+    for site in siteNames:
+        html += sites[site].htmlNameLink()
+    for site in siteNames:
+        html += '<hr/>'
+        html += sites[site].html()
+    html += htmlFooter()
+    return html
+
 def generateKml(filename, licences, sites, links, bySite):
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
@@ -909,6 +990,41 @@ def generateKmz(filename, licences, sites, links, bySite):
     archive.write(kmlFilename, os.path.basename(kmlFilename).encode("utf_8"))
     archive.close()
     shutil.rmtree(tempDir)
+
+def htmlHeader(title):
+    header = '<html><head></head><body>'
+    return header
+
+def htmlFooter():
+    footer = '</body></html>'
+    return footer
+
+def htmlRepeaterHeader(full=False):
+    header =  '<table border=1>\n'
+    header += '<tr><th rowspan=2>Name</th>'
+    header += '<th colspan=2>Frequency</th>'
+    if full:
+        header += '<th rowspan=2>Site</th>'
+        header += '<th rowspan=2>Map Reference</th>'
+    header += '<th rowspan=2>CTCSS</th>'
+    header += '<th rowspan=2>Branch</th>'
+    header += '<th rowspan=2>Trustees</th>'
+    header += '<th rowspan=2>Notes</th>'
+    header += '<th rowspan=2>Licencee</th>'
+    header += '<th rowspan=2>Licence No</th></tr>\n'
+    header += '<tr><th>Output</th><th>Input</th></tr>\n'
+    return header
+
+def htmlSimpleHeader(full=False):
+    header =  '<table border=1>\n'
+    header += '<tr><th>Name</th><th>Call Sign</th>'
+    header +=  '<th>Frequency</th><th>Branch</th>'
+    if full:
+        header += '<th>Site</th>'
+        header += '<th>Map Reference</th>'
+    header += '<th>Trustees</th><th>Notes</th>'
+    header += '<th>Licencee</th><th>Licence No</th></tr>\n'
+    return header
 
 def kmlHeader():
     header = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -1083,6 +1199,13 @@ def main():
     parser.add_option('-q','--quiet',action='store_true',dest='quiet',
                             help='Only critical logging')
 
+    parser.add_option('-H','--html',
+                      action='store',
+                      type='string',
+                      dest='htmlfilename',
+                      default=None,
+                      help='Output to html file, may be in addition to other output types')
+
     parser.add_option('-k','--kml',
                       action='store',
                       type='string',
@@ -1183,7 +1306,8 @@ def main():
     else:
         logging.basicConfig(level=logging.WARNING)
 
-    if options.kmlfilename == None and\
+    if options.htmlfilename == None and\
+       options.kmlfilename == None and\
        options.kmzfilename == None and\
        options.csvfilename == None:
         parser.error('Atleast one output file type must be defined or no output will be generated')
@@ -1233,6 +1357,9 @@ def main():
 
     if options.csvfilename != None:
         generateCsv(options.csvfilename, licences, sites, links)
+
+    if options.htmlfilename != None:
+        generateHtml(options.htmlfilename, licences, sites, links, options.site)
 
     if options.kmlfilename != None:
         generateKml(options.kmlfilename, licences, sites, links, options.site)
