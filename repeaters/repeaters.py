@@ -289,6 +289,7 @@ class Licence:
         csv += ',"%s"' % site.mapRef
         csv += ',"%s"' % site.coordinates.lat
         csv += ',"%f"' % site.coordinates.lon
+        csv += ',"%i"' % site.height
         csv += '\n'
         return csv
 
@@ -298,6 +299,9 @@ class Licence:
         Returns an HTML table row containig the licence information, formatted
         as follows:
         | Name | Callsign | Frequency | Branch | Trustees | Notes | Licencee | Number |
+        if a site is passed to the finction the following is added between
+        Frequency and Branch:
+          Site Name | Map ref | Height
         '''
         if self.callsign is None:
             callsign = ''
@@ -309,6 +313,7 @@ class Licence:
         if site != None:
             row += '</td><td>' + site.name
             row += '</td><td>' + site.mapRef
+            row += '</td><td>' + '%i m' % site.height
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
         row += '</td><td>' + self.note
@@ -322,6 +327,9 @@ class Licence:
         Returns an HTML table row containig the licence information including
         input frequency for a repeater, formatted as follows:
         | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licencee | Number |
+        if a site is passed to the finction the following is added between
+        Input frequency and CTCSS:
+          Site Name | Map ref | Height
         '''
         if self.ctcss is None:
             ctcss = 'None'
@@ -333,6 +341,7 @@ class Licence:
         if site != None:
             row += '</td><td>' + site.name
             row += '</td><td>' + site.mapRef
+            row += '</td><td>' + '%i m' % site.height
         row += '</td><td>' +'%s' % ctcss
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
@@ -389,6 +398,7 @@ class Licence:
         description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
         description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
         description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
+        description += '<tr><th colspan=%i><b>Height</b></td><td>%i m</td></tr>' % (colSpan, site.height)
         description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
         description += '<tr><td colspan=%i><b>Licencee</b></td><td>%s</td></tr>' % (colSpan, self.licencee)
         description += '</table>'
@@ -473,7 +483,7 @@ class Site:
     '''
     Amateur radio site containing the licences associated with it.
     '''
-    def __init__(self,name,mapRef,coordinates):
+    def __init__(self,name,mapRef,coordinates,height):
         '''
         Site constructor
 
@@ -481,14 +491,17 @@ class Site:
         name        - MED name of the site
         mapRef      - The Topo 50 map refference for the site
         coordinates - A cordinate object containing th ecordinates for the site
+        height      - Height above sea level in meters
         '''
         assert type(name) == str or type(name) == unicode
         assert type(mapRef) == str or type(mapRef) == unicode
         assert type(coordinates) == type(Coordinate(1.0,1.0))
+        assert type(height) == int
 
         self.name = name
         self.mapRef = mapRef
         self.coordinates = coordinates
+        self.height = height
         self.beacons = []
         self.digipeaters = []
         self.repeaters = []
@@ -567,6 +580,7 @@ class Site:
             description += '<table border="1">'
             description += '<tr><td><b>Map Reference</b></td><td>%s</td></tr>' % self.mapRef
             description += '<tr><td><b>Coordinates</b></td><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
+            description += '<tr><td><b>Height</b></td><td>%i m</td></tr>' % self.height
             description += '</table>'
             description += self.htmlSimpleDescription(self.beacons,'Beacon')
             description += self.htmlSimpleDescription(self.digipeaters, 'Digipeater')
@@ -703,7 +717,7 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
 SELECT l.licenceid, l.licencenumber, l.callsign, l.licencetype,
        c.name, c.address1, c.address2, c.address3,
        s.frequency,
-       lo.locationid, lo.locationname
+       lo.locationid, lo.locationname,lo.locationheight
 FROM licence l, clientname c, spectrum s, transmitconfiguration t, location lo
 WHERE c.clientid = l.clientid
   AND s.licenceid = l.licenceid
@@ -775,8 +789,9 @@ WHERE c.clientid = l.clientid
                 c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'NZTM2000'", (locationId,))
                 mapRef = c.fetchone()
                 site = Site(licenceLocation,
-                                nztmToTopo50(mapRef['easting'],mapRef['northing']),
-                                Coordinate(coord['northing'],coord['easting']))
+                            nztmToTopo50(mapRef['easting'],mapRef['northing']),
+                            Coordinate(coord['northing'],coord['easting']),
+                            row['locationheight'])
                 sites[licenceLocation] = site
             licType = row['licencetype']
             if licenceFrequency in [144.575,144.65,144.7] and licType != 'Amateur Digipeater':
@@ -846,7 +861,7 @@ def generateCsv(filename,licences,sites):
 
     licenceNos = sorted(licences.keys(), key=sortKey)
 
-    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS","Site Name","Map reference","Latitude","Longitude"\n'
+    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS","Site Name","Map reference","Latitude","Longitude","Height"\n'
     for licence in licenceNos:
         csv += licences[licence].csvLine(sites[licences[licence].site])
     f = open(filename,mode='w')
@@ -1006,6 +1021,7 @@ def htmlRepeaterHeader(full=False):
     if full:
         header += '<th rowspan=2>Site</th>'
         header += '<th rowspan=2>Map Reference</th>'
+        header += '<th rowspan=2>Height</th>'
     header += '<th rowspan=2>CTCSS</th>'
     header += '<th rowspan=2>Branch</th>'
     header += '<th rowspan=2>Trustees</th>'
@@ -1017,13 +1033,18 @@ def htmlRepeaterHeader(full=False):
 
 def htmlSimpleHeader(full=False):
     header =  '<table border=1>\n'
-    header += '<tr><th>Name</th><th>Call Sign</th>'
-    header +=  '<th>Frequency</th><th>Branch</th>'
+    header += '<tr><th>Name</th>\n'
+    header += '<th>Call Sign</th>\n'
+    header += '<th>Frequency</th>\n'
     if full:
         header += '<th>Site</th>'
         header += '<th>Map Reference</th>'
-    header += '<th>Trustees</th><th>Notes</th>'
-    header += '<th>Licencee</th><th>Licence No</th></tr>\n'
+        header += '<th>Height</th>'
+    header += '<th>Branch</th>\n'
+    header += '<th>Trustees</th>\n'
+    header += '<th>Notes</th>\n'
+    header += '<th>Licencee</th>\n'
+    header += '<th>Licence No</th></tr>\n'
     return header
 
 def kmlHeader():
@@ -1356,7 +1377,7 @@ def main():
         parser.error('The selected options have excluded all licences, no output will be generated!')
 
     if options.csvfilename != None:
-        generateCsv(options.csvfilename, licences, sites, links)
+        generateCsv(options.csvfilename, licences, sites)
 
     if options.htmlfilename != None:
         generateHtml(options.htmlfilename, licences, sites, links, options.site)
