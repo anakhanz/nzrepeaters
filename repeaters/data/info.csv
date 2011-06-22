@@ -32,7 +32,7 @@
 55719,"Westport",62,,,"N"
 174756,"Mount Grey",35,"ZL4FZ",,
 178982,"Balclutha",,"ZL4TL","ZL4AM",
-179006,"Akatere",78,,"N Linked to Doubtless Bay 7225 and Far North 710",
+179006,"Akatere",78,,,"N Linked to Doubtless Bay 7225 and Far North 710"
 97509,"Taihape",23,"ZL2KC","ZL2ADL",
 216083,"Tauranga",39,"ZL1TAJ","ZL1BVA",
 55400,"Poverty Bay",11,"ZL2TRG","ZL2HC","IRLP 6105"
@@ -56,10 +56,10 @@
 217532,"Tairua",85,"ZL1AAF","ZL1BCJ",
 209643,"North Canterbury",68,"ZL3AI","ZL4WX",
 50616,"Edgecumbe",67,"ZL1CAY","ZL1OW","IRLP 6394"
-102112,"Lower Hutt",18,ZL2TVM","ZL2TWS",
+102112,"Lower Hutt",18,"ZL2TVM","ZL2TWS",
 55700,"Alexandra",61,"ZL4THT","ZL4GP",
 223037,"Nelson",26,"ZL2BCA","ZL2RP",
-59684,"Egmont",87,"ZL2AFE","ZL2UFN",Linked to Opunake 540"
+59684,"Egmont",87,"ZL2AFE","ZL2UFN","Linked to Opunake 540"
 216482,"Christchurch",05,,,"N"
 217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
 228006,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode Analogue Voice and Digital Voice P25  NAC 293"
@@ -184,7 +184,7 @@
 224331,"Te Kapua APRS",,"ZL2CC",,
 218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
 221226,"Manawatu  APRS",20,"ZL2FX","ZL2MAX",
-220125,"Forest Lakes Road APRS",74,ZL2KG","ZL4SJ",
+220125,"Forest Lakes Road APRS",74,"ZL2KG","ZL4SJ",
 221323,"Nelson APRS",26,"ZL2BCA","ZL2RP",
 221396,"Wairarapa APRS",46,"ZL2BA","ZL4JS",
 221246,"Murchison APRS",26,"ZL2BCA","ZL2RP",

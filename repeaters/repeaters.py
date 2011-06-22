@@ -56,10 +56,14 @@ I_NOTE = 4
 # Columns in skip array
 S_FREQ = 0
 S_NOTE = 1
-# Columns in links array
+# Columns in links csv file
 L_END1 = 0
 L_END2 = 1
 L_NAME = 2
+# Columns on CTCSS csv file
+C_LICENCE = 0
+C_FREQ = 1
+C_NOTE = 2
 
 
 USAGE = """%s [options]
@@ -151,6 +155,29 @@ class Coordinate:
         Returns the coordinates in the correct format for kml files
         '''
         return '%f,%f' % (self.lon, self.lat)
+
+class Ctcss:
+    '''
+    CTCSS
+    '''
+    def __init__(self,freq,note):
+        '''
+        Constructor for a CTCSS code
+
+        Arguments:
+        freq - Frequench in decimal Hz of the tone
+        note - the use of the tome
+        '''
+        assert type(freq) == float
+        assert type(note) == str or type(name) == unicode
+        self.freq = freq
+        self.note = note
+
+    def html(self):
+        '''
+        Returns the CTCSS informatioin formatted for HTML
+        '''
+        return '%0.1f Hz<br>%s' % (self.freq, self.note)
 
 class Licence:
     '''
@@ -272,19 +299,32 @@ class Licence:
 
     def csvLine(self, site):
         csv = '"%s"' % self.name
-        csv += ',"%i"' % self.number
+        csv += ',%i' % self.number
         csv += ',"%s"' % self.licType
-        csv += ',"%s"' % self.callsign
-        csv += ',"%f"' % self.frequency
-        csv += ',"%s"' % self.branch
-        csv += ',"%s"' % self.trustee1
-        csv += ',"%s"' % self.trustee2
+        if self.callsign == None:
+            csv += ','
+        else:
+            csv += ',"%s"' % self.callsign
+        csv += ',%f' % self.frequency
+        if self.branch == None:
+            csv += ',""'
+        else:
+            csv += ',"%s"' % self.branch
+        if self.trustee1 == None:
+            csv += ',""'
+        else:
+            csv += ',"%s"' % self.trustee1
+        if self.trustee2 == None:
+            csv += ',""'
+        else:
+            csv += ',"%s"' % self.trustee2
         csv += ',"%s"' % self.note
         csv += ',"%s"' % self.licencee
         if self.ctcss == None:
-            csv += ','
+            csv += ',,'
         else:
-            csv += ',"%0.1f"' % self.ctcss
+            csv += ',%0.1f' % self.ctcss.freq
+            csv += ',"%s"' % self.ctcss.note
         csv += ',"%s"' % self.site
         csv += ',"%s"' % site.mapRef
         csv += ',"%s"' % site.coordinates.lat
@@ -309,7 +349,7 @@ class Licence:
             callsign = self.callsign
         row =  '<tr><td>'+ self.formatName()
         row += '</td><td>' + callsign
-        row += '</td><td>' +'%0.3fMHz' % self.frequency
+        row += '</td><td>' +'%0.3f MHz' % self.frequency
         if site != None:
             row += '</td><td>' + site.name
             row += '</td><td>' + site.mapRef
@@ -334,10 +374,10 @@ class Licence:
         if self.ctcss is None:
             ctcss = 'None'
         else:
-            ctcss = '%0.1fHz' % self.ctcss
+            ctcss = self.ctcss.html()
         row =  '<tr><td>'+ self.formatName()
-        row += '</td><td>' +'%0.3fMHz' % self.frequency
-        row += '</td><td>' +'%0.3fMHz' % self.calcInput()
+        row += '</td><td>' +'%0.3f MHz' % self.frequency
+        row += '</td><td>' +'%0.3f MHz' % self.calcInput()
         if site != None:
             row += '</td><td>' + site.name
             row += '</td><td>' + site.mapRef
@@ -352,6 +392,10 @@ class Licence:
         return row
 
     def htmlBranch(self):
+        '''
+        Returns the branch no formatted as a link to the information on the
+        NZART website for HTML output
+        '''
         try:
             b = int(self.branch)
             if b < 50:
@@ -367,6 +411,9 @@ class Licence:
         return '<a href="%s#%s">%s</a>' % (url, brl, br)
 
     def htmlTrustees(self):
+        '''
+        Returns the trustees formatted as HTML
+        '''
         if self.trustee2 == '':
             return self.trustee1
         else:
@@ -383,12 +430,12 @@ class Licence:
         if self.licType in ['Amateur Repeater','Amateur TV Repeater']:
             colSpan = 2
             description += "<tr><td rowspan=2><b>Frequency</b></td><td><b>Output</b></td><td>%0.3fMHz</td></tr>" % self.frequency
-            description += "<td><b>Input</b></td><td>%0.3fMHz</td></tr>" % self.calcInput()
+            description += "<td><b>Input</b></td><td>%0.3f MHz</td></tr>" % self.calcInput()
             if self.ctcss != None:
-                description += '<tr><td colspan=%i><b>CTCSS</b></td><td>%0.1fHz</td></tr>' % (colSpan, self.ctcss)
+                description += '<tr><td colspan=%i><b>CTCSS</b></td><td>%s</td></tr>' % (colSpan, self.ctcss.html())
         else:
             colSpan = 1
-            description += "<tr><td><b>Frequency</b><td>%0.3fMHz</td></tr>" % self.frequency
+            description += "<tr><td><b>Frequency</b><td>%0.3f MHz</td></tr>" % self.frequency
         if self.callsign != None:
             description += '<tr><td colspan=%i><b>Callsign</b></td><td>%s</td></tr>' % (colSpan, self.callsign)
         description += '<tr><td colspan=%i><b>Type</b></td><td>%s</td></tr>' % (colSpan, self.licType)
@@ -640,16 +687,23 @@ def module_path():
 
     return os.path.dirname(unicode(__file__, sys.getfilesystemencoding( )))
 
-def readFloatCsv(fileName):
+def readCtcss(fileName):
     '''
-    Reads a set of float values associated with licence numbers from the given csv
-    file and returns them as a dictionary indexed by the licence number.
+    Reads the CTCSS information from the given csv file and returns
+    a dictionary of CTCSS information indexed by licence number
+
+    Arguments:
+    fileName     - Filename to use for CSV file
+
+    Returns:
+    links     - A dictionary of CTCSS information indexed by licence number
     '''
-    ret = {}
+    ctcss = {}
+
     for row in csv.reader(open(fileName)):
-        if len(row) >= 2:
-            ret[int(row[0])] = float(row[1])
-    return ret
+        if len(row) >= 3:
+            ctcss[int(row[C_LICENCE])]= Ctcss(float(row[C_FREQ]),row[C_NOTE])
+    return ctcss
 
 def readRowCsv(fileName,length):
     '''
@@ -826,11 +880,11 @@ WHERE c.clientid = l.clientid
 
 def readLinks(fileName, licences, sites):
     '''
-    Reads the licence information from the given csv file and returns
+    Reads the link information from the given csv file and returns
     a list of the links
 
     Arguments:
-    fileName     - Filename to use for DB
+    fileName     - Filename to use for CSV file
     licences     - A dictionary of licences indexed by Linense number
     sites        - A dictionary of sites indexed by site name
 
@@ -861,7 +915,7 @@ def generateCsv(filename,licences,sites):
 
     licenceNos = sorted(licences.keys(), key=sortKey)
 
-    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS","Site Name","Map reference","Latitude","Longitude","Height"\n'
+    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
     for licence in licenceNos:
         csv += licences[licence].csvLine(sites[licences[licence].site])
     f = open(filename,mode='w')
@@ -1360,7 +1414,7 @@ def main():
     skip_file = os.path.join(data_dir,'skip.csv')
 
     callsigns = readTextCsv(callsigns_file)
-    ctcss = readFloatCsv(ctcss_file)
+    ctcss = readCtcss(ctcss_file)
     info = readRowCsv(info_file,6)
     skip = readRowCsv(skip_file,3)
     sites, licences, licencees = readLicences(licences_file,callsigns,ctcss,
