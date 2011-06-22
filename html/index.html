@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <style type="text/css">
+    html { height: 100% }
+    body { height: 100%; margin: 0px; padding: 0px }
+  </style>
+  
+  <link type="text/css" rel="stylesheet" href="treeview.css">
+
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+  <script src="http://yui.yahooapis.com/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
+  <script src="http://yui.yahooapis.com/2.9.0/build/logger/logger.js" ></script>
+  <script src="http://yui.yahooapis.com/2.9.0/build/treeview/treeview-debug.js" ></script>
+
+  <script type="text/javascript" src="data.js"></script>
+  <script type="text/javascript" src="repeaters.js"></script>
+
+</head>
+<body onload="initialize()">
+  <div style="float:left;">
+    <div id="treeDiv1" class="ygtv-checkbox">
+    </div>
+    <div id="expandcontractdiv">
+      <a href="javascript:tree.expandAll()">Expand all</a>
+      <a href="javascript:tree.collapseAll()">Collapse all</a><br>
+    </div>
+  </div>
+  <div id="map_canvas" style="width:auto; height:100%"></div>
+</body>
+</html>
