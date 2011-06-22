@@ -22,6 +22,8 @@
 
 
 import csv
+import datetime
+import time
 import logging
 import optparse
 import os
@@ -29,6 +31,7 @@ import shutil
 import sqlite3
 import sys
 import tempfile
+import urllib2
 import zipfile
 
 from mapping.nz_coords import nztmToTopo50
@@ -65,6 +68,8 @@ C_LICENCE = 0
 C_FREQ = 1
 C_NOTE = 2
 
+
+UPDATE_URL = 'http://www.wallace.gen.nz/maps/data/'
 
 USAGE = """%s [options]
 NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
@@ -1339,6 +1344,7 @@ def main():
                       dest='allTypes',
                       default=False,
                       help='Include all types in the generated file')
+
     parser.add_option('-f','--minfreq',
                       action='store',
                       type='float',
@@ -1351,6 +1357,7 @@ def main():
                       dest='maxFreq',
                       default=None,
                       help='Filter out all above the specified frequency')
+
     parser.add_option('-i','--include',
                       action='store',
                       type='string',
@@ -1363,12 +1370,25 @@ def main():
                       dest='exclude',
                       default=None,
                       help='Filter licences to exclude licences that contain [exclude] in their name')
+
     parser.add_option('-B','--branch',
                       action='store',
                       type='string',
                       dest='branch',
                       default=None,
                       help='Filter licences to only include those from the selected branch')
+
+    parser.add_option('-u','--update',
+                      action='store_true',
+                      dest='update',
+                      default=False,
+                      help='Update data files from the Internet')
+    parser.add_option('-A','--datafolder',
+                      action='store',
+                      type='string',
+                      dest='datadir',
+                      default='data',
+                      help='Modify the data folder location from the default')
 
     (options, args) = parser.parse_args()
 
@@ -1381,17 +1401,48 @@ def main():
     else:
         logging.basicConfig(level=logging.WARNING)
 
+    if os.path.isabs(options.datadir):
+        data_dir = options.datadir
+    else:
+        data_dir = os.path.join(module_path(),options.datadir)
+
+    if not os.path.isdir(data_dir):
+        parser.error('Chosen data folder %s does not exist' % data_dir)
+
+    dataDate_file = os.path.join(data_dir,'version')
+    try:
+        dataDate = datetime.datetime(*time.strptime(open(dataDate_file).read(), "%d/%m/%Y")[0:5])
+    except:
+        if options.update:
+            dataDate = datetime.datetime.min
+        else:
+            parser.error('Can not determine data date for the chosen data folder %s' % data_dir)
+
+    if options.update:
+        if not updateData(data_dir, dataDate):
+            logging.error('Unable to update data files')
+            exit()
+    elif not os.path.isfile(dataDate_file):
+        logging.error('Missing data date file please update')
+        exit()
+    else:
+        if (datetime.datetime.now() - dataDate) > datetime.timedelta(weeks=4):
+            print 'the data is more than 4 weeks old so it is recommended that you update'
+
+
+    callsigns_file = os.path.join(data_dir,'callsigns.csv')
+    ctcss_file = os.path.join(data_dir,'ctcss.csv')
+    licences_file = os.path.join(data_dir,'prism.sqlite')
+    links_file = os.path.join(data_dir,'links.csv')
+    info_file = os.path.join(data_dir,'info.csv')
+    skip_file = os.path.join(data_dir,'skip.csv')
+
     if options.htmlfilename == None and\
        options.kmlfilename == None and\
        options.kmzfilename == None and\
-       options.csvfilename == None:
+       options.csvfilename == None and\
+       not options.update:
         parser.error('Atleast one output file type must be defined or no output will be generated')
-
-    if options.licence and options.site:
-        parser.error('Only one of site or licence may be specified')
-    elif not (options.licence or options.site):
-        print 'Neither site or licence output specified creating output by licence'
-        options.licence = True
 
     if options.allTypes:
         options.beacon = True
@@ -1400,18 +1451,19 @@ def main():
         options.tv = True
 
     if not (options.beacon or options.digi or options.repeater or options.tv):
-        parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated.')
+        if options.update:
+            exit()
+        else:
+            parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated.')
 
     if options.minFreq > options.maxFreq:
         parser.error('The maximum frequency must be greater than the minimum frequency.')
 
-    data_dir = os.path.join(module_path(),'data')
-    callsigns_file = os.path.join(data_dir,'callsigns.csv')
-    ctcss_file = os.path.join(data_dir,'ctcss.csv')
-    licences_file = os.path.join(data_dir,'prism.sqlite')
-    links_file = os.path.join(data_dir,'links.csv')
-    info_file = os.path.join(data_dir,'info.csv')
-    skip_file = os.path.join(data_dir,'skip.csv')
+    if options.licence and options.site:
+        parser.error('Only one of site or licence may be specified')
+    elif not (options.licence or options.site):
+        print 'Neither site or licence output specified creating output by licence'
+        options.licence = True
 
     callsigns = readTextCsv(callsigns_file)
     ctcss = readCtcss(ctcss_file)
@@ -1441,6 +1493,45 @@ def main():
 
     if options.kmzfilename != None:
         generateKmz(options.kmzfilename, licences, sites, links, options.site)
+
+def updateData(dataFolder, localDate):
+    f = urllib2.urlopen(UPDATE_URL + 'version')
+    remoteDate = datetime.datetime(*time.strptime(f.read(10), "%d/%m/%Y")[0:5])
+    if localDate >= remoteDate:
+        print 'Data already up to date, continuing without downloading data'
+        return (True)
+    urlDownload(UPDATE_URL + 'data.zip', dataFolder)
+    z = zipfile.ZipFile(os.path.join(dataFolder,'data.zip'))
+    z.extractall(dataFolder)
+    f = open(os.path.join(dataFolder,'version'),'w')
+    f.write(remoteDate.strftime("%d/%m/%Y"))
+    f.close()
+    return(True)
+
+def urlDownload(url, folder=None, fileName=None):
+    if fileName == None:
+        fileName = url.split('/')[-1]
+    if folder != None:
+        fileName = os.path.join(folder, fileName)
+    u = urllib2.urlopen(url)
+    f = open(fileName, 'w')
+    meta = u.info()
+    fileSize = int(meta.getheaders("Content-Length")[0])
+    print "Downloading: %s Bytes: %s" % (fileName, fileSize)
+
+    fileSizeDl = 0
+    blockSz = 8192
+    while True:
+        buffer = u.read(blockSz)
+        if not buffer:
+            break
+
+        fileSizeDl += blockSz
+        f.write(buffer)
+        status = r"%10d  [%3.2f%%]" % (fileSizeDl, fileSizeDl * 100. / fileSize)
+        status = status + chr(8)*(len(status)+1)
+        print status,
+    f.close()
 
 if __name__ == "__main__":
     main()

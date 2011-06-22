@@ -42,3 +42,6 @@ sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTIN
 sqlite3 ${DB_SQLITE} 'DELETE FROM location WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM geographicreference WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 sqlite3 ${DB_SQLITE} 'VACUUM'
+
+rm version
+date +%d/%m/%Y >> version

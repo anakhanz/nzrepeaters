@@ -1,9 +1,13 @@
 repeaters/data/prism.sqlite
 repeaters/data/prism.sqlite.bak
+repeaters/data/version
 *.pyc
 *.swp
 *.wpr
 *.wpu
+# private scripts
+map_build.sh
+repeaters/data/upload_data.sh
 # Output files
 *.kml
 *.kmz
