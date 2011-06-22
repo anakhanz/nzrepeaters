@@ -22,3 +22,8 @@ build/scripts*/*
 *.dll
 build/bdist.*/*
 
+# output in the root of the project
+/*.csv
+/*.html
+/*.kml
+/*.kmz

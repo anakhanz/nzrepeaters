@@ -617,7 +617,7 @@ class Site:
         desc = self.htmlDescription()
         if len(desc) > 0:
             ret += '<a id="%s"> </a>' % self.name
-            ret +='<h1>'+self.name+'</h1>\n'
+            ret +='<h2>'+self.name+'</h2>\n'
             ret += desc
         return ret
 
@@ -927,18 +927,35 @@ def generateCsv(filename,licences,sites):
     f.write(csv)
     f.close()
 
-def generateHtml(filename, licences, sites, links, bySite):
+def generateHtml(filename, licences, sites, links, byLicence, bySite):
     if bySite:
         logging.debug('exporting htmlfile %s by site' % filename)
         html = generateHtmlSite(sites)
-    else:
+    elif byLicence:
         logging.debug('exporting htmfile %s by site' % filename)
         html= generateHtmlLicence(licences, sites, links)
+    else:
+        logging.debug('exporting htmfile %s by licence and site' % filename)
+        html= generateHtmlAll(licences, sites, links)
+
     f = open(filename,mode='w')
     f.write(html)
     f.close()
 
+def generateHtmlAll(licences,sites,links):
+    html = htmlHeader('Amateur Licences and Sites')
+    [lHeader, lBody] = generateHtmlLicenceBody(licences,sites,links)
+    [sHeader, sBody] = generateHtmlSiteBody(sites)
+    return htmlHeader('Amateur Licences and Sites') +\
+           lHeader + sHeader +\
+           lBody +sBody +\
+           htmlFooter()
+
 def generateHtmlLicence(licences,sites,links):
+    [header, body] = generateHtmlLicenceBody(licences,sites,links)
+    return htmlHeader('Amateur Sites') + header + body +htmlFooter()
+
+def generateHtmlLicenceBody(licences,sites,links):
 
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
@@ -957,63 +974,92 @@ def generateHtmlLicence(licences,sites,links):
             htmlByType[t][b] += licences[licence].htmlRepeaterRow(sites[licences[licence].site])
         else:
             htmlByType[t][b] += licences[licence].htmlBasicRow(sites[licences[licence].site])
-    header = htmlHeader('Amateur Licences')
-    header += '<h1>Amateur Licences</h1>'
+    header = '<h1>Amateur Licences</h1>'
     header += '<ul>'
-    html = ''
+    body = '<h1>Amateur Licences</h1>'
     for t in LICENCE_TYPES:
         if len(htmlByType[t]) > 0:
             header += '<li><a href="#%s">%ss</a></li>\n' % (t, t)
             header += '<ul>\n'
-            html += '<a id="%s"></a>' % (t)
-            html += '    <h2>%ss</h2>\n' % t
+            body += '<a id="%s"></a>' % (t)
+            body += '    <h2>%ss</h2>\n' % t
             for b in bands:
                 if b.name in htmlByType[t].keys():
                     header += '<li><a href="#%s_%s">%s</a></li>' % (t ,b.name ,b.name)
-                    html += '<a id="%s_%s"></a>' % (t ,b.name)
-                    html += '<h3>%s</h3>' % b.name
+                    body += '<a id="%s_%s"></a>' % (t ,b.name)
+                    body += '<h3>%s</h3>' % b.name
                     if "Repeater" in t:
-                        html += htmlRepeaterHeader(True)
+                        body += htmlRepeaterHeader(True)
                     else:
-                        html += htmlSimpleHeader(True)
-                    html += htmlByType[t][b.name]
-                    html += '</table>\n'
+                        body += htmlSimpleHeader(True)
+                    body += htmlByType[t][b.name]
+                    body += '</table>\n'
             header += '</ul>'
     header += '</ul>'
 
-    return header+html
+    return (header, body)
 
 def generateHtmlSite(sites):
-    html = htmlHeader('Amateur Sites')
-    html += '<h1>Amateur Sites</h1>'
+    [header, body] = generateHtmlSiteBody(sites)
+    return htmlHeader('Amateur Sites') + header + body +htmlFooter()
+
+def generateHtmlSiteBody(sites):
+    header = '<h1>Amateur Sites</h1>'
+    body = '<h1>Amateur Sites</h1>'
     siteNames = sites.keys()
     siteNames.sort()
     for site in siteNames:
-        html += sites[site].htmlNameLink()
+        header += sites[site].htmlNameLink()
     for site in siteNames:
-        html += '<hr/>'
-        html += sites[site].html()
-    html += htmlFooter()
-    return html
+        body += '<hr/>'
+        body += sites[site].html()
+    return (header, body)
 
-def generateKml(filename, licences, sites, links, bySite):
+def generateKml(filename, licences, sites, links, byLicence, bySite):
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
         kml = generateKmlSite(sites)
+    elif byLicence:
+        logging.debug('exporting kmlfile %s by licence' % filename)
+        kml = generateKmlLicence(licences, sites, links,1)
     else:
-        logging.debug('exporting kmlfile %s by site' % filename)
-        kml = generateKmlLicence(licences, sites, links)
+        logging.debug('exporting kmlfile %s by site and licence' % filename)
+        kml = generateKmlAll(licences, sites, links)
+
     f = open(filename,mode='w')
     f.write(kml)
     f.close()
 
-def generateKmlLicence(licences,sites,links):
+def generateKmlAll(licences, sites, links):
+    kml = kmlHeader()
+    kml += '    <name>Amateur Licences and Sites</name><open>1</open>\n'
+    kml += '    <Folder><name>Licences</name><open>1</open>\n'
+    kml += generateKmlLicenceBody(licences,sites,links,0)
+    kml += '    </Folder>\n'
+    kml += generateKmlLinksBody(links)
+    kml += '    <Folder><name>Sites</name><open>0</open>\n'
+    kml += generateKmlSiteBody(sites)
+    kml += '    </Folder>\n'
+    kml += kmlFooter()
+    return kml
+
+def generateKmlLicence(licences,sites,links,expand=1):
+
+    kml = kmlHeader()
+    kml += '    <name>Amateur Licences</name><open>1</open>\n'
+    kml += generateKmlLicenceBody(licences,sites,links,expand)
+    kml += generateKmlLinksBody(links)
+    kml += kmlFooter()
+    return kml
+
+def generateKmlLicenceBody(licences,sites,links,expand):
 
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
 
     licenceNos = sorted(licences.keys(), key=sortKey)
     kmlByType={}
+    kml=""
     for t in LICENCE_TYPES:
         kmlByType[t]={}
     for licence in licenceNos:
@@ -1023,41 +1069,46 @@ def generateKmlLicence(licences,sites,links):
         if b not in kmlByType[t].keys():
             kmlByType[t][b] = ""
         kmlByType[t][b] += licences[licence].kmlPlacemark(sites[licences[licence].site])
-    kml = kmlHeader()
-    kml += '    <name>Amateur Licences</name><open>1</open>\n'
     for t in LICENCE_TYPES:
         if len(kmlByType[t]) > 0:
-            kml += '    <Folder><name>%ss</name><open>1</open>\n' % t
+            kml += '    <Folder><name>%ss</name><open>%i</open>\n' % (t,expand)
             for b in bands:
                 if b.name in kmlByType[t].keys():
                     kml += '    <Folder><name>%s</name><open>0</open>\n' % b.name
                     kml += kmlByType[t][b.name]
                     kml += '    </Folder>\n'
             kml += '    </Folder>'
+    return kml
 
+def generateKmlLinksBody(links):
+    kml = ''
     if len(links) > 0:
-        kml += '    <Folder><name>Links</name>\n'
+        kml += '    <Folder><name>Links</name><open>0</open>\n'
         for link in links:
             kml += link.kmlPlacemark()
         kml += '    </Folder>\n'
-    kml += kmlFooter()
     return kml
 
 def generateKmlSite(sites):
     kml = kmlHeader()
-    kml += '    <name>Amateur Sites</name>\n'
+    kml += '    <name>Amateur Sites</name><open>1</open>\n'
+    kml += generateKmlSiteBody(sites)
+    kml += kmlFooter()
+    return kml
+
+def generateKmlSiteBody(sites):
+    kml = ""
     siteNames = sites.keys()
     siteNames.sort()
     for site in siteNames:
         kml += sites[site].kmlPlacemark()
-    kml += kmlFooter()
     return kml
 
-def generateKmz(filename, licences, sites, links, bySite):
+def generateKmz(filename, licences, sites, links, byLicence, bySite):
     logging.debug('exporting kmlfile %s' % filename)
     tempDir = tempfile.mkdtemp()
     kmlFilename = os.path.join(tempDir,'doc.kml')
-    generateKml(kmlFilename, licences, sites, bySite, links)
+    generateKml(kmlFilename, licences, sites, links, byLicence ,bySite)
     archive = zipfile.ZipFile(filename,
                               mode='w',
                               compression=zipfile.ZIP_DEFLATED)
@@ -1411,7 +1462,7 @@ def main():
 
     dataDate_file = os.path.join(data_dir,'version')
     try:
-        dataDate = datetime.datetime(*time.strptime(open(dataDate_file).read(), "%d/%m/%Y")[0:5])
+        dataDate = datetime.datetime(*time.strptime(open(dataDate_file).read()[:10], "%d/%m/%Y")[0:5])
     except:
         if options.update:
             dataDate = datetime.datetime.min
@@ -1462,8 +1513,7 @@ def main():
     if options.licence and options.site:
         parser.error('Only one of site or licence may be specified')
     elif not (options.licence or options.site):
-        print 'Neither site or licence output specified creating output by licence'
-        options.licence = True
+        print 'Neither site or licence output specified creating output including licence and site'
 
     callsigns = readTextCsv(callsigns_file)
     ctcss = readCtcss(ctcss_file)
@@ -1486,13 +1536,13 @@ def main():
         generateCsv(options.csvfilename, licences, sites)
 
     if options.htmlfilename != None:
-        generateHtml(options.htmlfilename, licences, sites, links, options.site)
+        generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site)
 
     if options.kmlfilename != None:
-        generateKml(options.kmlfilename, licences, sites, links, options.site)
+        generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site)
 
     if options.kmzfilename != None:
-        generateKmz(options.kmzfilename, licences, sites, links, options.site)
+        generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site)
 
 def updateData(dataFolder, localDate):
     f = urllib2.urlopen(UPDATE_URL + 'version')
