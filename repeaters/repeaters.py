@@ -364,7 +364,7 @@ class Licence:
         row += '</td><td>' + self.note
         row += '</td><td>' + self.licencee
         row += '</td><td>' +str(self.number)
-        row += '</td></tr>\n'
+        row += '</td></tr>'
         return row
 
     def htmlRepeaterRow(self,site=None):
@@ -393,7 +393,7 @@ class Licence:
         row += '</td><td>' + self.note
         row += '</td><td>' + self.licencee
         row += '</td><td>' +str(self.number)
-        row += '</td></tr>\n'
+        row += '</td></tr>'
         return row
 
     def htmlBranch(self):
@@ -415,18 +415,9 @@ class Licence:
             brl = 'Af'
         return '<a href="%s#%s">%s</a>' % (url, brl, br)
 
-    def htmlTrustees(self):
+    def htmlDescription(self, site):
         '''
-        Returns the trustees formatted as HTML
-        '''
-        if self.trustee2 == '':
-            return self.trustee1
-        else:
-            return self.trustee1 + '<br>' + self.trustee2
-
-    def kmlPlacemark(self, site):
-        '''
-        Returns a kml placemark for the licence.
+        Returns a html description for the licence.
 
         Keyword Argument:
         site - Site information for printing twith the licence
@@ -454,11 +445,45 @@ class Licence:
         description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
         description += '<tr><td colspan=%i><b>Licencee</b></td><td>%s</td></tr>' % (colSpan, self.licencee)
         description += '</table>'
+        return description
 
+    def htmlTrustees(self):
+        '''
+        Returns the trustees formatted as HTML
+        '''
+        if self.trustee2 == '':
+            return self.trustee1
+        else:
+            return self.trustee1 + '<br>' + self.trustee2
+
+    def js(self,site, splitNs=False):
+        '''
+        Returns a javascript placemark generation call placemark for the licence.
+
+        Keyword Argument:
+        site - Site information for printing twith the licence
+        '''
+        if splitNs and 'National System' in self.name:
+            ns = ' National System'
+        else:
+            ns = ''
+        return "    createMarker('%s','%s%s',%f, %f, '%s', '<h2>%s - %s</h2>%s');\n" % (
+            self.licType, self.band(), ns,
+            site.coordinates.lat, site.coordinates.lon,
+            self.formatName(),
+            self.licType, self.formatName(), self.htmlDescription(site))
+
+    def kmlPlacemark(self, site):
+        '''
+        Returns a kml placemark for the licence.
+
+        Keyword Argument:
+        site - Site information for printing twith the licence
+        '''
         placemark = '    <Placemark>\n'
         placemark += '      <name>'+ self.formatName()+'</name>\n'
         placemark += '      <description><![CDATA['
-        placemark += description
+        placemark += self.htmlDescription(site)
         placemark += ']]></description>\n'
         placemark += '      <styleUrl>' + STYLE_MAP[self.licType] + '</styleUrl>\n'
         placemark += '      <Point>\n'
@@ -511,6 +536,20 @@ class Link:
         self.name = name
         self.end1 = end1
         self.end2 = end2
+
+    def js(self, splitNs=False):
+        '''
+        Returns a javascript function call for the link
+        '''
+        if splitNs and 'National System' in self.name:
+            ltype = 'National System'
+        else:
+            ltype = 'General'
+        return "createLink('%s', %f, %f, %f, %f,'%s');\n" % (
+            ltype,
+            self.end1.lat, self.end1.lon,
+            self.end2.lat, self.end2.lon,
+            self.name)
 
     def kmlPlacemark(self):
         '''
@@ -587,31 +626,6 @@ class Site:
         assert type(tvRepeater) == type(Licence('',1.1,'','',1))
         self.tvRepeaters.append(tvRepeater)
 
-    def kmlPlacemark(self):
-        '''
-        Returns a kml placemark for the site containing the requested
-        information or an empty string if there are no licences to display
-        in the requested informaton.
-        '''
-        desc = self.htmlDescription()
-        if len(desc) > 0:
-            placemark = '    <Placemark>\n'
-            placemark += '      <name>'+ self.name+'</name>\n'
-            placemark += '      <description><![CDATA['
-            placemark += desc
-            placemark += ']]></description>\n'
-            placemark += '      <styleUrl>#msn_site</styleUrl>\n'
-            placemark += '      <Point>\n'
-            placemark += '        <coordinates>'
-            placemark += '%s,0' % (self.coordinates.kml())
-            placemark += '</coordinates>\n'
-            placemark += '      </Point>\n'
-            placemark += '    </Placemark>\n'
-        else:
-            logging.debug('Skiping creating empty placemark for: %s' % self.name)
-            placemark=''
-        return placemark
-
     def html(self):
         ret = ''
         desc = self.htmlDescription()
@@ -653,7 +667,7 @@ class Site:
             for item in items:
                 logging.debug('creating row for repeater %i' % item.number)
                 description += item.htmlRepeaterRow()
-            description += '</table>\n'
+            description += '</table>'
             return description
 
     def htmlSimpleDescription(self, items, text):
@@ -667,7 +681,7 @@ class Site:
             for item in items:
                 logging.debug('creating row for beacon %i' % item.number)
                 description += item.htmlBasicRow()
-            description += '</table>\n'
+            description += '</table>'
             return description
 
     def htmlDescriptionTitle(self, items, text):
@@ -676,6 +690,36 @@ class Site:
         else:
             title = '<h3>' + text + 's</h3>'
         return title
+
+    def js (self):
+        return "createMarker('Site','site',%f, %f, '%s', '<h2>%s</h2>%s');\n" % (
+            self.coordinates.lat, self.coordinates.lon,
+            self.name, self.name, self.htmlDescription())
+
+    def kmlPlacemark(self):
+        '''
+        Returns a kml placemark for the site containing the requested
+        information or an empty string if there are no licences to display
+        in the requested informaton.
+        '''
+        desc = self.htmlDescription()
+        if len(desc) > 0:
+            placemark = '    <Placemark>\n'
+            placemark += '      <name>'+ self.name+'</name>\n'
+            placemark += '      <description><![CDATA['
+            placemark += desc
+            placemark += ']]></description>\n'
+            placemark += '      <styleUrl>#msn_site</styleUrl>\n'
+            placemark += '      <Point>\n'
+            placemark += '        <coordinates>'
+            placemark += '%s,0' % (self.coordinates.kml())
+            placemark += '</coordinates>\n'
+            placemark += '      </Point>\n'
+            placemark += '    </Placemark>\n'
+        else:
+            logging.debug('Skiping creating empty placemark for: %s' % self.name)
+            placemark=''
+        return placemark
 
 def we_are_frozen():
     """Returns whether we are frozen via py2exe.
@@ -1015,6 +1059,139 @@ def generateHtmlSiteBody(sites):
         body += sites[site].html()
     return (header, body)
 
+def generateJs(filename, licences, sites, links, byLicence, bySite):
+    if bySite:
+        logging.debug('exporting javascript file %s by site' % filename)
+        js = generateJsSite(sites)
+    elif byLicence:
+        logging.debug('exporting javascript file %s by site' % filename)
+        js = generateJsLicence(licences, sites, links)
+    else:
+        logging.debug('exporting javascript file %s by licence and site' % filename)
+        js= generateJsAll(licences, sites, links)
+
+    f = open(filename,mode='w')
+    f.write(js)
+    f.close()
+
+def generateJsAll(licences, sites, links):
+    [lMarkers ,lTree] = generateJsLicenceMarkersTree(licences, sites, True, False)
+    js = "  function loadLayers() {\n"
+    js += lMarkers
+    js += generateJsSiteMarkers(sites)
+    js += generateJsLinksMarkers(links,True)
+    js += "  }\n\n"
+    js += "  function loadTree() {\n"
+    js += "    var tmpNode\n"
+    js += "    var typeNode\n"
+    js += "    var root = tree.getRoot();\n"
+    js += lTree
+    js += generateJsLinksTree(True, False)
+    js += generateJsSiteTree()
+    js += "  }\n\n"
+    js += "  function highlightTree() {\n"
+    js += "    tree.getNodeByProperty ( 'label' , 'Licences' ).highlight(true);\n"
+    js += "    tree.getNodeByProperty ( 'label' , 'Links' ).highlight(true);\n"
+    js += "  }\n"
+    return js
+
+def generateJsLicence(licences, sites, links):
+    [markers ,tree] = generateJsLicenceMarkersTree(licences, sites, True, True)
+    js = "  function loadLayers() {\n"
+    js += markers
+    js += "  }\n\n"
+    js += "  function loadTree() {\n"
+    js += "    var tmpNode\n"
+    js += "    var typeNode\n"
+    js += "    var root = tree.getRoot();\n"
+    js += tree
+    js += "  }\n\n"
+    js += "  function highlightTree() {\n"
+    js += "    tree.getNodeByProperty ( 'label' , 'Licences' ).highlight(true);\n"
+    js += "  }\n"
+    return js
+
+def generateJsLicenceMarkersTree(licences, sites, splitNs, expand):
+
+    arrays = ""
+    markers = ""
+    tree = "    var baseNode = new YAHOO.widget.TextNode('Licences', root, true);\n"
+    lTypeBand = {}
+    for t in LICENCE_TYPES:
+        lTypeBand[t]=[]
+
+    if expand:
+        expand = 'true'
+    else:
+        expand = 'false'
+
+    for licence in licences:
+        l = licences[licence]
+        t = l.licType
+        b = l.band()
+        if splitNs and 'National System' in l.name:
+            b = b + ' National System'
+        if b not in lTypeBand[t]:
+            lTypeBand[t].append(b)
+        markers += l.js(sites[l.site], True)
+    for t in LICENCE_TYPES:
+        if len(lTypeBand[t]) > 0:
+            tree += "    typeNode = new YAHOO.widget.TextNode('%ss', baseNode, %s);\n" % (t, expand)
+            for b in bands:
+                if b.name in lTypeBand[t]:
+                    arrays += "    markers['%ss-%s'] = new Array();\n" % (t, b.name)
+                    tree += "    tmpNode = new YAHOO.widget.TextNode('%s', typeNode, false);\n" % b.name
+                if b.name + ' National System' in lTypeBand[t]:
+                    arrays += "    markers['%ss-%s National System'] = new Array();\n" % (t, b.name)
+                    tree += "    tmpNode = new YAHOO.widget.TextNode('%s National System', typeNode, false);\n" % b.name
+    return (arrays + markers, tree)
+
+def generateJsSite(sites):
+    js = "  function loadLayers() {\n"
+    js += generateJsSiteMarkers(sites)
+    js += "  }\n\n"
+    js += "  function loadTree() {\n"
+    js += "    var tmpNode\n"
+    js += "    var typeNode\n"
+    js += "    var root = tree.getRoot();\n"
+    js += generateJsSiteTree()
+    js += "  }\n\n"
+    js += "  function highlightTree() {\n"
+    js += "    tree.getNodeByProperty ( 'label' , 'Sites' ).highlight(true);\n"
+    js += "  }\n"
+    return js
+
+def generateJsSiteMarkers(sites):
+    js = "    markers['Sites'] = new Array();\n"
+    siteNames = sites.keys()
+    siteNames.sort()
+    for site in siteNames:
+        js += sites[site].js()
+    return js
+
+def generateJsSiteTree():
+    return "    typeNode = new YAHOO.widget.TextNode('Sites', root, false);\n"
+
+def generateJsLinksMarkers(links, splitNs):
+    js = "    links['General'] = new Array();\n"
+    if splitNs:
+        js += "    links['National System'] = new Array();\n"
+    for link in links:
+        js += link.js(splitNs)
+    return js
+
+def generateJsLinksTree(splitNs, expand):
+    if expand:
+        expand = 'true'
+    else:
+        expand = 'false'
+    js = "    typeNode = new YAHOO.widget.TextNode('Links', root, %s);\n" % expand
+    if splitNs:
+        js += "    tmpNode = new YAHOO.widget.TextNode('General', typeNode, false);\n"
+        js += "    tmpNode = new YAHOO.widget.TextNode('National System', typeNode, false);\n"
+    return js
+
+
 def generateKml(filename, licences, sites, links, byLicence, bySite):
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
@@ -1034,25 +1211,25 @@ def generateKmlAll(licences, sites, links):
     kml = kmlHeader()
     kml += '    <name>Amateur Licences and Sites</name><open>1</open>\n'
     kml += '    <Folder><name>Licences</name><open>1</open>\n'
-    kml += generateKmlLicenceBody(licences,sites,links,0)
+    kml += generateKmlLicenceBody(licences,sites,links,0,True)
     kml += '    </Folder>\n'
-    kml += generateKmlLinksBody(links)
+    kml += generateKmlLinksBody(links,True)
     kml += '    <Folder><name>Sites</name><open>0</open>\n'
     kml += generateKmlSiteBody(sites)
     kml += '    </Folder>\n'
     kml += kmlFooter()
     return kml
 
-def generateKmlLicence(licences,sites,links,expand=1):
+def generateKmlLicence(licences,sites,links,expand=1,splitNs=False):
 
     kml = kmlHeader()
     kml += '    <name>Amateur Licences</name><open>1</open>\n'
-    kml += generateKmlLicenceBody(licences,sites,links,expand)
-    kml += generateKmlLinksBody(links)
+    kml += generateKmlLicenceBody(licences,sites,links,expand,splitNs)
+    kml += generateKmlLinksBody(links,splitNs)
     kml += kmlFooter()
     return kml
 
-def generateKmlLicenceBody(licences,sites,links,expand):
+def generateKmlLicenceBody(licences,sites,links,expand,splitNs):
 
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
@@ -1066,6 +1243,8 @@ def generateKmlLicenceBody(licences,sites,links,expand):
         l = licences[licence]
         t = l.licType
         b = l.band()
+        if splitNs and 'National System' in l.name:
+            b = b + ' National System'
         if b not in kmlByType[t].keys():
             kmlByType[t][b] = ""
         kmlByType[t][b] += licences[licence].kmlPlacemark(sites[licences[licence].site])
@@ -1077,16 +1256,38 @@ def generateKmlLicenceBody(licences,sites,links,expand):
                     kml += '    <Folder><name>%s</name><open>0</open>\n' % b.name
                     kml += kmlByType[t][b.name]
                     kml += '    </Folder>\n'
+                if b.name + ' National System' in kmlByType[t].keys():
+                    kml += '    <Folder><name>%s</name><open>0</open>\n' % (b.name + ' National System')
+                    kml += kmlByType[t][b.name + ' National System']
+                    kml += '    </Folder>\n'
             kml += '    </Folder>'
     return kml
 
-def generateKmlLinksBody(links):
+def generateKmlLinksBody(links, splitNs):
+    general = ''
+    ns = ''
+    for link in links:
+        if splitNs and 'National System' in link.name:
+            ns += link.kmlPlacemark()
+        else:
+            general += link.kmlPlacemark()
     kml = ''
     if len(links) > 0:
-        kml += '    <Folder><name>Links</name><open>0</open>\n'
-        for link in links:
-            kml += link.kmlPlacemark()
-        kml += '    </Folder>\n'
+        if splitNs:
+            kml += '    <Folder><name>Links</name><open>1</open>\n'
+            if len(general) >0:
+                kml += '    <Folder><name>General</name><open>0</open>\n'
+                kml += general
+                kml += '    </Folder>\n'
+            if len(ns) >0:
+                kml += '    <Folder><name>National System</name><open>0</open>\n'
+                kml += ns
+                kml += '    </Folder>\n'
+            kml += '    </Folder>\n'
+        else:
+            kml += '    <Folder><name>Links</name><open>0</open>\n'
+            kml += general
+            kml += '    </Folder>\n'
     return kml
 
 def generateKmlSite(sites):
@@ -1125,7 +1326,7 @@ def htmlFooter():
     return footer
 
 def htmlRepeaterHeader(full=False):
-    header =  '<table border=1>\n'
+    header =  '<table border=1>'
     header += '<tr><th rowspan=2>Name</th>'
     header += '<th colspan=2>Frequency</th>'
     if full:
@@ -1137,24 +1338,24 @@ def htmlRepeaterHeader(full=False):
     header += '<th rowspan=2>Trustees</th>'
     header += '<th rowspan=2>Notes</th>'
     header += '<th rowspan=2>Licencee</th>'
-    header += '<th rowspan=2>Licence No</th></tr>\n'
-    header += '<tr><th>Output</th><th>Input</th></tr>\n'
+    header += '<th rowspan=2>Licence No</th></tr>'
+    header += '<tr><th>Output</th><th>Input</th></tr>'
     return header
 
 def htmlSimpleHeader(full=False):
-    header =  '<table border=1>\n'
-    header += '<tr><th>Name</th>\n'
-    header += '<th>Call Sign</th>\n'
-    header += '<th>Frequency</th>\n'
+    header =  '<table border=1>'
+    header += '<tr><th>Name</th>'
+    header += '<th>Call Sign</th>'
+    header += '<th>Frequency</th>'
     if full:
         header += '<th>Site</th>'
         header += '<th>Map Reference</th>'
         header += '<th>Height</th>'
-    header += '<th>Branch</th>\n'
-    header += '<th>Trustees</th>\n'
-    header += '<th>Notes</th>\n'
-    header += '<th>Licencee</th>\n'
-    header += '<th>Licence No</th></tr>\n'
+    header += '<th>Branch</th>'
+    header += '<th>Trustees</th>'
+    header += '<th>Notes</th>'
+    header += '<th>Licencee</th>'
+    header += '<th>Licence No</th></tr>'
     return header
 
 def kmlHeader():
@@ -1337,6 +1538,13 @@ def main():
                       default=None,
                       help='Output to html file, may be in addition to other output types')
 
+    parser.add_option('-j','--javascript',
+                      action='store',
+                      type='string',
+                      dest='jsfilename',
+                      default=None,
+                      help='Output to javascript file, may be in addition to other output types')
+
     parser.add_option('-k','--kml',
                       action='store',
                       type='string',
@@ -1489,6 +1697,7 @@ def main():
     skip_file = os.path.join(data_dir,'skip.csv')
 
     if options.htmlfilename == None and\
+       options.jsfilename == None and\
        options.kmlfilename == None and\
        options.kmzfilename == None and\
        options.csvfilename == None and\
@@ -1537,6 +1746,9 @@ def main():
 
     if options.htmlfilename != None:
         generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site)
+
+    if options.jsfilename != None:
+        generateJs(options.jsfilename, licences, sites, links, options.licence, options.site)
 
     if options.kmlfilename != None:
         generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site)
