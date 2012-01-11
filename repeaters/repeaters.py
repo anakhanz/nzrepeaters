@@ -188,7 +188,7 @@ class Licence:
     '''
     Amateur radio licence
     '''
-    def __init__(self,licType,frequency,site,licencee,
+    def __init__(self,licType,frequency,site,licensee,
                  number,name='',branch='',trustee1='',trustee2='',
                  note='',callsign='', ctcss=None):
         '''
@@ -198,7 +198,7 @@ class Licence:
         licType   - Type of Licence (Repeater, Beacon etc)
         frequency - Frequency for the licence
         site      - Site name
-        licencee  - Name of the Licence
+        licensee  - Name of the Licence
         number    - Licence number
 
         Keyword Arguments:
@@ -214,7 +214,7 @@ class Licence:
         assert licType in LICENCE_TYPES
         assert type(frequency) == float
         assert type(site) == str or type(site) == unicode
-        assert type(licencee) == str or type(licencee) == unicode
+        assert type(licensee) == str or type(licensee) == unicode
         assert type(number) == int
         assert type(name) == str or type(name) == unicode
         assert type(branch) == str or type(branch) == unicode
@@ -226,7 +226,7 @@ class Licence:
         self.licType = licType
         self.frequency = frequency
         self.site = site
-        self.licencee = licencee
+        self.licensee = licensee
         self.number = number
         self.name = name
         self.branch = branch
@@ -324,7 +324,7 @@ class Licence:
         else:
             csv += ',"%s"' % self.trustee2
         csv += ',"%s"' % self.note
-        csv += ',"%s"' % self.licencee
+        csv += ',"%s"' % self.licensee
         if self.ctcss == None:
             csv += ',,'
         else:
@@ -343,7 +343,7 @@ class Licence:
         '''
         Returns an HTML table row containig the licence information, formatted
         as follows:
-        | Name | Callsign | Frequency | Branch | Trustees | Notes | Licencee | Number |
+        | Name | Callsign | Frequency | Branch | Trustees | Notes | Licensee | Number |
         if a site is passed to the finction the following is added between
         Frequency and Branch:
           Site Name | Map ref | Height
@@ -362,7 +362,7 @@ class Licence:
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
         row += '</td><td>' + self.note
-        row += '</td><td>' + self.licencee
+        row += '</td><td>' + self.licensee
         row += '</td><td>' +str(self.number)
         row += '</td></tr>'
         return row
@@ -371,7 +371,7 @@ class Licence:
         '''
         Returns an HTML table row containig the licence information including
         input frequency for a repeater, formatted as follows:
-        | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licencee | Number |
+        | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licensee | Number |
         if a site is passed to the finction the following is added between
         Input frequency and CTCSS:
           Site Name | Map ref | Height
@@ -391,7 +391,7 @@ class Licence:
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
         row += '</td><td>' + self.note
-        row += '</td><td>' + self.licencee
+        row += '</td><td>' + self.licensee
         row += '</td><td>' +str(self.number)
         row += '</td></tr>'
         return row
@@ -443,7 +443,7 @@ class Licence:
         description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
         description += '<tr><th colspan=%i><b>Height</b></td><td>%i m</td></tr>' % (colSpan, site.height)
         description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
-        description += '<tr><td colspan=%i><b>Licencee</b></td><td>%s</td></tr>' % (colSpan, self.licencee)
+        description += '<tr><td colspan=%i><b>Licensee</b></td><td>%s</td></tr>' % (colSpan, self.licensee)
         description += '</table>'
         return description
 
@@ -494,16 +494,16 @@ class Licence:
         placemark += '    </Placemark>\n'
         return placemark
 
-class Licencee:
+class Licensee:
     '''
-    Licencee for a amateur radio licences
+    Licensee for a amateur radio licences
     '''
     def __init__(self, name, address1, address2, address3):
         '''
-        Licencee constructor
+        Licensee constructor
 
         Arguments:
-        name     - Name of the licencee
+        name     - Name of the licensee
         address1 - First line of the address
         address2 - Second line of the address
         address3 - Third line of the address
@@ -807,11 +807,11 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
     Returns:
     sites     - A list of sites and their associated licences
     licences  - A list of licences
-    licencees - A list of the named licencees and their details
+    licensees - A list of the named licensees and their details
     '''
     sites = {}
     licences = {}
-    licencees = {}
+    licensees = {}
 
     con = sqlite3.connect(fileName)
     con.row_factory = sqlite3.Row
@@ -839,8 +839,8 @@ WHERE c.clientid = l.clientid
     c.execute(sql)
     rows = c.fetchall()
     for row in rows:
-        if row['name'] not in licencees:
-            licencees[row['name']]=Licencee(row['name'],
+        if row['name'] not in licensees:
+            licensees[row['name']]=Licensee(row['name'],
                                               row['address1'],
                                               row['address2'],
                                               row['address3'])
@@ -851,13 +851,13 @@ WHERE c.clientid = l.clientid
 
         skipping = False
         if licenceLocation == 'ALL NEW ZEALAND':
-            logging.info('Skipping Licencee No: %d because it has the location "ALL NEW ZEALAND"' % licenceNumber)
+            logging.info('Skipping Licensee No: %d because it has the location "ALL NEW ZEALAND"' % licenceNumber)
             skipping = True
         elif licenceNumber in skip.keys():
             skipFreq = float(skip[licenceNumber][S_FREQ])
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
                 skipping = True
-                logging.info('Skipping Licencee No: %d, frequency %0.3f at location %s for reason "%s"' % (
+                logging.info('Skipping Licensee No: %d, frequency %0.3f at location %s for reason "%s"' % (
                              licenceNumber,
                              licenceFrequency,
                              licenceLocation,
@@ -925,7 +925,7 @@ WHERE c.clientid = l.clientid
             elif licType == 'Amateur TV Repeater' and shTvRepeater:
                 site.addTvRepeater(licence)
                 licences[licenceNumber] = (licence)
-    return sites, licences, licencees
+    return sites, licences, licensees
 
 def readLinks(fileName, licences, sites):
     '''
@@ -964,7 +964,7 @@ def generateCsv(filename,licences,sites):
 
     licenceNos = sorted(licences.keys(), key=sortKey)
 
-    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licencee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
+    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licensee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
     for licence in licenceNos:
         csv += licences[licence].csvLine(sites[licences[licence].site])
     f = open(filename,mode='w')
@@ -1337,7 +1337,7 @@ def htmlRepeaterHeader(full=False):
     header += '<th rowspan=2>Branch</th>'
     header += '<th rowspan=2>Trustees</th>'
     header += '<th rowspan=2>Notes</th>'
-    header += '<th rowspan=2>Licencee</th>'
+    header += '<th rowspan=2>Licensee</th>'
     header += '<th rowspan=2>Licence No</th></tr>'
     header += '<tr><th>Output</th><th>Input</th></tr>'
     return header
@@ -1354,7 +1354,7 @@ def htmlSimpleHeader(full=False):
     header += '<th>Branch</th>'
     header += '<th>Trustees</th>'
     header += '<th>Notes</th>'
-    header += '<th>Licencee</th>'
+    header += '<th>Licensee</th>'
     header += '<th>Licence No</th></tr>'
     return header
 
@@ -1728,7 +1728,7 @@ def main():
     ctcss = readCtcss(ctcss_file)
     info = readRowCsv(info_file,6)
     skip = readRowCsv(skip_file,3)
-    sites, licences, licencees = readLicences(licences_file,callsigns,ctcss,
+    sites, licences, licensees = readLicences(licences_file,callsigns,ctcss,
                                               info,skip,
                                               options.minFreq,options.maxFreq,
                                               options.beacon,options.digi,
