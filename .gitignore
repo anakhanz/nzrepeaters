@@ -7,7 +7,9 @@
 *.wpu
 
 # private scripts
+all.sh
 map_build.sh
+map_upload.sh
 repeaters/data/upload_data.sh
 
 # generated data files
