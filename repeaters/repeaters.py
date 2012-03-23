@@ -441,7 +441,7 @@ class Licence:
         description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
         description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
         description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
-        description += '<tr><th colspan=%i><b>Height</b></td><td>%i m</td></tr>' % (colSpan, site.height)
+        description += '<tr><td colspan=%i><b>Height</b></td><td>%i m</td></tr>' % (colSpan, site.height)
         description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
         description += '<tr><td colspan=%i><b>Licensee</b></td><td>%s</td></tr>' % (colSpan, self.licensee)
         description += '</table>'
