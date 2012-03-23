@@ -170,11 +170,11 @@ class Ctcss:
         Constructor for a CTCSS code
 
         Arguments:
-        freq - Frequench in decimal Hz of the tone
-        note - the use of the tome
+        freq - Frequency in decimal Hz of the tone
+        note - the use of the tone
         '''
         assert type(freq) == float
-        assert type(note) == str or type(name) == unicode
+        assert type(note) == str or type(note) == unicode
         self.freq = freq
         self.note = note
 
@@ -858,11 +858,6 @@ WHERE c.clientid = l.clientid
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
                 skipping = True
                 logging.info('Skipping Licensee No: %d, frequency %0.3f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
-        
-        if include != None:
-            skipping = skipping or (include not in licenceName)
-        if exclude != None:
-            skipping = skipping or (exclude in licenceName)
 
         if not skipping:
             if licenceNumber in info.keys():
@@ -878,6 +873,11 @@ WHERE c.clientid = l.clientid
                 licenceTrustee1 = ''
                 licenceTrustee2 = ''
                 licenceNote = ''
+        
+        if include != None:
+            skipping = skipping or (include not in licenceName)
+        if exclude != None:
+            skipping = skipping or (exclude in licenceName)
 
         if branch != None:
             skipping = skipping or (branch != info[licenceNumber][I_BRANCH])
@@ -992,7 +992,6 @@ def generateHtml(filename, licences, sites, links, byLicence, bySite):
     f.close()
 
 def generateHtmlAll(licences,sites,links):
-    html = htmlHeader('Amateur Licences and Sites')
     [lHeader, lBody] = generateHtmlLicenceBody(licences,sites,links)
     [sHeader, sBody] = generateHtmlSiteBody(sites)
     return htmlHeader('Amateur Licences and Sites') +\
@@ -1789,12 +1788,12 @@ def urlDownload(url, folder=None, fileName=None):
     fileSizeDl = 0
     blockSz = 8192
     while True:
-        buffer = u.read(blockSz)
-        if not buffer:
+        dlBuffer = u.read(blockSz)
+        if not dlBuffer:
             break
 
         fileSizeDl += blockSz
-        f.write(buffer)
+        f.write(dlBuffer)
         status = r"%10d  [%3.2f%%]" % (fileSizeDl, fileSizeDl * 100. / fileSize)
         status = status + chr(8)*(len(status)+1)
         print status,
