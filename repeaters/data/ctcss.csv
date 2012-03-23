@@ -1,9 +1,23 @@
 213219,123.0,Activation
 174211,88.5,Activation
-216482,123.0,Activation
-177321,123.0,Activation
+216482,123.0,"Dual level receive, Sigs -100dBm or better do not need CTCSS"
+177321,123.0,"Dual level receive, Sigs -100dBm or better do not need CTCSS"
 55711,71.9,Activation
 174209,123.0,Activation
 179120,88.5,Increased sensitivity
 116876,123.0,Activation
 228006,123.0,Activation and Output when not digital
+207982,123.0,Tone access required
+221225,71.9,TX only (not on tail)
+215875,71.9,TX only (not on tail)
+70235,71.9,TX only (not on tail)
+21321,123.0, TX only
+70240,123.0,
+55711,71.9,TX only (not on tail)
+231856,123.0,TX only (not on tail)
+175649,71.9,TX only (not on tail)
+225965,88.5,TX only
+225963,88.5,TX only
+137508,88.5,
+156052,88.5,
+207488,85.4,TX only
