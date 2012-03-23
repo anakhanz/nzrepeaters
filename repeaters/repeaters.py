@@ -857,22 +857,27 @@ WHERE c.clientid = l.clientid
             skipFreq = float(skip[licenceNumber][S_FREQ])
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
                 skipping = True
-                logging.info('Skipping Licensee No: %d, frequency %0.3f at location %s for reason "%s"' % (
-                             licenceNumber,
-                             licenceFrequency,
-                             licenceLocation,
-                             skip[licenceNumber][S_NOTE]))
-        if not skipping:
-            if licenceNumber in info.keys():
-                    licenceName = info[licenceNumber][I_NAME]
-            else:
-                skipping = True
-                logging.error('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
-
+                logging.info('Skipping Licensee No: %d, frequency %0.3f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
+        
         if include != None:
             skipping = skipping or (include not in licenceName)
         if exclude != None:
             skipping = skipping or (exclude in licenceName)
+
+        if not skipping:
+            if licenceNumber in info.keys():
+                    licenceName = info[licenceNumber][I_NAME]
+                    licenceBranch = info[licenceNumber][I_BRANCH]
+                    licenceTrustee1 = info[licenceNumber][I_TRUSTEE1]
+                    licenceTrustee2 = info[licenceNumber][I_TRUSTEE2]
+                    licenceNote = info[licenceNumber][I_NOTE]
+            else:
+                logging.error('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
+                licenceName = licenceLocation.title()
+                licenceBranch = ''
+                licenceTrustee1 = ''
+                licenceTrustee2 = ''
+                licenceNote = ''
 
         if branch != None:
             skipping = skipping or (branch != info[licenceNumber][I_BRANCH])
@@ -906,10 +911,10 @@ WHERE c.clientid = l.clientid
                               row['name'],
                               licenceNumber,
                               licenceName,
-                              info[licenceNumber][I_BRANCH],
-                              info[licenceNumber][I_TRUSTEE1],
-                              info[licenceNumber][I_TRUSTEE2],
-                              info[licenceNumber][I_NOTE],
+                              licenceBranch,
+                              licenceTrustee1,
+                              licenceTrustee2,
+                              licenceNote,
                               licenceCallsign)
             if licenceNumber in ctcss.keys():
                 licence.setCtcss(ctcss[licenceNumber])
