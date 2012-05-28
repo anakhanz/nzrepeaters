@@ -21,6 +21,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licences/>.
 
 
+import cgi
 import csv
 import datetime
 import time
@@ -341,10 +342,10 @@ class Licence:
 
     def htmlBasicRow(self,site=None):
         '''
-        Returns an HTML table row containig the licence information, formatted
+        Returns an HTML table row containing the licence information, formatted
         as follows:
         | Name | Callsign | Frequency | Branch | Trustees | Notes | Licensee | Number |
-        if a site is passed to the finction the following is added between
+        if a site is passed to the function the following is added between
         Frequency and Branch:
           Site Name | Map ref | Height
         '''
@@ -352,27 +353,27 @@ class Licence:
             callsign = ''
         else:
             callsign = self.callsign
-        row =  '<tr><td>'+ self.formatName()
+        row =  '<tr><td>'+ cgi.escape(self.formatName())
         row += '</td><td>' + callsign
         row += '</td><td>' +'%0.3f MHz' % self.frequency
         if site != None:
-            row += '</td><td>' + site.name
+            row += '</td><td>' + cgi.escape(site.name)
             row += '</td><td>' + site.mapRef
             row += '</td><td>' + '%i m' % site.height
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
-        row += '</td><td>' + self.note
-        row += '</td><td>' + self.licensee
+        row += '</td><td>' + cgi.escape(self.note)
+        row += '</td><td>' + cgi.escape(self.licensee)
         row += '</td><td>' +str(self.number)
         row += '</td></tr>'
         return row
 
     def htmlRepeaterRow(self,site=None):
         '''
-        Returns an HTML table row containig the licence information including
+        Returns an HTML table row containing the licence information including
         input frequency for a repeater, formatted as follows:
         | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licensee | Number |
-        if a site is passed to the finction the following is added between
+        if a site is passed to the function the following is added between
         Input frequency and CTCSS:
           Site Name | Map ref | Height
         '''
@@ -380,18 +381,18 @@ class Licence:
             ctcss = 'None'
         else:
             ctcss = self.ctcss.html()
-        row =  '<tr><td>'+ self.formatName()
+        row =  '<tr><td>'+ cgi.escape(self.formatName())
         row += '</td><td>' +'%0.3f MHz' % self.frequency
         row += '</td><td>' +'%0.3f MHz' % self.calcInput()
         if site != None:
-            row += '</td><td>' + site.name
+            row += '</td><td>' + cgi.escape(site.name)
             row += '</td><td>' + site.mapRef
             row += '</td><td>' + '%i m' % site.height
         row += '</td><td>' +'%s' % ctcss
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
-        row += '</td><td>' + self.note
-        row += '</td><td>' + self.licensee
+        row += '</td><td>' + cgi.escape(self.note)
+        row += '</td><td>' + cgi.escape(self.licensee)
         row += '</td><td>' +str(self.number)
         row += '</td></tr>'
         return row
@@ -420,7 +421,7 @@ class Licence:
         Returns a html description for the licence.
 
         Keyword Argument:
-        site - Site information for printing twith the licence
+        site - Site information for printing with the licence
         '''
         description = '<table border=1>'
         if self.licType in ['Amateur Repeater','Amateur TV Repeater']:
@@ -437,13 +438,13 @@ class Licence:
         description += '<tr><td colspan=%i><b>Type</b></td><td>%s</td></tr>' % (colSpan, self.licType)
         description += '<tr><td colspan=%i><b>Branch</b></td><td>%s</td></tr>' % (colSpan, self.htmlBranch())
         description += '<tr><td colspan=%i><b>Trustees</b></td><td>%s</td></tr>' % (colSpan, self.htmlTrustees())
-        description += '<tr><td colspan=%i><b>Notes</b></td><td>%s</td></tr>' % (colSpan, self.note)
-        description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, self.site)
+        description += '<tr><td colspan=%i><b>Notes</b></td><td>%s</td></tr>' % (colSpan, cgi.escape(self.note))
+        description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, cgi.escape(self.site))
         description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
         description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
         description += '<tr><td colspan=%i><b>Height</b></td><td>%i m</td></tr>' % (colSpan, site.height)
         description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
-        description += '<tr><td colspan=%i><b>Licensee</b></td><td>%s</td></tr>' % (colSpan, self.licensee)
+        description += '<tr><td colspan=%i><b>Licensee</b></td><td>%s</td></tr>' % (colSpan, cgi.escape(self.licensee))
         description += '</table>'
         return description
 
@@ -461,7 +462,7 @@ class Licence:
         Returns a javascript placemark generation call placemark for the licence.
 
         Keyword Argument:
-        site - Site information for printing twith the licence
+        site - Site information for printing with the licence
         '''
         if splitNs and 'National System' in self.name:
             ns = ' National System'
@@ -471,17 +472,17 @@ class Licence:
             self.licType, self.band(), ns,
             site.coordinates.lat, site.coordinates.lon,
             self.formatName(),
-            self.licType, self.formatName(), self.htmlDescription(site))
+            self.licType, cgi.escape(self.formatName()), self.htmlDescription(site))
 
     def kmlPlacemark(self, site):
         '''
         Returns a kml placemark for the licence.
 
         Keyword Argument:
-        site - Site information for printing twith the licence
+        site - Site information for printing with the licence
         '''
         placemark = '    <Placemark>\n'
-        placemark += '      <name>'+ self.formatName()+'</name>\n'
+        placemark += '      <name>'+ cgi.escape(self.formatName())+'</name>\n'
         placemark += '      <description><![CDATA['
         placemark += self.htmlDescription(site)
         placemark += ']]></description>\n'
@@ -549,14 +550,14 @@ class Link:
             ltype,
             self.end1.lat, self.end1.lon,
             self.end2.lat, self.end2.lon,
-            self.name)
+            cgi.escape(self.name))
 
     def kmlPlacemark(self):
         '''
         Returns a kml placemark (line) for the link
         '''
         placemark = '    <Placemark>\n'
-        placemark += '      <name>%s</name>\n' % self.name
+        placemark += '      <name>%s</name>\n' % cgi.escape(self.name)
         #placemark += '      <description>description</description>\n'
         placemark += '      <styleUrl>#repeaterLink</styleUrl>\n'
         placemark += '      <LineString>\n'
@@ -641,7 +642,7 @@ class Site:
            (len(self.digipeaters) > 0) or\
            (len(self.repeaters) > 0) or\
            (len(self.tvRepeaters) >0):
-            logging.debug('Creating placemark for: %s' % self.name)
+            logging.debug('Creating placemark for: %s' % cgi.escape(self.name))
             #description += '<h2>Amateur Site</h2>'
             description += '<table border="1">'
             description += '<tr><td><b>Map Reference</b></td><td>%s</td></tr>' % self.mapRef
@@ -700,12 +701,12 @@ class Site:
         '''
         Returns a kml placemark for the site containing the requested
         information or an empty string if there are no licences to display
-        in the requested informaton.
+        in the requested information.
         '''
         desc = self.htmlDescription()
         if len(desc) > 0:
             placemark = '    <Placemark>\n'
-            placemark += '      <name>'+ self.name+'</name>\n'
+            placemark += '      <name>'+ cgi.escape(self.name) + '</name>\n'
             placemark += '      <description><![CDATA['
             placemark += desc
             placemark += ']]></description>\n'
@@ -717,7 +718,7 @@ class Site:
             placemark += '      </Point>\n'
             placemark += '    </Placemark>\n'
         else:
-            logging.debug('Skiping creating empty placemark for: %s' % self.name)
+            logging.debug('Skipping creating empty "Placemark" for: %s' % self.name)
             placemark=''
         return placemark
 
