@@ -1,39 +1,70 @@
 #!/bin/bash
 
-URL_PATH=" http://www.rsm.govt.nz/cms/pdf-library/resource-library//spectrum-search-lite"
-URL_FILE="spectrum-search-lite-database"
+# Script for converting the NZ Smart database to a for tat can be used
+# by the nzrepeaters map generation tool
 
+# Requirements:
+#    bash
+#    mdb tools
+#    perl
+#    sed
+#    sqlite3
+#    wget
+
+# Download URL & file name
+URL_PATH="http://www.rsm.govt.nz/cms/pdf-library/resource-library/spectrum-search-lite/spectrum-search-lite-database"
+URL_FILE="spectrum-search-lite-database.zip"
+
+# Database file names
 DB_MDB="prism.mdb"
 DB_SQLITE="prism.sqlite"
 
-wget ${URL_PATH}/${URL_FILE} -O ${URL_FILE}
-unzip ${URL_FILE}
+NEEDED_TABLES=(licence
+               clientname
+               spectrum
+               transmitconfiguration
+               spectrum
+               location
+               geographicreference)
 
+UNNEEDED_TABLES=(associatedlicences
+                 emission
+                 emissionlimit
+                 issuingoffice
+                 licenceconditions
+                 licencetype
+                 managementright
+                 mapdistrict
+                 radiationpattern
+                 receiveconfiguration)
+
+# Get and unzip the source database file
+wget -q ${URL_PATH} -O ${URL_FILE}
+#wget ${URL_PATH} -O ${URL_FILE}
+unzip -q ${URL_FILE}
+
+# remove zip file
+rm ${URL_FILE}
+
+# create backup of destination sqlite file
 mv ${DB_SQLITE} ${DB_SQLITE}.bak
 
-mdb-schema ${DB_MDB}| perl -wpe 's%^DROP TABLE %DROP TABLE IF EXISTS %i;
-  s%(Memo/Hyperlink|DateTime( \(Short\))?)%TEXT%i;
-  s%(Boolean|Byte|Byte|Numeric|Replication ID|(\w+ )?Integer)%INTEGER%i;
-  s%(BINARY|OLE|Unknown ([0-9a-fx]+)?)%BLOB%i;
-  s%\s*\(\d+\)\s*(,?[ \t]*)$%${1}%;' | sqlite3 ${DB_SQLITE}
-for i in $(mdb-tables ${DB_MDB}); do echo $i; (
-  echo "BEGIN TRANSACTION;";
+# loop through the required tables creating the table and  
+for i in ${NEEDED_TABLES[@]}; do
+  mdb-schema -T $i ${DB_MDB}| perl -wpe 's%^DROP TABLE %DROP TABLE IF EXISTS %i;
+    s%(Memo/Hyperlink|DateTime( \(Short\))?)%TEXT%i;
+    s%(Boolean|Byte|Byte|Numeric|Replication ID|(\w+ )?Integer)%INTEGER%i;
+    s%(BINARY|OLE|Unknown ([0-9a-fx]+)?)%BLOB%i;
+    s%\s*\(\d+\)\s*(,?[ \t]*)$%${1}%;' | sqlite3 ${DB_SQLITE}
+  (echo "BEGIN TRANSACTION;";
   MDB_JET3_CHARSET=cp1256 mdb-export -R ";\n" -I ${DB_MDB} $i;
-  echo "END TRANSACTION;" ) | sed 's/ *"/\"/g' | sqlite3 ${DB_SQLITE}; done
+  echo "END TRANSACTION;" ) | sed 's/ *"/\"/g' | sqlite3 ${DB_SQLITE};
+done
 
-rm ${URL_FILE}
+# Remove the source database file
 rm ${DB_MDB}
 
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS associatedlicences;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS emission;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS emissionlimit;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS issuingoffice;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS licenceconditions;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS licencetype;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS managementright;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS mapdistrict;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS radiationpattern;'
-sqlite3 ${DB_SQLITE} 'DROP TABLE IF EXISTS receiveconfiguration;'
+# Remove all non Amateur related records from the destination database
 sqlite3 ${DB_SQLITE} 'DELETE FROM licence WHERE licencetype NOT LIKE "Amateur%";'
 sqlite3 ${DB_SQLITE} 'DELETE FROM clientname WHERE clientid NOT IN (SELECT DISTINCT clientid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
@@ -41,7 +72,15 @@ sqlite3 ${DB_SQLITE} 'DELETE FROM transmitconfiguration WHERE licenceid NOT IN (
 sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM location WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM geographicreference WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
+
+# Compact/Vacuul the database
 sqlite3 ${DB_SQLITE} 'VACUUM'
 
+# update the version marker file
 rm version
 date +%d/%m/%Y >> version
+
+mv data.zip data.zip.bak
+
+zip -q data.zip *.csv ${DB_SQLITE}
+
