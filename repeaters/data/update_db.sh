@@ -23,8 +23,8 @@ NEEDED_TABLES=(licence
                clientname
                spectrum
                transmitconfiguration
-               spectrum
-               location
+               receiveconfiguration
+	       location
                geographicreference)
 
 UNNEEDED_TABLES=(associatedlicences
@@ -35,8 +35,7 @@ UNNEEDED_TABLES=(associatedlicences
                  licencetype
                  managementright
                  mapdistrict
-                 radiationpattern
-                 receiveconfiguration)
+                 radiationpattern)
 
 # Get and unzip the source database file
 wget -q ${URL_PATH} -O ${URL_FILE}
@@ -68,6 +67,7 @@ rm ${DB_MDB}
 sqlite3 ${DB_SQLITE} 'DELETE FROM licence WHERE licencetype NOT LIKE "Amateur%";'
 sqlite3 ${DB_SQLITE} 'DELETE FROM clientname WHERE clientid NOT IN (SELECT DISTINCT clientid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
+sqlite3 ${DB_SQLITE} 'DELETE FROM receiveconfiguration WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM transmitconfiguration WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM location WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
