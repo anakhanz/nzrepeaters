@@ -180,7 +180,7 @@
 101943,"Kaimai Data",81,"ZL1TAT","ZL1THG",
 207725,"Whangarei Data",28,,,"N"
 215877,"Climie Data",63,"ZL2HM","ZL2BRG",
-101946,"Auckland Data",66,"ZL1TGC","ZL1BK",
+101946,Auckland Data,66,ZL1TGC,ZL1BK,
 228520,"Hawkins Hill Voice, Data & P25",74,"ZL3TC","ZL2TVM",ZL2WA.#60.NZL.OC
 
 #APRS BULLETIN BOARDS DIGIPEATERS & D-STAR
@@ -200,6 +200,7 @@
 175652,"Timaru APRS",34,"ZL3GL","ZL3OZ",
 228051,"Taumarunui APRS",60,,,
 224689,"Gisborne APRS",11,"ZL2TRG","ZL2HC",
+234904,Kaiwharawhara Hill APRS,74,ZL3TC,ZL2HD,
 209773,"North Shore",29,"ZL1AUW","ZL1TGC",
 209786,"Te Puke",53,"ZL1MOF",,
 207996,"Hamilton",12,"ZL1PK","ZL1GWP",
@@ -226,33 +227,31 @@
 232973,DENNISTON (AMATEUR),,,,Unknown details
 
 #BEACONS
-202338,"International Beacon Project, NCDX",46,"ZL2FC",,
-215940,"Upper Hutt 10m",63,"ZL2HM","ZL2BRG",
-83591,"Greymouth 6m",49,"ZL3TY","ZL3ADH",
-70236,"Hawkes Bay 6m",25,"ZL2TC","ZL2DW",
-215939,"Upper Hutt 6m",63,"ZL2HM","ZL2BRG",
-202048,"Blenheim 6m",22,"ZL2BK","ZL2WD",
+202338,International Beacon Project, NCDX",46,"ZL2FC",,
+215940,Upper Hutt 10m,63,"ZL2HM","ZL2BRG",
+83591,Greymouth 6m,49,"ZL3TY","ZL3ADH",
+70236,Hawkes Bay 6m,25,"ZL2TC","ZL2DW",
+215939,Upper Hutt 6m,63,"ZL2HM","ZL2BRG",
+202048,Blenheim 6m,22,"ZL2BK","ZL2WD",
 153344,Rolleston Railway Station 6m,,,,
-215921,"Auckland 2m",66,"ZL1QF","ZL1WTT",
-224659,"Waikato 2m",81,"ZL1THG","ZL1UJG","C"
-155254,"Hawkins Hill 2m",74,"ZL3TC","ZL2TVM",
-59673,"Christchurch 2m",5,,,"N"
-158611,"Hokitika 2m",49,"ZL3TY","ZL3ADH",
-59682,"New Plymouth 2m",27,"ZL2BR","ZL2BZH",
-55710,"Hawkes Bay 2 m",25,"ZL2TC","ZL2DW",
-215920,"Auckland 70 cm",66,"ZL1QF","ZL1WTT",
-224660,"Waikato 70cm",81,"ZL1THG","ZL1UJG","C"
-155265,"Hawkins Hill 70cm",74,"ZL3TC","ZL2TVM",
-59675,"Christchurch 70cm",5,,,"N"
-59679,"New Plymouth 70cm",27,"ZL2BR","ZL2BZH",
-177985,"Lower Hutt 32cm",74,"ZL2TAR","ZL2TAK",
-224661,"Waikato 23cm",81,"ZL1THG","ZL1UJG","C"
-155267,"Hawkins Hill 23cm",74,"ZL3TC","ZL2TVM",
-177888,"Lower Hutt 12cm",18,"ZL2TVM","ZL2TWS",
-221252,"Waikato 12cm",81,"ZL1THG","ZL1UJG",
-202076,"Muriwai 5cm",74,"ZL1TBG","ZL1AVZ",
-177974,"Hawkins Hill 3cm",74,"ZL3TC","ZL2TVM",
-178031,"Hawkins Hill 12mm",74,"ZL3TC","ZL2TVM",
+215921,Auckland 2m,66,"ZL1QF","ZL1WTT",
+224659,Waikato 2m,81,"ZL1THG","ZL1UJG","C"
+155254,Hawkins Hill 2m,74,"ZL3TC","ZL2TVM",
+59673,Christchurch 2m,5,,,"N"
+158611,Hokitika 2m,49,"ZL3TY","ZL3ADH",
+59682,New Plymouth 2m,27,"ZL2BR","ZL2BZH",
+55710,Hawkes Bay 2 m,25,"ZL2TC","ZL2DW",
+215920,Auckland 70 cm,66,"ZL1QF","ZL1WTT",
+224660,Waikato 70cm,81,"ZL1THG","ZL1UJG","C"
+155265,Hawkins Hill 70cm,74,"ZL3TC","ZL2TVM",
+59675,Christchurch 70cm,5,,,"N"
+59679,New Plymouth 70cm,27,"ZL2BR","ZL2BZH",
+177985,Lower Hutt 32cm,74,"ZL2TAR","ZL2TAK",
+224661,Waikato 23cm,81,"ZL1THG","ZL1UJG","C"
+155267,Hawkins Hill 23cm,74,"ZL3TC","ZL2TVM",
+177888,Lower Hutt 12cm,18,"ZL2TVM","ZL2TWS",
+221252,Waikato 12cm,81,"ZL1THG","ZL1UJG",
+202076,Muriwai 5cm,74,"ZL1TBG","ZL1AVZ",
 
 #ATV
 175654,Whitford ATV (Not Working),3,ZL1VRR,ZL1RCA,
