@@ -38,18 +38,23 @@ import zipfile
 from mapping.nz_coords import nztmToTopo50
 
 #import topo50
-__version__ = '0.1.1'
+__version__ = '0.1.2'
+
+T_BEACON = 'Amateur Beacon'
+T_DIGI = 'Amateur Digipeater'
+T_REPEATER = 'Amateur Repeater'
+T_TV = 'Amateur TV Repeater'
 
 LICENCE_TYPES = ['',
-                 'Amateur Beacon',
-                 'Amateur Digipeater',
-                 'Amateur Repeater',
-                 'Amateur TV Repeater']
+                 T_BEACON,
+                 T_DIGI,
+                 T_REPEATER,
+                 T_TV]
 
-STYLE_MAP = {'Amateur Beacon':'#msn_beacon',
-                 'Amateur Digipeater':'#msn_digipeater',
-                 'Amateur Repeater':'#msn_repeater',
-                 'Amateur TV Repeater':'#msn_repeater'}
+STYLE_MAP = {T_BEACON:'#msn_beacon',
+             T_DIGI:'#msn_digipeater',
+             T_REPEATER:'#msn_repeater',
+             T_TV:'#msn_repeater'}
 
 # Columns in info array
 I_NAME = 0
@@ -139,15 +144,15 @@ bands = [band('1800 meters',0.13,0.19),
 
 class Coordinate:
     '''
-    Cordinate
+    Coordinate
     '''
     def __init__(self, lat=0.0, lon=0.0):
         '''
-        Constructor for a cordinate
+        Constructor for a coordinate
 
         Arguments:
-        lat - Latitude of the cordinate (float)
-        lon - Longitude of the cordinate (float)
+        lat - Latitude of the coordinate (float)
+        lon - Longitude of the coordinate (float)
         '''
         assert type(lat) == float
         assert type(lon) == float
@@ -181,7 +186,7 @@ class Ctcss:
 
     def html(self):
         '''
-        Returns the CTCSS informatioin formatted for HTML
+        Returns the CTCSS information formatted for HTML
         '''
         return '%0.1f Hz<br>%s' % (self.freq, self.note)
 
@@ -239,13 +244,13 @@ class Licence:
 
     def setCallsign(self,callsign):
         '''
-        Sets theh callsign associated with the licence.
+        Sets the call sign associated with the licence.
         '''
         self.callsign = callsign
 
     def setCtcss(self,ctcss):
         '''
-        Sets theh CTCSS tone frequency associated with the licence.
+        Sets the CTCSS tone frequency associated with the licence.
         '''
         self.ctcss = ctcss
 
@@ -267,7 +272,7 @@ class Licence:
             offset = -0.6
         elif 147.025 <= self.frequency <= 148.0:
             offset = +0.6
-        # special case fo Rotorua Linear
+        # special case for Rotorua Linear
         elif self.frequency == 144.35:
             offset = +0.6
         # 70cm
@@ -340,40 +345,17 @@ class Licence:
         return csv
 
 
-    def htmlBasicRow(self,site=None):
-        '''
-        Returns an HTML table row containing the licence information, formatted
-        as follows:
-        | Name | Callsign | Frequency | Branch | Trustees | Notes | Licensee | Number |
-        if a site is passed to the function the following is added between
-        Frequency and Branch:
-          Site Name | Map ref | Height
-        '''
-        if self.callsign is None:
-            callsign = ''
-        else:
-            callsign = self.callsign
-        row =  '<tr><td>'+ cgi.escape(self.formatName())
-        row += '</td><td>' + callsign
-        row += '</td><td>' +'%0.3f MHz' % self.frequency
-        if site != None:
-            row += '</td><td>' + cgi.escape(site.name)
-            row += '</td><td>' + site.mapRef
-            row += '</td><td>' + '%i m' % site.height
-        row += '</td><td>' + self.htmlBranch()
-        row += '</td><td>' + self.htmlTrustees()
-        row += '</td><td>' + cgi.escape(self.note)
-        row += '</td><td>' + cgi.escape(self.licensee)
-        row += '</td><td>' +str(self.number)
-        row += '</td></tr>'
-        return row
-
-    def htmlRepeaterRow(self,site=None):
+    def htmlRow(self,site=None):
         '''
         Returns an HTML table row containing the licence information including
         input frequency for a repeater, formatted as follows:
-        | Name | Output Freq | Input Freq | CTCSS | Branch | Trustees | Notes | Licensee | Number |
-        if a site is passed to the function the following is added between
+        | Name | Output Freq  | Branch | Trustees | Notes | Licensee | Number |
+        
+        If the license is for a repeater the following is added after Output 
+        frequency:
+          Input Freq | CTCSS 
+        
+        If a site is passed to the function the following is added before Branch
         Input frequency and CTCSS:
           Site Name | Map ref | Height
         '''
@@ -383,12 +365,13 @@ class Licence:
             ctcss = self.ctcss.html()
         row =  '<tr><td>'+ cgi.escape(self.formatName())
         row += '</td><td>' +'%0.3f MHz' % self.frequency
-        row += '</td><td>' +'%0.3f MHz' % self.calcInput()
+        if self.licType == T_REPEATER:
+            row += '</td><td>' +'%0.3f MHz' % self.calcInput()
+            row += '</td><td>' +'%s' % ctcss
         if site != None:
             row += '</td><td>' + cgi.escape(site.name)
             row += '</td><td>' + site.mapRef
             row += '</td><td>' + '%i m' % site.height
-        row += '</td><td>' +'%s' % ctcss
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
         row += '</td><td>' + cgi.escape(self.note)
@@ -415,6 +398,15 @@ class Licence:
             br = self.branch
             brl = 'Af'
         return '<a href="%s#%s">%s</a>' % (url, brl, br)
+    
+    def htmlNote(self):
+        '''
+        Returns an html formatted note including coverage link for digipeaters 
+        '''
+        if self.licType == T_DIGI and self.callsign != None and self.frequency == 144.575:
+            return cgi.escape(self.note) + '<a href="http://aprs.fi/#!v=heard&ym=1207&call=a%2F' + self.callsign + '&timerange=3600" target="_blank"> APRS.FI Coverage Map</a>'
+        else:
+            return cgi.escape(self.note)
 
     def htmlDescription(self, site):
         '''
@@ -423,28 +415,28 @@ class Licence:
         Keyword Argument:
         site - Site information for printing with the licence
         '''
-        description = '<table border=1>'
-        if self.licType in ['Amateur Repeater','Amateur TV Repeater']:
+        description = '<table>'
+        if self.licType in [T_REPEATER, T_TV]:
             colSpan = 2
-            description += "<tr><td rowspan=2><b>Frequency</b></td><td><b>Output</b></td><td>%0.3fMHz</td></tr>" % self.frequency
+            description += '<tr><th align="left" rowspan=2><b>Frequency</th><td><b>Output</b></td><td>%0.3fMHz</td></tr>' % self.frequency
             description += "<td><b>Input</b></td><td>%0.3f MHz</td></tr>" % self.calcInput()
             if self.ctcss != None:
-                description += '<tr><td colspan=%i><b>CTCSS</b></td><td>%s</td></tr>' % (colSpan, self.ctcss.html())
+                description += '<tr><th align="left" colspan=%i>CTCSS</th><td>%s</td></tr>' % (colSpan, self.ctcss.html())
         else:
             colSpan = 1
-            description += "<tr><td><b>Frequency</b><td>%0.3f MHz</td></tr>" % self.frequency
+            description += '<tr><th align="left">Frequency</th><td>%0.3f MHz</td></tr>' % self.frequency
         if self.callsign != None:
-            description += '<tr><td colspan=%i><b>Callsign</b></td><td>%s</td></tr>' % (colSpan, self.callsign)
-        description += '<tr><td colspan=%i><b>Type</b></td><td>%s</td></tr>' % (colSpan, self.licType)
-        description += '<tr><td colspan=%i><b>Branch</b></td><td>%s</td></tr>' % (colSpan, self.htmlBranch())
-        description += '<tr><td colspan=%i><b>Trustees</b></td><td>%s</td></tr>' % (colSpan, self.htmlTrustees())
-        description += '<tr><td colspan=%i><b>Notes</b></td><td>%s</td></tr>' % (colSpan, cgi.escape(self.note))
-        description += '<tr><td colspan=%i><b>Site Name</b></td><td>%s</td></tr>' % (colSpan, cgi.escape(self.site))
-        description += '<tr><td colspan=%i><b>Map Reference</b></td><td>%s</td></tr>' % (colSpan, site.mapRef)
-        description += '<tr><td colspan=%i><b>Coordinates</b></td><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
-        description += '<tr><td colspan=%i><b>Height</b></td><td>%i m</td></tr>' % (colSpan, site.height)
-        description += '<tr><td colspan=%i><b>Licence Number</b></td><td>%s</td></tr>' % (colSpan, self.number)
-        description += '<tr><td colspan=%i><b>Licensee</b></td><td>%s</td></tr>' % (colSpan, cgi.escape(self.licensee))
+            description += '<tr><th align="left" colspan=%i>Callsign</th><td>%s</td></tr>' % (colSpan, self.callsign)
+        description += '<tr><th align="left" colspan=%i>Type</th><td>%s</td></tr>' % (colSpan, self.licType)
+        description += '<tr><th align="left" colspan=%i>Branch</th><td>%s</td></tr>' % (colSpan, self.htmlBranch())
+        description += '<tr><th align="left" colspan=%i>Trustees</th><td>%s</td></tr>' % (colSpan, self.htmlTrustees())
+        description += '<tr><th align="left" colspan=%i>Notes</th><td>%s</td></tr>' % (colSpan, self.htmlNote())
+        description += '<tr><th align="left" colspan=%i>Site Name</th><td>%s</td></tr>' % (colSpan, cgi.escape(self.site))
+        description += '<tr><th align="left" colspan=%i>Map Reference</th><td>%s</td></tr>' % (colSpan, site.mapRef)
+        description += '<tr><th align="left" colspan=%i>Coordinates</th><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
+        description += '<tr><th align="left" colspan=%i>Height</th><td>%i m</td></tr>' % (colSpan, site.height)
+        description += '<tr><th align="left" colspan=%i>Licence Number</th><td>%s</td></tr>' % (colSpan, self.number)
+        description += '<tr><th align="left" colspan=%i>Licensee</th><td>%s</td></tr>' % (colSpan, cgi.escape(self.licensee))
         description += '</table>'
         return description
 
@@ -459,7 +451,7 @@ class Licence:
 
     def js(self,site, splitNs=False):
         '''
-        Returns a javascript placemark generation call placemark for the licence.
+        Returns a java script placemark generation call placemark for the licence.
 
         Keyword Argument:
         site - Site information for printing with the licence
@@ -540,7 +532,7 @@ class Link:
 
     def js(self, splitNs=False):
         '''
-        Returns a javascript function call for the link
+        Returns a java script function call for the link
         '''
         if splitNs and 'National System' in self.name:
             ltype = 'National System'
@@ -581,8 +573,8 @@ class Site:
 
         Arguments:
         name        - MED name of the site
-        mapRef      - The Topo 50 map refference for the site
-        coordinates - A cordinate object containing th ecordinates for the site
+        mapRef      - The Topo 50 map reference for the site
+        coordinates - A coordinate object containing the coordinates for the site
         height      - Height above sea level in meters
         '''
         assert type(name) == str or type(name) == unicode
@@ -644,53 +636,35 @@ class Site:
            (len(self.tvRepeaters) >0):
             logging.debug('Creating placemark for: %s' % cgi.escape(self.name))
             #description += '<h2>Amateur Site</h2>'
-            description += '<table border="1">'
-            description += '<tr><td><b>Map Reference</b></td><td>%s</td></tr>' % self.mapRef
-            description += '<tr><td><b>Coordinates</b></td><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
-            description += '<tr><td><b>Height</b></td><td>%i m</td></tr>' % self.height
+            description += '<table>'
+            description += '<tr><th align="left">Map Reference</th><td>%s</td></tr>' % self.mapRef
+            description += '<tr><th align="left">Coordinates</th><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
+            description += '<tr><th align="left">Height</th><td>%i m</td></tr>' % self.height
             description += '</table>'
-            description += self.htmlSimpleDescription(self.beacons,'Beacon')
-            description += self.htmlSimpleDescription(self.digipeaters, 'Digipeater')
-            description += self.htmlRepeaterDescription(self.repeaters, 'Repeater')
-            description += self.htmlRepeaterDescription(self.tvRepeaters, 'TV Repeater')
+            description += self.htmlItemTable(self.beacons,'Beacon')
+            description += self.htmlItemTable(self.digipeaters, 'Digipeater')
+            description += self.htmlItemTable(self.repeaters, 'Repeater')
+            description += self.htmlItemTable(self.tvRepeaters, 'TV Repeater')
         return description
 
     def htmlNameLink(self):
         return '<a href="#%s">%s</a><br>' % (self.name, self.name)
 
-    def htmlRepeaterDescription(self, items, text):
+    def htmlItemTable(self, items, text):
         if len(items) == 0:
             return ""
         else:
-            description = self.htmlDescriptionTitle(items, text)
-            description += htmlRepeaterHeader()
+            if len(items) == 1:
+                description = '<h3>' + text + '</h3>'
+            else:
+                description = '<h3>' + text + 's</h3>'
+            description += htmlTableHeader(licType = items[0].licType)
             items.sort()
             for item in items:
                 logging.debug('creating row for repeater %i' % item.number)
-                description += item.htmlRepeaterRow()
+                description += item.htmlRow()
             description += '</table>'
             return description
-
-    def htmlSimpleDescription(self, items, text):
-        if len(items) == 0:
-            return ""
-        else:
-            description = self.htmlDescriptionTitle(items, text)
-            self.htmlDescriptionTitle(items, text)
-            description += htmlSimpleHeader()
-            items.sort()
-            for item in items:
-                logging.debug('creating row for beacon %i' % item.number)
-                description += item.htmlBasicRow()
-            description += '</table>'
-            return description
-
-    def htmlDescriptionTitle(self, items, text):
-        if len(items) == 1:
-            title = '<h3>' + text + '</h3>'
-        else:
-            title = '<h3>' + text + 's</h3>'
-        return title
 
     def js (self):
         return "createMarker('Site','site',%f, %f, '%s', '<h2>%s</h2>%s');\n" % (
@@ -791,18 +765,18 @@ def readLicences(fileName,callsigns,ctcss,info,skip,
 
     Arguments:
     fileName     - Filename to use for DB
-    callsigns    - A dictionary of callsigns indexed by Linense number
-    ctcss        - A dictionary of ctcss tones indexed by Linense number
+    callsigns    - A dictionary of call signs indexed by Licnence number
+    ctcss        - A dictionary of ctcss tones indexed by Licnense number
     info         - A dictionary of additional info indexed by Linense number
-    skip         - A dictionary of callsigns licences to skip by Linense number
+    skip         - A dictionary of licences to skip by Linense number
     fMin         - minimum frequency to include
     fMax         - maximum frequency to include
     shBeacon     - Include beacons ?
     shDigipeater - Include digis ?
     shRepeater   - Include repeaters ?
     shTvRepeater - Include TV repeaters ?
-    include      - Filter licences to only include those tha have this in their name
-    exclude      - Filter licences to exclude those tha have this in their name
+    include      - Filter licences to only include those that have this in their name
+    exclude      - Filter licences to exclude those that have this in their name
     branch       - Filter licences to only include those allocated to this branch
 
     Returns:
@@ -919,16 +893,16 @@ WHERE c.clientid = l.clientid
                               licenceCallsign)
             if licenceNumber in ctcss.keys():
                 licence.setCtcss(ctcss[licenceNumber])
-            if licType == 'Amateur Beacon' and shBeacon:
+            if licType == T_BEACON and shBeacon:
                 site.addBeacon(licence)
                 licences['%i_%0.3f' % (licenceNumber,licenceFrequency)] = (licence)
-            elif licType == 'Amateur Digipeater' and shDigipeater:
+            elif licType == T_DIGI and shDigipeater:
                 site.addDigipeater(licence)
                 licences[licenceNumber] = (licence)
-            elif licType == 'Amateur Repeater' and shRepeater:
+            elif licType == T_REPEATER and shRepeater:
                 site.addRepeater(licence)
                 licences[licenceNumber] = (licence)
-            elif licType == 'Amateur TV Repeater' and shTvRepeater:
+            elif licType == T_TV and shTvRepeater:
                 site.addTvRepeater(licence)
                 licences[licenceNumber] = (licence)
     return sites, licences, licensees
@@ -1020,9 +994,9 @@ def generateHtmlLicenceBody(licences,sites,links):
         if b not in htmlByType[t].keys():
             htmlByType[t][b] = ""
         if "Repeater" in t:
-            htmlByType[t][b] += licences[licence].htmlRepeaterRow(sites[licences[licence].site])
+            htmlByType[t][b] += licences[licence].htmlRow(sites[licences[licence].site])
         else:
-            htmlByType[t][b] += licences[licence].htmlBasicRow(sites[licences[licence].site])
+            htmlByType[t][b] += licences[licence].htmlRow(sites[licences[licence].site])
     header = '<h1>Amateur Licences</h1>'
     header += '<ul>'
     body = '<h1>Amateur Licences</h1>'
@@ -1037,10 +1011,7 @@ def generateHtmlLicenceBody(licences,sites,links):
                     header += '<li><a href="#%s_%s">%s</a></li>' % (t ,b.name ,b.name)
                     body += '<a id="%s_%s"></a>' % (t ,b.name)
                     body += '<h3>%s</h3>' % b.name
-                    if "Repeater" in t:
-                        body += htmlRepeaterHeader(True)
-                    else:
-                        body += htmlSimpleHeader(True)
+                    body += htmlTableHeader(True, t)
                     body += htmlByType[t][b.name]
                     body += '</table>\n'
             header += '</ul>'
@@ -1323,44 +1294,40 @@ def generateKmz(filename, licences, sites, links, byLicence, bySite):
     shutil.rmtree(tempDir)
 
 def htmlHeader(title):
-    header = '<html><head></head><body>'
+    header = '<html><head>'
+    header += '<style type="text/css">th,td{border: 2px solid #d3e7f4;}</style>'
+    header += '</head><body>'
     return header
 
 def htmlFooter():
     footer = '</body></html>'
     return footer
 
-def htmlRepeaterHeader(full=False):
-    header =  '<table border=1>'
-    header += '<tr><th rowspan=2>Name</th>'
-    header += '<th colspan=2>Frequency</th>'
+def htmlTableHeader(full=False, licType=T_REPEATER):
+    if licType in (T_REPEATER,T_TV):
+        repeater =  True
+        rowspan = ' rowspan=2'
+    else:
+        repeater = False
+        rowspan = ''
+    header =  '<table>'
+    header += '<tr><th' + rowspan + '>Name</th>'
+    if repeater:
+        header += '<th colspan=2>Frequency</th>'
+        header += '<th' + rowspan + '>CTCSS</th>'
+    else:
+        header += '<th>Frequency</th>'
     if full:
-        header += '<th rowspan=2>Site</th>'
-        header += '<th rowspan=2>Map Reference</th>'
-        header += '<th rowspan=2>Height</th>'
-    header += '<th rowspan=2>CTCSS</th>'
-    header += '<th rowspan=2>Branch</th>'
-    header += '<th rowspan=2>Trustees</th>'
-    header += '<th rowspan=2>Notes</th>'
-    header += '<th rowspan=2>Licensee</th>'
-    header += '<th rowspan=2>Licence No</th></tr>'
-    header += '<tr><th>Output</th><th>Input</th></tr>'
-    return header
-
-def htmlSimpleHeader(full=False):
-    header =  '<table border=1>'
-    header += '<tr><th>Name</th>'
-    header += '<th>Call Sign</th>'
-    header += '<th>Frequency</th>'
-    if full:
-        header += '<th>Site</th>'
-        header += '<th>Map Reference</th>'
-        header += '<th>Height</th>'
-    header += '<th>Branch</th>'
-    header += '<th>Trustees</th>'
-    header += '<th>Notes</th>'
-    header += '<th>Licensee</th>'
-    header += '<th>Licence No</th></tr>'
+        header += '<th' + rowspan + '>Site</th>'
+        header += '<th' + rowspan + '>Map Reference</th>'
+        header += '<th' + rowspan + '>Height</th>'
+    header += '<th' + rowspan + '>Branch</th>'
+    header += '<th' + rowspan + '>Trustees</th>'
+    header += '<th' + rowspan + '>Notes</th>'
+    header += '<th' + rowspan + '>Licensee</th>'
+    header += '<th' + rowspan + '>Licence No</th></tr>'
+    if repeater:
+        header += '<tr><th>Output</th><th>Input</th></tr>'
     return header
 
 def kmlHeader():
