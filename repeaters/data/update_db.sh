@@ -57,7 +57,7 @@ for i in ${NEEDED_TABLES[@]}; do
     s%(BINARY|OLE|Unknown ([0-9a-fx]+)?)%BLOB%i;
     s%\s*\(\d+\)\s*(,?[ \t]*)$%${1}%;' | sqlite3 ${DB_SQLITE}
   (echo "BEGIN TRANSACTION;";
-  MDB_JET3_CHARSET=cp1256 mdb-export -R ";\n" -I ${DB_MDB} $i;
+  MDB_JET3_CHARSET=cp1256 mdb-export -R ";\n" -I mysql ${DB_MDB} $i;
   echo "END TRANSACTION;" ) | sed 's/ *"/\"/g' | sqlite3 ${DB_SQLITE};
 done
 
