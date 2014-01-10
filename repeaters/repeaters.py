@@ -97,9 +97,9 @@ class band:
         Constructor for band
 
         Arguments:
-        name -
-        minF -
-        maxF -
+        name - Name of the band
+        minF - Minimum frequency im MHz
+        maxF - Maximum frequency in MHz
         '''
         assert type(name) == str or type(name) == unicode
         assert type(minF) == float
@@ -854,7 +854,7 @@ WHERE c.clientid = l.clientid
                 licenceBranch = ''
                 licenceTrustee1 = ''
                 licenceTrustee2 = ''
-                licenceNote = ''
+                licenceNote = 'No info record available'
         
         if include != None:
             skipping = skipping or (include not in licenceName)
@@ -988,7 +988,7 @@ def generateHtmlLicence(licences,sites,links):
 def generateHtmlLicenceBody(licences,sites,links):
 
     def sortKey(item):
-        return (licences[item].name, licences[item].frequency)
+        return (licences[item].frequency, licences[item].name)
 
     licenceNos = sorted(licences.keys(), key=sortKey)
     htmlByType={}
