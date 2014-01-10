@@ -356,6 +356,8 @@ class Licence:
         If the license is for a repeater the following is added after Output 
         frequency:
           Input Freq | CTCSS 
+          
+        If the licence is for a Beacon the Callsign is added before the Name
         
         If a site is passed to the function the following is added before Branch
         Input frequency and CTCSS:
@@ -365,10 +367,13 @@ class Licence:
             ctcss = 'None'
         else:
             ctcss = self.ctcss.html()
-        row =  '<tr><td>'+ cgi.escape(self.formatName())
-        row += '</td><td>' +'%0.3f MHz' % self.frequency
+        row =  '<tr>'
+        if self.licType == T_BEACON:
+           row += '<td>%s</td>' % self.callsign 
+        row += '<td>'+ cgi.escape(self.formatName())
+        row += '</td><td>' +'%0.4f MHz' % self.frequency
         if self.licType == T_REPEATER:
-            row += '</td><td>' +'%0.3f MHz' % self.calcInput()
+            row += '</td><td>' +'%0.4f MHz' % self.calcInput()
             row += '</td><td>' +'%s' % ctcss
         if site != None:
             row += '</td><td>' + cgi.escape(site.name)
