@@ -418,7 +418,7 @@ class Licence:
         site - Site information for printing with the licence
         '''
         description = '<table>'
-        if self.licType in [T_REPEATER, T_TV]:
+        if self.licType in [T_REPEATER]:
             colSpan = 2
             description += '<tr><th align="left" rowspan=2><b>Frequency</th><td><b>Output</b></td><td>%0.4fMHz</td></tr>' % self.frequency
             description += "<td><b>Input</b></td><td>%0.4f MHz</td></tr>" % self.calcInput()
@@ -1306,14 +1306,16 @@ def htmlFooter():
     return footer
 
 def htmlTableHeader(full=False, licType=T_REPEATER):
-    if licType in (T_REPEATER,T_TV):
+    if licType in (T_REPEATER):
         repeater =  True
         rowspan = ' rowspan=2'
     else:
         repeater = False
         rowspan = ''
-    header =  '<table>'
-    header += '<tr><th' + rowspan + '>Name</th>'
+    header =  '<table><tr>'
+    if licType == T_BEACON:
+        header += '<th' + rowspan + '>Callsign</th>'
+    header += '<th' + rowspan + '>Name</th>'
     if repeater:
         header += '<th colspan=2>Frequency</th>'
         header += '<th' + rowspan + '>CTCSS</th>'
