@@ -229,6 +229,8 @@ class Licence:
         assert type(note) == str or type(note) == unicode
         assert type(callsign) == str or type(callsign) == unicode or callsign == None
         assert type(ctcss) == float or ctcss == None
+        if callsign == None:
+            callsign = ''
         self.licType = licType
         self.frequency = frequency
         self.site = site
