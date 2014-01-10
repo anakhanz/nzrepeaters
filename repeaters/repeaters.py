@@ -85,7 +85,7 @@ def calcBand(f):
     for band in bands:
         if band.fIsIn(f):
             return band.name
-    logging.error('Band for %0.3f not found' % f)
+    logging.error('Band for %0.4f not found' % f)
     return 'Band Not Found'
 
 class band:
@@ -291,7 +291,7 @@ class Licence:
             offset = 0.0
 
         else:
-            logging.error('Error no offset calculation for No: %i %s %fMHz' % (
+            logging.error('Error no offset calculation for No: %i %s %0.4fMHz' % (
                            self.number, self.name, self.frequency))
             offset = 0
         return self.frequency + offset
@@ -418,13 +418,13 @@ class Licence:
         description = '<table>'
         if self.licType in [T_REPEATER, T_TV]:
             colSpan = 2
-            description += '<tr><th align="left" rowspan=2><b>Frequency</th><td><b>Output</b></td><td>%0.3fMHz</td></tr>' % self.frequency
-            description += "<td><b>Input</b></td><td>%0.3f MHz</td></tr>" % self.calcInput()
+            description += '<tr><th align="left" rowspan=2><b>Frequency</th><td><b>Output</b></td><td>%0.4fMHz</td></tr>' % self.frequency
+            description += "<td><b>Input</b></td><td>%0.4f MHz</td></tr>" % self.calcInput()
             if self.ctcss != None:
                 description += '<tr><th align="left" colspan=%i>CTCSS</th><td>%s</td></tr>' % (colSpan, self.ctcss.html())
         else:
             colSpan = 1
-            description += '<tr><th align="left">Frequency</th><td>%0.3f MHz</td></tr>' % self.frequency
+            description += '<tr><th align="left">Frequency</th><td>%0.4f MHz</td></tr>' % self.frequency
         if self.callsign != None:
             description += '<tr><th align="left" colspan=%i>Callsign</th><td>%s</td></tr>' % (colSpan, self.callsign)
         description += '<tr><th align="left" colspan=%i>Type</th><td>%s</td></tr>' % (colSpan, self.licType)
@@ -832,7 +832,7 @@ WHERE c.clientid = l.clientid
             skipFreq = float(skip[licenceNumber][S_FREQ])
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
                 skipping = True
-                logging.info('Skipping Licensee No: %d, frequency %0.3f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
+                logging.info('Skipping Licensee No: %d, frequency %0.4f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
 
         if not skipping:
             if licenceNumber in info.keys():
@@ -842,7 +842,7 @@ WHERE c.clientid = l.clientid
                     licenceTrustee2 = info[licenceNumber][I_TRUSTEE2]
                     licenceNote = info[licenceNumber][I_NOTE]
             else:
-                logging.error('Licence No: %i on frequency %0.3fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
+                logging.error('Licence No: %i on frequency %0.4fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
                 licenceName = licenceLocation.title()
                 licenceBranch = ''
                 licenceTrustee1 = ''
@@ -878,7 +878,7 @@ WHERE c.clientid = l.clientid
                 sites[licenceLocation] = site
             licType = row['licencetype']
             if licenceFrequency in [144.575,144.65,144.7] and licType != 'Amateur Digipeater':
-                logging.info('Licence No: %i %s on frequency %0.3fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
+                logging.info('Licence No: %i %s on frequency %0.4fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
                 licType = 'Amateur Digipeater'
             licence = Licence(licType,
                               licenceFrequency,
@@ -895,7 +895,7 @@ WHERE c.clientid = l.clientid
                 licence.setCtcss(ctcss[licenceNumber])
             if licType == T_BEACON and shBeacon:
                 site.addBeacon(licence)
-                licences['%i_%0.3f' % (licenceNumber,licenceFrequency)] = (licence)
+                licences['%i_%0.4f' % (licenceNumber,licenceFrequency)] = (licence)
             elif licType == T_DIGI and shDigipeater:
                 site.addDigipeater(licence)
                 licences[licenceNumber] = (licence)
