@@ -24,6 +24,7 @@
 import cgi
 import csv
 import datetime
+import json
 import time
 import logging
 import optparse
@@ -159,7 +160,7 @@ class Coordinate:
         assert -90.0 <= lat <= 90.0
         assert -180.0 <= lon <= 180.0
         self.lat = lat
-        self.lon = lon
+        self.lon = lon   
 
     def kml(self):
         '''
@@ -531,12 +532,12 @@ class Link:
         end2 - coordinates for the second end of the link
         '''
         assert type(name) == str or type(name) == unicode
-        assert type(end1) == type(Coordinate())
-        assert type(end2) == type(Coordinate())
+        assert isinstance(end1, Coordinate)
+        assert isinstance(end2, Coordinate)
         self.name = name
         self.end1 = end1
         self.end2 = end2
-
+    
     def js(self, splitNs=False):
         '''
         Returns a java script function call for the link
@@ -702,6 +703,16 @@ class Site:
             logging.debug('Skipping creating empty "Placemark" for: %s' % self.name)
             placemark=''
         return placemark
+   
+
+def jsonDefault(o):
+    """Returns a dictionary for the given object
+    This is used when serialising objects to a json file
+    
+    Argument
+    o - the object to be turned into a dictionary"""
+    
+    return o.__dict__
 
 def we_are_frozen():
     """Returns whether we are frozen via py2exe.
@@ -1174,6 +1185,12 @@ def generateJsLinksTree(splitNs, expand):
         js += "    tmpNode = new YAHOO.widget.TextNode('National System', typeNode, false);\n"
     return js
 
+def generateJson(filename, indent, licences, sites, links):
+    f = open(filename,mode='w')
+    f.write("var sites = " + json.dumps(sites,default=jsonDefault, indent=indent))
+    f.write("var links = " + json.dumps(links,default=jsonDefault, indent=indent))
+    f.close()    
+
 
 def generateKml(filename, licences, sites, links, byLicence, bySite):
     if bySite:
@@ -1507,11 +1524,20 @@ def main():
     parser = optparse.OptionParser(usage=USAGE, version=("NZ Repeaters "+__version__))
     parser.add_option('-v','--verbose',action='store_true',dest='verbose',
                             help="Verbose logging")
+    
     parser.add_option('-D','--debug',action='store_true',dest='debug',
                             help='Debug level logging')
+    
     parser.add_option('-q','--quiet',action='store_true',dest='quiet',
-                            help='Only critical logging')
+                      help='Only critical logging')
 
+    parser.add_option('--indent',
+                      action='store',
+                      type='int',
+                      dest='indent',
+                      default=None,
+                      help="Indentation for some output formats")    
+    
     parser.add_option('-H','--html',
                       action='store',
                       type='string',
@@ -1525,6 +1551,12 @@ def main():
                       dest='jsfilename',
                       default=None,
                       help='Output to javascript file, may be in addition to other output types')
+    parser.add_option('-J','--json',
+                      action='store',
+                      type='string',
+                      dest='jsonfilename',
+                      default=None,
+                      help='Output to JSON file, may be in addition to other output types')
 
     parser.add_option('-k','--kml',
                       action='store',
@@ -1679,6 +1711,7 @@ def main():
 
     if options.htmlfilename == None and\
        options.jsfilename == None and\
+       options.jsonfilename == None and\
        options.kmlfilename == None and\
        options.kmzfilename == None and\
        options.csvfilename == None and\
@@ -1695,7 +1728,7 @@ def main():
         if options.update:
             exit()
         else:
-            parser.error('Atleast one of the -b ,-d, -r or -t options must be specified for output to be generated.')
+            parser.error('Atleast one of the -a -b ,-d, -r or -t options must be specified for output to be generated.')
 
     if options.minFreq > options.maxFreq:
         parser.error('The maximum frequency must be greater than the minimum frequency.')
@@ -1730,6 +1763,9 @@ def main():
 
     if options.jsfilename != None:
         generateJs(options.jsfilename, licences, sites, links, options.licence, options.site)
+        
+    if options.jsonfilename != None:
+        generateJson(options.jsonfilename, options.indent, licences, sites, links)    
 
     if options.kmlfilename != None:
         generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site)
