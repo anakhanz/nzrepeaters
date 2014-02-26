@@ -874,7 +874,7 @@ WHERE c.clientid = l.clientid
             else:
                 c.execute("SELECT locationid FROM location WHERE locationname = ?", (licenceLocation,))
                 locationId = c.fetchone()[0]
-                c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'LAT/LONG (NZGD1949)'", (locationId,))
+                c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'LAT/LONG (NZGD2000)'", (locationId,))
                 coord = c.fetchone()
                 c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'NZTM2000'", (locationId,))
                 mapRef = c.fetchone()
