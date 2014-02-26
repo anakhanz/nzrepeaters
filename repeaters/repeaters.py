@@ -467,7 +467,7 @@ class Licence:
             ns = ' National System'
         else:
             ns = ''
-        return "    createMarker('%s','%s%s',%f, %f, '%s', '<h2>%s - %s</h2>%s');\n" % (
+        return "createMarker('%s','%s%s',%f, %f, '%s', '<h2>%s - %s</h2>%s');\n" % (
             self.licType, self.band(), ns,
             site.coordinates.lat, site.coordinates.lon,
             self.formatName(),
@@ -1156,9 +1156,9 @@ def generateJsSiteTree():
     return "    typeNode = new YAHOO.widget.TextNode('Sites', root, false);\n"
 
 def generateJsLinksMarkers(links, splitNs):
-    js = "    links['General'] = new Array();\n"
+    js = "links['General'] = new Array();\n"
     if splitNs:
-        js += "    links['National System'] = new Array();\n"
+        js += "links['National System'] = new Array();\n"
     for link in links:
         js += link.js(splitNs)
     return js
