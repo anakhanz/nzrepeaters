@@ -73,6 +73,9 @@ sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTIN
 sqlite3 ${DB_SQLITE} 'DELETE FROM location WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM geographicreference WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 
+# Add msissing CARDS clientname record
+sqlite3 ${DB_SQLITE} 'INSERT INTO clientname VALUES (129376,"CANTERBURY AMATEUR RADIO DEVELOPMENT SOCIETY INCORPORATED",1,"64 Broadhaven Ave","Parklands","Christchurch");'
+
 # Compact/Vacuul the database
 sqlite3 ${DB_SQLITE} 'VACUUM'
 
