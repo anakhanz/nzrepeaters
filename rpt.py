@@ -3,7 +3,7 @@
 
 ## NZ Repeater list/map builder
 ## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
-## Copyright (C) 2011, Rob Wallace rob[at]wallace[dot]gen[dot]nz
+## Copyright (C) 2014, Rob Wallace rob[at]wallace[dot]gen[dot]nz
 ## Builds lists of NZ repeaters from the licence information avaliable from the
 ## RSM's smart system.
 ##

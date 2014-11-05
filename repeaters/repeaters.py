@@ -3,7 +3,7 @@
 
 ## NZ Repeater list/map builder
 ## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
-## Copyright (C) 2011, Rob Wallace rob[at]wallace[dot]gen[dot]nz
+## Copyright (C) 2014, Rob Wallace rob[at]wallace[dot]gen[dot]nz
 ## Builds lists of NZ repeaters from the licence information avaliable from the
 ## RSM's smart system.
 ##
@@ -79,7 +79,7 @@ C_NOTE = 2
 UPDATE_URL = 'http://www.wallace.gen.nz/maps/data/'
 
 USAGE = """%s [options]
-NZ Repeaters %s by Rob Wallace (C)2010, Licence GPLv3
+NZ Repeaters %s by Rob Wallace (C)2014, Licence GPLv3
 http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
 
 def calcBand(f):
@@ -1699,7 +1699,7 @@ def main():
         exit()
     else:
         if (datetime.datetime.now() - dataDate) > datetime.timedelta(weeks=4):
-            print 'the data is more than 4 weeks old so it is recommended that you update'
+            print 'the data is more than 4 weeks old so it is recommended that you update using -u'
 
 
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
