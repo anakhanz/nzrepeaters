@@ -18,6 +18,8 @@ map_upload.sh
 repeaters/data/upload_data.sh
 
 # generated data files
+repeaters/data/data.zip
+repeaters/data/data.zip.bak
 repeaters/data/prism.sqlite
 repeaters/data/prism.sqlite.bak
 repeaters/data/version
