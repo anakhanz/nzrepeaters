@@ -21,9 +21,10 @@ Data sources
 The data included with this software comes from two sources:
 
 The technical data is sourced form the RSM's SMART system, if this is
-incorrect please notify the owner of the licence and ask them to submit a
-form 10 to get it corrected (Note: if the licencee is NZART please contact the
-branch not NZART itself).  The actual data from SMART is as follows:
+incorrect please notify the owner of the licence and ask them to submit
+a form 10 to get it corrected (Note: if the licencee is NZART please
+contact the branch not NZART itself).  The actual data from SMART is as
+follows:
  * Frequency (the input frequency for repeaters is calculated)
  * Type
  * Site Name
@@ -32,17 +33,16 @@ branch not NZART itself).  The actual data from SMART is as follows:
  * Licence Number
  * Licencee
 
-Other data is sourced from the NZART call book for corrections to this data
-please email zl2wal@nzart.org.nz, this is:
+Other data is sourced from the NZART call book for corrections to this
+data please email zl2wal@nzart.org.nz, this is:
  * Callsign
  * CTCSS
  * Branch
  * Trustees
  * Notes
 
-Note: At present the data is distributed with the software and there is no
-automated mechanism for updating the data, this will be addded in a future
-version of the software.
+An updated data file is made available every week on thursday mornings,
+and can be fetched by the program using the command "rpt -u". 
 
 
 Installation
@@ -56,8 +56,9 @@ that it may be run from the command line.
 Linux and other
 ---------------
 For other platforms this requires that python 2.6 or later is installed
-including distutils, to perform the actual installation use the following steps
-once you have downloaded the source package:
+including distutils, to perform the actual installation use the following
+commands to install the software once you have downloaded the source
+package:
   tar -xvzf NZ_Repeaters-*.tar.gz
   cd NZ_Repeaters-*
   ./setup.py install
@@ -72,15 +73,25 @@ Options:
   -v, --verbose         Verbose logging
   -D, --debug           Debug level logging
   -q, --quiet           Only critical logging
+  --indent=INDENT       Indentation for some output formats
+  -H HTMLFILENAME, --html=HTMLFILENAME
+                        Output to html file, may be in addition to other
+                        output types
+  -j JSFILENAME, --javascript=JSFILENAME
+                        Output to javascript file, may be in addition to
+                        other output types
+  -J JSONFILENAME, --json=JSONFILENAME
+                        Output to JSON file, may be in addition to other
+                        output types
   -k KMLFILENAME, --kml=KMLFILENAME
-                        Output to kml file, may be in addition to other output
-                        types
+                        Output to kml file, may be in addition to other 
+                        output types
   -z KMZFILENAME, --kmz=KMZFILENAME
-                        Output to kmz file, may be in addition to other output
-                        types
+                        Output to kmz file, may be in addition to other
+                        output types
   -c CSVFILENAME, --csv=CSVFILENAME
-                        Output to csv file, may be in addition to other output
-                        types
+                        Output to csv file, may be in addition to other
+                        output types
   -s, --site            Output information by site
   -l, --licence         Output information by licence
   -b, --beacon          Include digipeaters in the generated file
@@ -92,3 +103,15 @@ Options:
                         Filter out all below the specified frequency
   -F MAXFREQ, --maxfreq=MAXFREQ
                         Filter out all above the specified frequency
+  -i INCLUDE, --include=INCLUDE
+                        Filter licences to only include licences that
+                        contain [include] in their name
+  -e EXCLUDE, --exclude=EXCLUDE
+                        Filter licences to exclude licences that contain
+                        [exclude] in their name
+  -B BRANCH, --branch=BRANCH
+                        Filter licences to only include those from the
+                        selected branch
+  -u, --update          Update data files from the Internet
+  -A DATADIR, --datafolder=DATADIR
+                        Modify the data folder location from the default
