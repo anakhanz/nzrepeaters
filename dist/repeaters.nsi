@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "NZ Repeaters"
-!define PRODUCT_VERSION "0.1.1"
+!define PRODUCT_VERSION "0.1.2"
 !define PRODUCT_PUBLISHER "Rob Wallace"
 !define PRODUCT_WEB_SITE "http://projects.wallace.gen.nz/projects/nzrepeaters"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\rpt.exe"
@@ -57,7 +57,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup-NZ_Repeaters_0.1.2.exe"
+OutFile "Setup-NZ_Repeaters_${PRODUCT_VERSION}.exe"
 InstallDir "$PROGRAMFILES\NZ Repeaters"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -74,7 +74,10 @@ Section "Application" SEC01
   File "sqlite3.dll"
   File "unicodedata.pyd"
   File "w9xpopen.exe"
+  File "_hashlib.pyd"
+  File "_socket.pyd"
   File "_sqlite3.pyd"
+  File "_ssl.pyd"
   File "..\README.txt"
   File "..\COPYING"
 
@@ -92,9 +95,11 @@ SectionEnd
 Section "Data" SEC02
   SetOutPath "$INSTDIR\data"
   SetOverwrite try
+  File "..\repeaters\data\version"
   File "..\repeaters\data\callsigns.csv"
   File "..\repeaters\data\ctcss.csv"
   File "..\repeaters\data\info.csv"
+  File "..\repeaters\data\links.csv"
   File "..\repeaters\data\prism.sqlite"
   File "..\repeaters\data\skip.csv"
 
@@ -151,13 +156,16 @@ Section Uninstall
   Delete "$INSTDIR\data\callsigns.csv"
   Delete "$INSTDIR\COPYING"
   Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\_hashlib.pyd"
+  Delete "$INSTDIR\_socket.pyd"
   Delete "$INSTDIR\_sqlite3.pyd"
+  Delete "$INSTDIR\_ssl.pyd"
   Delete "$INSTDIR\w9xpopen.exe"
   Delete "$INSTDIR\unicodedata.pyd"
   Delete "$INSTDIR\sqlite3.dll"
   Delete "$INSTDIR\select.pyd"
   Delete "$INSTDIR\rpt.exe"
-  Delete "$INSTDIR\python26.dll"
+  Delete "$INSTDIR\python27.dll"
   Delete "$INSTDIR\library.zip"
   Delete "$INSTDIR\bz2.pyd"
 
