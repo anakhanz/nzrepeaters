@@ -57,7 +57,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup-NZ_Repeaters_0.1.exe"
+OutFile "Setup-NZ_Repeaters_0.1.2.exe"
 InstallDir "$PROGRAMFILES\NZ Repeaters"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -68,7 +68,7 @@ Section "Application" SEC01
   SetOverwrite ifnewer
   File "bz2.pyd"
   File "library.zip"
-  File "python26.dll"
+  File "python27.dll"
   File "rpt.exe"
   File "select.pyd"
   File "sqlite3.dll"
@@ -97,7 +97,6 @@ Section "Data" SEC02
   File "..\repeaters\data\info.csv"
   File "..\repeaters\data\prism.sqlite"
   File "..\repeaters\data\skip.csv"
-  File "..\repeaters\data\update_db.sh"
 
 ; Shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -145,7 +144,6 @@ Section Uninstall
   !insertmacro MUI_STARTMENU_GETFOLDER "Application" $ICONS_GROUP
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\data\update_db.sh"
   Delete "$INSTDIR\data\skip.csv"
   Delete "$INSTDIR\data\prism.sqlite"
   Delete "$INSTDIR\data\info.csv"
