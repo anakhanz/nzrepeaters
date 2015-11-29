@@ -20,13 +20,13 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import topo50
+from . import topo50
 
-from nztm import *
+from .nztm import *
 
 def sheetInfo(s):
     s = s[0:4]
-    assert s in topo50.maps.keys()
+    assert s in list(topo50.maps.keys())
     details = topo50.maps[s]
     return """Sheet:       %s
 Name:        %s
@@ -42,7 +42,7 @@ def formatNztm(easting, northing):
 
 def topo50ToNztm(s):
     (sheet, easting, northing) = s.split(' ')
-    assert sheet in topo50.maps.keys()
+    assert sheet in list(topo50.maps.keys())
     sheetDetails = topo50.maps[sheet]
     sheetEasting = sheetDetails['min_easting']
     sheetNorthing = sheetDetails['min_northing']
@@ -53,11 +53,11 @@ def topo50ToNztm(s):
     return (easting, northing)
 
 def nztmToTopo50(easting, northing, highPrecisioin=False):
-    for key in topo50.east_max.keys():
+    for key in list(topo50.east_max.keys()):
         if easting >= topo50.east_min[key] and easting < topo50.east_max[key]:
             eastSheet = key
             break
-    for key in topo50.north_max.keys():
+    for key in list(topo50.north_max.keys()):
         if northing >= topo50.north_min[key] and northing < topo50.north_max[key]:
             northSheet = key
     easting = float(easting % 100000) / 100.0
@@ -90,14 +90,14 @@ def main():
         n = i[1]
         lt, ln = nztm_geod(e, n)
         e1, n1 = geod_nztm(lt,ln)
-        print "Input NZTM e,n:  %12.3lf %12.3lf" % (e,n)
-        print "Output Lat/Long: %12.6lf %12.6lf" % (degrees(lt), degrees(ln))
-        print "Output NZTM e,n: %12.3lf %12.3lf" % (e1,n1)
-        print "Difference:      %12.3lf %12.3lf" % (e1-e,n1-n)
-        print "Map ref std:     %s" % nztmToTopo50(e,n)
-        print "Map ref High:    %s" % nztmToTopo50(e,n,True)
-        print ""
-        print ""
+        print("Input NZTM e,n:  %12.3lf %12.3lf" % (e,n))
+        print("Output Lat/Long: %12.6lf %12.6lf" % (degrees(lt), degrees(ln)))
+        print("Output NZTM e,n: %12.3lf %12.3lf" % (e1,n1))
+        print("Difference:      %12.3lf %12.3lf" % (e1-e,n1-n))
+        print("Map ref std:     %s" % nztmToTopo50(e,n))
+        print("Map ref High:    %s" % nztmToTopo50(e,n,True))
+        print("")
+        print("")
 
 if __name__ == '__main__':
     main()

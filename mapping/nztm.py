@@ -21,7 +21,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from math import radians, degrees
-from tm import tmprojection, tm_geod, geod_tm
+from .tm import tmprojection, tm_geod, geod_tm
 
 NZTM_A  = 6378137.0
 NZTM_RF = 298.257222101
@@ -78,12 +78,12 @@ def main():
         n = i[1]
         lt, ln = nztm_geod(e, n)
         e1, n1 = geod_nztm(lt,ln)
-        print "Input NZTM e,n:  %12.3lf %12.3lf" % (e,n)
-        print "Output Lat/Long: %12.6lf %12.6lf" % (degrees(lt), degrees(ln))
-        print "Output NZTM e,n: %12.3lf %12.3lf" % (e1,n1)
-        print "Difference:      %12.3lf %12.3lf" % (e1-e,n1-n)
-        print ""
-        print ""
+        print("Input NZTM e,n:  %12.3lf %12.3lf" % (e,n))
+        print("Output Lat/Long: %12.6lf %12.6lf" % (degrees(lt), degrees(ln)))
+        print("Output NZTM e,n: %12.3lf %12.3lf" % (e1,n1))
+        print("Difference:      %12.3lf %12.3lf" % (e1-e,n1-n))
+        print("")
+        print("")
 
 if __name__ == '__main__':
     main()

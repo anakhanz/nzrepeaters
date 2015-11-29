@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
 ## NZ Repeater list/map builder
@@ -33,13 +33,13 @@ import shutil
 import sqlite3
 import sys
 import tempfile
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import zipfile
 
 from mapping.nz_coords import nztmToTopo50
 
 #import topo50
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 
 T_BEACON = 'Amateur Beacon'
 T_DIGI = 'Amateur Digipeater'
@@ -102,7 +102,7 @@ class band:
         minF - Minimum frequency im MHz
         maxF - Maximum frequency in MHz
         '''
-        assert type(name) == str or type(name) == unicode
+        assert type(name) == str
         assert type(minF) == float
         assert type(maxF) == float
         assert minF < maxF
@@ -160,7 +160,7 @@ class Coordinate:
         assert -90.0 <= lat <= 90.0
         assert -180.0 <= lon <= 180.0
         self.lat = lat
-        self.lon = lon   
+        self.lon = lon
 
     def kml(self):
         '''
@@ -181,7 +181,7 @@ class Ctcss:
         note - the use of the tone
         '''
         assert type(freq) == float
-        assert type(note) == str or type(note) == unicode
+        assert type(note) == str
         self.freq = freq
         self.note = note
 
@@ -217,18 +217,18 @@ class Licence:
         callsign - Callsign for the licence
         ctcss    - CTCSS Tone squelch frequency
         '''
-        assert type(licType) == str or type(licType) == unicode
+        assert type(licType) == str
         assert licType in LICENCE_TYPES
         assert type(frequency) == float
-        assert type(site) == str or type(site) == unicode
-        assert type(licensee) == str or type(licensee) == unicode
+        assert type(site) == str
+        assert type(licensee) == str
         assert type(number) == int
-        assert type(name) == str or type(name) == unicode
-        assert type(branch) == str or type(branch) == unicode
-        assert type(trustee1) == str or type(trustee1) == unicode
-        assert type(trustee2) == str or type(trustee2) == unicode
-        assert type(note) == str or type(note) == unicode
-        assert type(callsign) == str or type(callsign) == unicode or callsign == None
+        assert type(name) == str
+        assert type(branch) == str
+        assert type(trustee1) == str
+        assert type(trustee2) == str
+        assert type(note) == str
+        assert type(callsign) == str or callsign == None
         assert type(ctcss) == float or ctcss == None
         if callsign == None:
             callsign = ''
@@ -353,13 +353,13 @@ class Licence:
         Returns an HTML table row containing the licence information including
         input frequency for a repeater, formatted as follows:
         | Name | Output Freq  | Branch | Trustees | Notes | Licensee | Number |
-        
-        If the license is for a repeater the following is added after Output 
+
+        If the license is for a repeater the following is added after Output
         frequency:
-          Input Freq | CTCSS 
-          
+          Input Freq | CTCSS
+
         If the licence is for a Beacon the Callsign is added before the Name
-        
+
         If a site is passed to the function the following is added before Branch
         Input frequency and CTCSS:
           Site Name | Map ref | Height
@@ -370,7 +370,7 @@ class Licence:
             ctcss = self.ctcss.html()
         row =  '<tr>'
         if self.licType == T_BEACON:
-           row += '<td>%s</td>' % self.callsign 
+           row += '<td>%s</td>' % self.callsign
         row += '<td>'+ cgi.escape(self.formatName())
         row += '</td><td>' +'%0.4f MHz' % self.frequency
         if self.licType == T_REPEATER:
@@ -406,10 +406,10 @@ class Licence:
             br = self.branch
             brl = 'Af'
         return '<a href="%s#%s">%s</a>' % (url, brl, br)
-    
+
     def htmlNote(self):
         '''
-        Returns an html formatted note including coverage link for digipeaters 
+        Returns an html formatted note including coverage link for digipeaters
         '''
         if self.licType == T_DIGI and self.callsign != None and self.frequency == 144.575:
             return cgi.escape(self.note) + '<a href="http://aprs.fi/#!v=heard&ym=1207&call=a%2F' + self.callsign + '&timerange=3600" target="_blank"> APRS.FI Coverage Map</a>'
@@ -509,10 +509,10 @@ class Licensee:
         address2 - Second line of the address
         address3 - Third line of the address
         '''
-        assert type(name) == str or type(name) == unicode
-        assert type(address1) == str or type(address1) == unicode or address1 == None
-        assert type(address2) == str or type(address2) == unicode or address2 == None
-        assert type(address3) == str or type(address3) == unicode or address3 == None
+        assert type(name) == str
+        assert type(address1) == str or address1 == None
+        assert type(address2) == str or address2 == None
+        assert type(address3) == str or address3 == None
         self.name = name
         self.address1 = address1
         self.address2 = address2
@@ -531,13 +531,13 @@ class Link:
         end1 - coordinates for the first end of the link
         end2 - coordinates for the second end of the link
         '''
-        assert type(name) == str or type(name) == unicode
+        assert type(name) == str
         assert isinstance(end1, Coordinate)
         assert isinstance(end2, Coordinate)
         self.name = name
         self.end1 = end1
         self.end2 = end2
-    
+
     def js(self, splitNs=False):
         '''
         Returns a java script function call for the link
@@ -585,8 +585,8 @@ class Site:
         coordinates - A coordinate object containing the coordinates for the site
         height      - Height above sea level in meters
         '''
-        assert type(name) == str or type(name) == unicode
-        assert type(mapRef) == str or type(mapRef) == unicode
+        assert type(name) == str
+        assert type(mapRef) == str
         assert type(coordinates) == type(Coordinate(1.0,1.0))
         assert type(height) == int
 
@@ -667,7 +667,7 @@ class Site:
             else:
                 description = '<h3>' + text + 's</h3>'
             description += htmlTableHeader(licType = items[0].licType)
-            items.sort()
+            items.sort(key=lambda items: items.frequency)
             for item in items:
                 logging.debug('creating row for repeater %i' % item.number)
                 description += item.htmlRow()
@@ -703,15 +703,15 @@ class Site:
             logging.debug('Skipping creating empty "Placemark" for: %s' % self.name)
             placemark=''
         return placemark
-   
+
 
 def jsonDefault(o):
     """Returns a dictionary for the given object
     This is used when serialising objects to a json file
-    
+
     Argument
     o - the object to be turned into a dictionary"""
-    
+
     return o.__dict__
 
 def we_are_frozen():
@@ -725,9 +725,9 @@ def module_path():
     even if we are frozen using py2exe"""
 
     if we_are_frozen():
-        return os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding( )))
+        return os.path.dirname(str(sys.executable, sys.getfilesystemencoding( )))
 
-    return os.path.dirname(unicode(__file__, sys.getfilesystemencoding( )))
+    return os.path.dirname(str(__file__, sys.getfilesystemencoding( )))
 
 def readCtcss(fileName):
     '''
@@ -846,14 +846,14 @@ WHERE c.clientid = l.clientid
         if licenceLocation == 'ALL NEW ZEALAND':
             logging.info('Skipping Licensee No: %d because it has the location "ALL NEW ZEALAND"' % licenceNumber)
             skipping = True
-        elif licenceNumber in skip.keys():
+        elif licenceNumber in list(skip.keys()):
             skipFreq = float(skip[licenceNumber][S_FREQ])
             if skipFreq == 0.0 or skipFreq == licenceFrequency:
                 skipping = True
                 logging.info('Skipping Licensee No: %d, frequency %0.4f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
 
         if not skipping:
-            if licenceNumber in info.keys():
+            if licenceNumber in list(info.keys()):
                     licenceName = info[licenceNumber][I_NAME]
                     licenceBranch = info[licenceNumber][I_BRANCH]
                     licenceTrustee1 = info[licenceNumber][I_TRUSTEE1]
@@ -866,7 +866,7 @@ WHERE c.clientid = l.clientid
                 licenceTrustee1 = ''
                 licenceTrustee2 = ''
                 licenceNote = 'No info record available'
-        
+
         if include != None:
             skipping = skipping or (include not in licenceName)
         if exclude != None:
@@ -876,7 +876,7 @@ WHERE c.clientid = l.clientid
             skipping = skipping or (branch != info[licenceNumber][I_BRANCH])
 
         if not skipping:
-            if licenceNumber in callsigns.keys():
+            if licenceNumber in list(callsigns.keys()):
                 if licenceCallsign != callsigns[licenceNumber]:
                     logging.info('Licence No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenceNumber, row['callsign'], callsigns[licenceNumber]))
                     licenceCallsign = callsigns[licenceNumber]
@@ -909,7 +909,7 @@ WHERE c.clientid = l.clientid
                               licenceTrustee2,
                               licenceNote,
                               licenceCallsign)
-            if licenceNumber in ctcss.keys():
+            if licenceNumber in list(ctcss.keys()):
                 licence.setCtcss(ctcss[licenceNumber])
             if licType == T_BEACON and shBeacon:
                 site.addBeacon(licence)
@@ -945,7 +945,7 @@ def readLinks(fileName, licences, sites):
             name = row[L_NAME]
             end1 = int(row[L_END1])
             end2 = int(row[L_END2])
-            if (end1 in licences.keys()) and (end2 in licences.keys()):
+            if (end1 in list(licences.keys())) and (end2 in list(licences.keys())):
                 links.append(Link(name,
                                   sites[licences[end1].site].coordinates,
                                   sites[licences[end2].site].coordinates))
@@ -960,7 +960,7 @@ def generateCsv(filename,licences,sites):
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
 
-    licenceNos = sorted(licences.keys(), key=sortKey)
+    licenceNos = sorted(list(licences.keys()), key=sortKey)
 
     csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licensee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
     for licence in licenceNos:
@@ -1001,7 +1001,7 @@ def generateHtmlLicenceBody(licences,sites,links):
     def sortKey(item):
         return (licences[item].frequency, licences[item].name)
 
-    licenceNos = sorted(licences.keys(), key=sortKey)
+    licenceNos = sorted(list(licences.keys()), key=sortKey)
     htmlByType={}
     for t in LICENCE_TYPES:
         htmlByType[t]={}
@@ -1009,7 +1009,7 @@ def generateHtmlLicenceBody(licences,sites,links):
         l = licences[licence]
         t = l.licType
         b = l.band()
-        if b not in htmlByType[t].keys():
+        if b not in list(htmlByType[t].keys()):
             htmlByType[t][b] = ""
         if "Repeater" in t:
             htmlByType[t][b] += licences[licence].htmlRow(sites[licences[licence].site])
@@ -1025,7 +1025,7 @@ def generateHtmlLicenceBody(licences,sites,links):
             body += '<a id="%s"></a>' % (t)
             body += '    <h2>%ss</h2>\n' % t
             for b in bands:
-                if b.name in htmlByType[t].keys():
+                if b.name in list(htmlByType[t].keys()):
                     header += '<li><a href="#%s_%s">%s</a></li>' % (t ,b.name ,b.name)
                     body += '<a id="%s_%s"></a>' % (t ,b.name)
                     body += '<h3>%s</h3>' % b.name
@@ -1044,7 +1044,7 @@ def generateHtmlSite(sites):
 def generateHtmlSiteBody(sites):
     header = '<h1>Amateur Sites</h1>'
     body = '<h1>Amateur Sites</h1>'
-    siteNames = sites.keys()
+    siteNames = list(sites.keys())
     siteNames.sort()
     for site in siteNames:
         header += sites[site].htmlNameLink()
@@ -1157,7 +1157,7 @@ def generateJsSite(sites):
 
 def generateJsSiteMarkers(sites):
     js = "    markers['Sites'] = new Array();\n"
-    siteNames = sites.keys()
+    siteNames = list(sites.keys())
     siteNames.sort()
     for site in siteNames:
         js += sites[site].js()
@@ -1189,7 +1189,7 @@ def generateJson(filename, indent, licences, sites, links):
     f = open(filename,mode='w')
     f.write("var sites = " + json.dumps(sites,default=jsonDefault, indent=indent))
     f.write("var links = " + json.dumps(links,default=jsonDefault, indent=indent))
-    f.close()    
+    f.close()
 
 
 def generateKml(filename, licences, sites, links, byLicence, bySite):
@@ -1234,7 +1234,7 @@ def generateKmlLicenceBody(licences,sites,links,expand,splitNs):
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
 
-    licenceNos = sorted(licences.keys(), key=sortKey)
+    licenceNos = sorted(list(licences.keys()), key=sortKey)
     kmlByType={}
     kml=""
     for t in LICENCE_TYPES:
@@ -1245,18 +1245,18 @@ def generateKmlLicenceBody(licences,sites,links,expand,splitNs):
         b = l.band()
         if splitNs and 'National System' in l.name:
             b = b + ' National System'
-        if b not in kmlByType[t].keys():
+        if b not in list(kmlByType[t].keys()):
             kmlByType[t][b] = ""
         kmlByType[t][b] += licences[licence].kmlPlacemark(sites[licences[licence].site])
     for t in LICENCE_TYPES:
         if len(kmlByType[t]) > 0:
             kml += '    <Folder><name>%ss</name><open>%i</open>\n' % (t,expand)
             for b in bands:
-                if b.name in kmlByType[t].keys():
+                if b.name in list(kmlByType[t].keys()):
                     kml += '    <Folder><name>%s</name><open>0</open>\n' % b.name
                     kml += kmlByType[t][b.name]
                     kml += '    </Folder>\n'
-                if b.name + ' National System' in kmlByType[t].keys():
+                if b.name + ' National System' in list(kmlByType[t].keys()):
                     kml += '    <Folder><name>%s</name><open>0</open>\n' % (b.name + ' National System')
                     kml += kmlByType[t][b.name + ' National System']
                     kml += '    </Folder>\n'
@@ -1299,7 +1299,7 @@ def generateKmlSite(sites):
 
 def generateKmlSiteBody(sites):
     kml = ""
-    siteNames = sites.keys()
+    siteNames = list(sites.keys())
     siteNames.sort()
     for site in siteNames:
         kml += sites[site].kmlPlacemark()
@@ -1313,7 +1313,7 @@ def generateKmz(filename, licences, sites, links, byLicence, bySite):
     archive = zipfile.ZipFile(filename,
                               mode='w',
                               compression=zipfile.ZIP_DEFLATED)
-    archive.write(kmlFilename, os.path.basename(kmlFilename).encode("utf_8"))
+    archive.write(kmlFilename, os.path.basename(kmlFilename))
     archive.close()
     shutil.rmtree(tempDir)
 
@@ -1524,10 +1524,10 @@ def main():
     parser = optparse.OptionParser(usage=USAGE, version=("NZ Repeaters "+__version__))
     parser.add_option('-v','--verbose',action='store_true',dest='verbose',
                             help="Verbose logging")
-    
+
     parser.add_option('-D','--debug',action='store_true',dest='debug',
                             help='Debug level logging')
-    
+
     parser.add_option('-q','--quiet',action='store_true',dest='quiet',
                       help='Only critical logging')
 
@@ -1536,8 +1536,8 @@ def main():
                       type='int',
                       dest='indent',
                       default=None,
-                      help="Indentation for some output formats")    
-    
+                      help="Indentation for some output formats")
+
     parser.add_option('-H','--html',
                       action='store',
                       type='string',
@@ -1676,7 +1676,7 @@ def main():
     if os.path.isabs(options.datadir):
         data_dir = options.datadir
     else:
-        data_dir = os.path.join(module_path(),options.datadir)
+        data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),options.datadir)
 
     if not os.path.isdir(data_dir):
         parser.error('Chosen data folder %s does not exist' % data_dir)
@@ -1699,7 +1699,7 @@ def main():
         exit()
     else:
         if (datetime.datetime.now() - dataDate) > datetime.timedelta(weeks=4):
-            print 'the data is more than 4 weeks old so it is recommended that you update using -u'
+            print('the data is more than 4 weeks old so it is recommended that you update using -u')
 
 
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
@@ -1730,13 +1730,14 @@ def main():
         else:
             parser.error('Atleast one of the -a -b ,-d, -r or -t options must be specified for output to be generated.')
 
-    if options.minFreq > options.maxFreq:
-        parser.error('The maximum frequency must be greater than the minimum frequency.')
+    if not (options.minFreq == None or options.maxFreq == None):
+        if passoptions.minFreq > options.maxFreq:
+            parser.error('The maximum frequency must be greater than the minimum frequency.')
 
     if options.licence and options.site:
         parser.error('Only one of site or licence may be specified')
     elif not (options.licence or options.site):
-        print 'Neither site or licence output specified creating output including licence and site'
+        print('Neither site or licence output specified creating output including licence and site')
 
     callsigns = readTextCsv(callsigns_file)
     ctcss = readCtcss(ctcss_file)
@@ -1763,9 +1764,9 @@ def main():
 
     if options.jsfilename != None:
         generateJs(options.jsfilename, licences, sites, links, options.licence, options.site)
-        
+
     if options.jsonfilename != None:
-        generateJson(options.jsonfilename, options.indent, licences, sites, links)    
+        generateJson(options.jsonfilename, options.indent, licences, sites, links)
 
     if options.kmlfilename != None:
         generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site)
@@ -1774,10 +1775,10 @@ def main():
         generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site)
 
 def updateData(dataFolder, localDate):
-    f = urllib2.urlopen(UPDATE_URL + 'version')
+    f = urllib.request.urlopen(UPDATE_URL + 'version')
     remoteDate = datetime.datetime(*time.strptime(f.read(10), "%d/%m/%Y")[0:5])
     if localDate >= remoteDate:
-        print 'Data already up to date, continuing without downloading data'
+        print('Data already up to date, continuing without downloading data')
         return (True)
     urlDownload(UPDATE_URL + 'data.zip', dataFolder)
     z = zipfile.ZipFile(os.path.join(dataFolder,'data.zip'))
@@ -1792,11 +1793,11 @@ def urlDownload(url, folder=None, fileName=None):
         fileName = url.split('/')[-1]
     if folder != None:
         fileName = os.path.join(folder, fileName)
-    u = urllib2.urlopen(url)
+    u = urllib.request.urlopen(url)
     f = open(fileName, 'w')
     meta = u.info()
     fileSize = int(meta.getheaders("Content-Length")[0])
-    print "Downloading: %s Bytes: %s" % (fileName, fileSize)
+    print("Downloading: %s Bytes: %s" % (fileName, fileSize))
 
     fileSizeDl = 0
     blockSz = 8192
@@ -1809,7 +1810,7 @@ def urlDownload(url, folder=None, fileName=None):
         f.write(dlBuffer)
         status = r"%10d  [%3.2f%%]" % (fileSizeDl, fileSizeDl * 100. / fileSize)
         status = status + chr(8)*(len(status)+1)
-        print status,
+        print(status, end=' ')
     f.close()
 
 if __name__ == "__main__":

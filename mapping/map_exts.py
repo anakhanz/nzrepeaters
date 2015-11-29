@@ -39,7 +39,7 @@ limit_east_max = {}
 limit_north_min = {}
 limit_north_max = {}
 
-sheet_codes = sheets.keys()
+sheet_codes = list(sheets.keys())
 sheet_codes.sort()
 for code in sheet_codes:
     if len(code) == 4 and code[0:2] != 'CI':
@@ -92,7 +92,7 @@ output += """
 # Eastings Extents #
 # ================ #
 """
-east_codes = limit_east_min.keys()
+east_codes = list(limit_east_min.keys())
 east_codes.sort()
 east_min = "east_min = {\n"
 east_max = "east_max = {\n"
@@ -107,7 +107,7 @@ output += """
 # Nothings Extents #
 # ================ #
 """
-north_codes = limit_north_min.keys()
+north_codes = list(limit_north_min.keys())
 north_codes.sort(reverse=True)
 north_min = "north_min = {\n"
 north_max = "north_max = {\n"

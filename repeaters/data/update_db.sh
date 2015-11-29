@@ -12,23 +12,24 @@
 #    wget
 
 # Download URL & file name
-URL_PATH="http://www.rsm.govt.nz/cms/pdf-library/resource-library/spectrum-search-lite/spectrum-search-lite-database"
-URL_FILE="spectrum-search-lite-database.zip"
-
+#URL_PATH="http://www.rsm.govt.nz/cms/pdf-library/resource-library/spectrum-search-lite/spectrum-search-lite-database"
+#URL_FILE="spectrum-search-lite-database.zip"
+URL_PATH="http://www.rsm.govt.nz/online-services-resources/pdf-and-documents-library/tools/spectrum-search-lite/prism.zip"
+URL_FILE="prism.zip"
 # Database file names
 DB_MDB="prism.mdb"
 DB_SQLITE="prism.sqlite"
 
 NEEDED_TABLES=(licence
                clientname
+               emission
                spectrum
                transmitconfiguration
                receiveconfiguration
-	       location
+	           location
                geographicreference)
 
 UNNEEDED_TABLES=(associatedlicences
-                 emission
                  emissionlimit
                  issuingoffice
                  licenceconditions
@@ -70,6 +71,7 @@ sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTIN
 sqlite3 ${DB_SQLITE} 'DELETE FROM receiveconfiguration WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM transmitconfiguration WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM spectrum WHERE licenceid NOT IN (SELECT DISTINCT licenceid FROM licence);'
+sqlite3 ${DB_SQLITE} 'DELETE FROM emission WHERE emissionid NOT IN (SELECT DISTINCT emissionid FROM spectrum);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM location WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 sqlite3 ${DB_SQLITE} 'DELETE FROM geographicreference WHERE locationid NOT IN (SELECT DISTINCT locationid FROM transmitconfiguration);'
 

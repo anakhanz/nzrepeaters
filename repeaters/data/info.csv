@@ -1,4 +1,4 @@
-# Name | Branch | Trustee 1 | Trustee 2 | Note
+# Licence Number | Name | Branch | Trustee 1 | Trustee 2 | Note
 
 # 6M Repeaters
 104137,Alexandra,61,ZL4THT,ZL2BGX,
@@ -15,7 +15,7 @@
 159316,"Ward",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Picton 7225 and Blenheim 695"
 173091,Butters Voice and Data,6,ZL1AFZ,,Linked to Wharite 690
 207722,Cass Peak,CA,ZL2BCF,ZL3TMB,"Linked to Tekapo 680, IRLP 6900"
-223698,"Raglan",81,"ZL1TAT","ZL1THG",
+223698,"Te Uku",81,"ZL1TAT","ZL1THG",
 221227,Manawatu,20,,,
 155262,"Auclkand",86,"ZL1BFB","ZL1BCJ",
 215881,Invercargill,37,,,
@@ -96,7 +96,7 @@
 230005,Climie D-Star,63,ZL2BRG,ZL2TDN,
 228212,Waikato,81,ZL1TAT,ZL1THG,IRLP 6549
 239909,Kapiti Voice & Data,69,ZL2GO,ZL4VV,
-235418,Raglan,81,ZL1TAT,ZL1THG,
+235418,Maungakawa,81,ZL1TAT,ZL1THG,Linked to Te Uku 5675 and Waikato 695
 236728,Auckland D-STAR DV,66,ZL1ICU,ZL1TGC,
 235494,Dunedin,30,ZL4JH,ZL4GR,
 234758,Motueka,24,ZL2BCG,ZL2ASF,
