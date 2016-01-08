@@ -395,14 +395,28 @@ class Licence:
         '''
         try:
             b = int(self.branch)
-            if b < 50:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branch-list-data-01-to-49/'
+            if b < 11:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-01-10/'
+            elif b < 21:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-11-20/'
+            elif b < 31:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-21-30/'
+            elif b < 41:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-31-40/'
+            elif b < 51:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-41-50/'
+            elif b < 61:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-51-60/'
+            elif b < 71:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-61-70/'
+            elif b < 81:
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-71-80/'
             else:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branch-list-data-50-to-99/'
+                url = 'http://www.nzart.org.nz/branches/branch-data/branches-81-90/'
             br = '%02i' % b
             brl = br
         except:
-            url = 'http://www.nzart.org.nz/branches/branch-data/branch-list-data-50-to-99/'
+            url = 'http://www.nzart.org.nz/branches/branch-data/affiliated-clubs'
             br = self.branch
             brl = 'Af'
         return '<a href="%s#%s">%s</a>' % (url, brl, br)
