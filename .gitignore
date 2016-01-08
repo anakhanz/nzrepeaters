@@ -42,3 +42,6 @@ build/*
 # Application output files in the root of the project
 /*.csv
 /*.html
+
+# Externaly supplied MDB data file
+/repeaters/data/prism.mdb
