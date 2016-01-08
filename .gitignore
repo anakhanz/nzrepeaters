@@ -2,6 +2,9 @@
 *.pyc
 *.swp
 
+# Backup files
+*.bak
+
 # Wing IDE project files
 *.wpr
 *.wpu
