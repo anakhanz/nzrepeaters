@@ -40,8 +40,7 @@ UNNEEDED_TABLES=(associatedlicences
 
 # Get and unzip the source database file
 wget -q ${URL_PATH} -O ${URL_FILE}
-#wget ${URL_PATH} -O ${URL_FILE}
-unzip -q ${URL_FILE}
+unzip -qf ${URL_FILE}
 
 # remove zip file
 rm ${URL_FILE}
@@ -62,7 +61,7 @@ for i in ${NEEDED_TABLES[@]}; do
 done
 
 # Remove the source database file
-rm ${DB_MDB}
+#rm ${DB_MDB}
 
 # Remove all non Amateur related records from the destination database
 sqlite3 ${DB_SQLITE} 'DELETE FROM licence WHERE licencetype NOT LIKE "Amateur%";'
