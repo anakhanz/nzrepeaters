@@ -6,6 +6,7 @@
 239944,Colonial Knob,74,ZL3TC,ZL4JY,Under Construction
 163358,Cass Peak,CA,ZL2BCF,ZL3TMB,
 236498,Climie,63,ZL2BRG,ZL2TDN,
+245318,Arowhana,,,,
 
 # 2M Repeaters
 70440,"Rotorua Linear",33,"ZL1JP","ZL1BWC",
@@ -15,7 +16,7 @@
 159316,"Ward",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Picton 7225 and Blenheim 695"
 173091,Butters Voice and Data,6,ZL1AFZ,,Linked to Wharite 690
 207722,Cass Peak,CA,ZL2BCF,ZL3TMB,"Linked to Tekapo 680, IRLP 6900"
-223698,"Te Uku",81,"ZL1TAT","ZL1THG",
+223698,"Te Uku",81,"ZL1TAT","ZL1THG","Waiplenty Network, IRLP 6549"
 221227,Manawatu,20,,,
 155262,"Auclkand",86,"ZL1BFB","ZL1BCJ",
 215881,Invercargill,37,,,
@@ -66,7 +67,8 @@
 216482,Christchurch,05,ZL3RX,ZL3VP,
 217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
 228006,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode Analogue Voice and Digital Voice P25  NAC 293"
-55694,"Far North",78,ZL1BG,ZL1FC,"Linked to Doubtless Bay 7225 and Akatere 6775"
+55694,Far North,78,ZL1BG,ZL1FC,"Linked to Doubtless Bay 7225, Akatere 6775 and Dawson Road 6175"
+179109,Dawson Road,78,,,"Linked to Doubtless Bay 7225, Akatere 6775 and Far North 710"
 216134,"Belmont",74,"ZL3TC","ZL2TVM",
 221225,Manawatu,20,,,IRLP 6943
 97452,"Taummaraunui",38,"ZL1UTH","ZL1TIG",
@@ -76,7 +78,7 @@
 63840,"Pariwhariki",46,"ZL2BA","ZL4JS",
 224527,"New Plymouth",27,"ZL2BR","ZL2BZH",
 65587,"Nelson",26,"ZL2BCA","ZL2RP",
-159308,"Doubtless Bay",78,ZL1AUI,ZL1BQK,"Linked to Far North 710 and Akatere 6775"
+159308,Doubtless Bay,78,ZL1AUI,ZL1BQK,"Linked to Far North 710, Akatere 6775 and Dawson Road 6175"
 215880,Herangi,55,ZL4SQ,ZL1HJ,
 159304,"Picton",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Blenheim 695 and Ward 560"
 55711,Hawkes Bay,25,ZL2TC,ZL2DW,IRLP 6793
@@ -94,9 +96,9 @@
 227633,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
 225629,"Rodney",71,ZL2BCB,ZL2MR,
 230005,Climie D-Star,63,ZL2BRG,ZL2TDN,
-228212,Waikato,81,ZL1TAT,ZL1THG,IRLP 6549
+228212,Waikato,81,ZL1TAT,ZL1THG,"Waiplenty Network, IRLP 6549"
 239909,Kapiti Voice & Data,69,ZL2GO,ZL4VV,
-235418,Maungakawa,81,ZL1TAT,ZL1THG,Linked to Te Uku 5675 and Waikato 695
+235418,Maungakawa,81,ZL1TAT,ZL1THG,"Waiplenty Network, IRLP 6549"
 236728,Auckland D-STAR DV,66,ZL1ICU,ZL1TGC,
 235494,Dunedin,30,ZL4JH,ZL4GR,
 234758,Motueka,24,ZL2BCG,ZL2ASF,
@@ -104,6 +106,13 @@
 242588,Kapiti,69,ZL2GO,ZL4VV,
 236193,Lower Hutt,18,ZL2TVM,ZL2TWS,
 235015,Hamilton,89,ZL1PO,ZL1SAD,
+244752,Rotorua Linear,33,ZL1JP,ZL1BWC,
+243361,Hamilton (Raglan) Voice & D-Star,83,,,
+250528,Timaru,34,,,
+247021,Tauranga (Voice & D-Star),39,,,
+250805,Taumarnui,,,,
+243453,New Plymouth,27,,,
+246517,Waihi North,81,,,"Waiplenty Network, IRLP 6549"
 
 # STSP
 159314,"Branch 12 STSP",12,"ZL1PK","ZL1GWP",
@@ -156,6 +165,8 @@
 225767,Hamilton,89,ZL1PO,ZL1SAD,
 225385,Dunedin,30,ZL4JH,ZL4GR,
 242376,Auckland D-STAR DV,86,ZL1WOT,ZL1BFB,
+243842,Colonial Knob,74,,,
+243362,Hamilton (Raglan) Voice & D-Star,83,,,
 
 # 70CM National System Repeaters
 177228,"Kaimai National System",81,"ZL1GWP","ZL3GR",
@@ -189,6 +200,19 @@
 177324,Wharite National System,74,ZL2KG,ZL3TC,
 232974,Westoprt National System,62,,,
 
+
+# 70CM DMR Repeaters
+245589,Porirua (master) DMR,74,,,
+246799,Wairarapa DMR,46,,,
+247596,Kapiti DMR,69,,,
+248901,Hamilton DMR,,,,
+250794,Wellington DMR,74,,,
+248897,Dunedin DMR,,,,
+251251,Auckland DMR,,,,
+249985,Tasman DMR,,,,
+249599,Manawatu DMR,20,,,
+9999999,Christchurch DMR,,,,
+
 # 23CM Repeaters
 177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
 169950,"Auckland",66,"ZL1TGC","ZL1JD",
@@ -211,7 +235,8 @@
 218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
 221226,Manawatu  APRS,20,,,
 220125,"Forest Lakes Road APRS",74,"ZL2KG","ZL4SJ",
-221323,"Nelson APRS",26,"ZL2BCA","ZL2RP",
+221323,Nelson Takaka APRS,26,ZL2BCA,ZL2RP,
+244213,Nelson Grampians,26,,,
 221396,"Wairarapa APRS",46,"ZL2BA","ZL4JS",
 221246,"Murchison APRS",26,"ZL2BCA","ZL2RP",
 221145,Marlborough APRS,22,ZL2BK,ZL2BJV,
@@ -221,6 +246,8 @@
 228051,"Taumarunui APRS",60,ZL1UTH,ZL1BU,
 224689,"Gisborne APRS",11,"ZL2TRG","ZL2HC",
 234904,Ngaio APRS,74,ZL3TC,ZL2HD,
+242600,Dunedin APRS,30,,,
+249831,Rotorua APRS,33,,,
 209773,"North Shore",29,"ZL1AUW","ZL1TGC",
 209786,"Te Puke",53,"ZL1MOF",,
 207996,"Hamilton",12,"ZL1PK","ZL1GWP",
@@ -246,9 +273,6 @@
 231658,Kauahei APRS,,ZL2AJ,,
 232950,Taihape APRS,20,,,
 
-#Unknown APRS
-242600,HIGHCLIFF (AMATEUR) APRS,,,,Not listed in 2013 Callbook
-
 #BEACONS
 202338,"International Beacon Project, NCDX",46,ZL2BFY,,
 215940,Upper Hutt 10m,63,ZL2HM,ZL2BRG,
@@ -256,7 +280,10 @@
 70236,Hawkes Bay 6m,25,"ZL2TC","ZL2DW",
 215939,Upper Hutt 6m,63,ZL2HM,ZL2BRG,
 202048,Blenheim 6m,22,ZL2BK,ZL2BJV,
-153344,Rolleston Railway Station,,,,
+250050,Greymouth 6m,49,ZL3TY,ZL3ADH,
+250014,Waipuna 2m,,ZL2WHO,,
+153344,Rolleston Railway Station 10m,,,,
+250081,Rolleston Railway Station 6m,,,,
 215921,Auckland 2m,66,ZL1JD,ZL1TPH,
 224659,Waikato 2m,81,ZL1THG,ZL1UJG,
 237684,Waipuna 2m,,ZL2WHO,,
@@ -268,15 +295,18 @@
 215920,Auckland 70 cm,66,ZL1JD,ZL1TPH,
 224660,Waikato 70cm,81,ZL1THG,ZL1UJG,
 239391,Waipuna 70cm,,ZL2WHO,,
+246787,Waipuna 23cm,74,ZL2WHO,ZL2BKC,
 236082,Hawkins Hill 70cm,74,ZL3TC,ZL2TVM,
 241793,Christchurch 70cm,05,ZL3RX,ZL3VP,Under Construction
 59679,New Plymouth 70cm,27,ZL2BR,ZL2BZH,
 177985,Lower Hutt 32cm,74,ZL2TAR,ZL2BDI,
 224661,Waikato 23cm,81,ZL1THG,ZL1UJG,
-155267,Hawkins Hill 23cm,74,ZL3TC,ZL2TVM,
+246419,Hawkins Hill 23cm,74,ZL3TC,ZL2TVM,
 242651,Lower Hutt 13cm,18,ZL2TVM,ZL2TWS,
 221252,Waikato 12cm,81,ZL1THG,ZL1UJG,
 202076,Muriwai 5cm,74,ZL1TBG,ZL1AVZ,
+246751,Climie 3cm,63,,,
+249395,Colonial Knob 9cm,74,,,
 
 #ATV
 175154,Ngaio ATV,74,ZL2HD,ZL2TAR,
