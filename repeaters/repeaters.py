@@ -897,7 +897,7 @@ WHERE c.clientid = l.clientid
             skipping = skipping or (exclude in licenceName)
 
         if branch != None:
-            skipping = skipping or (branch != info[licenceNumber][I_BRANCH])
+            skipping = skipping or (branch != licenceBranch)
 
         if not skipping:
             if licenceNumber in list(callsigns.keys()):
