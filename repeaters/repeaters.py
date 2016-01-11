@@ -52,6 +52,9 @@ LICENCE_TYPES = ['',
                  T_REPEATER,
                  T_TV]
 
+LICENCE_SUB_TYPES = ['DMR',
+                     'National System']
+
 STYLE_MAP = {T_BEACON:'#msn_beacon',
              T_DIGI:'#msn_digipeater',
              T_REPEATER:'#msn_repeater',
@@ -244,6 +247,10 @@ class Licence:
         self.note = note
         self.callsign = callsign
         self.ctcss = ctcss
+        self.licSubType = ''
+        for subType in LICENCE_SUB_TYPES:
+            if subType in name:
+                self.licSubType = subType
 
     def setCallsign(self,callsign):
         '''
@@ -369,8 +376,7 @@ class Licence:
         else:
             ctcss = self.ctcss.html()
         row =  '<tr>'
-        if self.licType == T_BEACON:
-           row += '<td>%s</td>' % self.callsign
+        row += '<td>%s</td>' % self.callsign
         row += '<td>'+ cgi.escape(self.formatName())
         row += '</td><td>' +'%0.4f MHz' % self.frequency
         if self.licType == T_REPEATER:
@@ -471,19 +477,19 @@ class Licence:
         else:
             return self.trustee1 + '<br>' + self.trustee2
 
-    def js(self,site, splitNs=False):
+    def js(self,site, splitSubType=False):
         '''
         Returns a java script placemark generation call placemark for the licence.
 
         Keyword Argument:
         site - Site information for printing with the licence
         '''
-        if splitNs and 'National System' in self.name:
-            ns = ' National System'
+        if splitSubType and self.licSubType != '':
+            subType = ' ' + self.licSubType
         else:
-            ns = ''
+            subType = ''
         return "createMarker('%s','%s%s',%f, %f, '%s', '<h2>%s - %s</h2>%s');\n" % (
-            self.licType, self.band(), ns,
+            self.licType, self.band(), subType,
             site.coordinates.lat, site.coordinates.lon,
             self.formatName(),
             self.licType, cgi.escape(self.formatName()), self.htmlDescription(site))
@@ -551,13 +557,17 @@ class Link:
         self.name = name
         self.end1 = end1
         self.end2 = end2
+        self.subType = ''
+        for subType in LICENCE_SUB_TYPES:
+            if subType in name:
+                self.subType  = subType
 
-    def js(self, splitNs=False):
+    def js(self, splitSubType=False):
         '''
         Returns a java script function call for the link
         '''
-        if splitNs and 'National System' in self.name:
-            ltype = 'National System'
+        if splitSubType and self.subType != '':
+            ltype = self.subType
         else:
             ltype = 'General'
         return "createLink('%s', %f, %f, %f, %f,'%s');\n" % (
@@ -1119,7 +1129,7 @@ def generateJsLicence(licences, sites, links):
     js += "  }\n"
     return js
 
-def generateJsLicenceMarkersTree(licences, sites, splitNs, expand):
+def generateJsLicenceMarkersTree(licences, sites, splitSubType, expand):
 
     arrays = ""
     markers = ""
@@ -1137,8 +1147,8 @@ def generateJsLicenceMarkersTree(licences, sites, splitNs, expand):
         l = licences[licence]
         t = l.licType
         b = l.band()
-        if splitNs and 'National System' in l.name:
-            b = b + ' National System'
+        if splitSubType and l.licSubType != '':
+            b = b + ' ' + l.licSubType
         if b not in lTypeBand[t]:
             lTypeBand[t].append(b)
         markers += l.js(sites[l.site], True)
@@ -1149,9 +1159,10 @@ def generateJsLicenceMarkersTree(licences, sites, splitNs, expand):
                 if b.name in lTypeBand[t]:
                     arrays += "    markers['%ss-%s'] = new Array();\n" % (t, b.name)
                     tree += "    tmpNode = new YAHOO.widget.TextNode('%s', typeNode, false);\n" % b.name
-                if b.name + ' National System' in lTypeBand[t]:
-                    arrays += "    markers['%ss-%s National System'] = new Array();\n" % (t, b.name)
-                    tree += "    tmpNode = new YAHOO.widget.TextNode('%s National System', typeNode, false);\n" % b.name
+                for s in LICENCE_SUB_TYPES:
+                    if b.name + ' ' + s in lTypeBand[t]:
+                        arrays += "    markers['%ss-%s %s'] = new Array();\n" % (t, b.name, s)
+                        tree += "    tmpNode = new YAHOO.widget.TextNode('%s %s', typeNode, false);\n" % (b.name, s)
     return (arrays + markers, tree)
 
 def generateJsSite(sites):
@@ -1180,23 +1191,25 @@ def generateJsSiteMarkers(sites):
 def generateJsSiteTree():
     return "    typeNode = new YAHOO.widget.TextNode('Sites', root, false);\n"
 
-def generateJsLinksMarkers(links, splitNs):
+def generateJsLinksMarkers(links, splitSubType):
     js = "links['General'] = new Array();\n"
-    if splitNs:
-        js += "links['National System'] = new Array();\n"
+    if splitSubType:
+        for s in LICENCE_SUB_TYPES:
+            js += "links['%s'] = new Array();\n" % s
     for link in links:
-        js += link.js(splitNs)
+        js += link.js(splitSubType)
     return js
 
-def generateJsLinksTree(splitNs, expand):
+def generateJsLinksTree(splitSubType, expand):
     if expand:
         expand = 'true'
     else:
         expand = 'false'
     js = "    typeNode = new YAHOO.widget.TextNode('Links', root, %s);\n" % expand
-    if splitNs:
+    if splitSubType:
         js += "    tmpNode = new YAHOO.widget.TextNode('General', typeNode, false);\n"
-        js += "    tmpNode = new YAHOO.widget.TextNode('National System', typeNode, false);\n"
+        for s in LICENCE_SUB_TYPES:
+            js += "    tmpNode = new YAHOO.widget.TextNode('%s', typeNode, false);\n" % s
     return js
 
 def generateJson(filename, indent, licences, sites, links):
@@ -1243,7 +1256,7 @@ def generateKmlLicence(licences,sites,links,expand=1,splitNs=False):
     kml += kmlFooter()
     return kml
 
-def generateKmlLicenceBody(licences,sites,links,expand,splitNs):
+def generateKmlLicenceBody(licences,sites,links,expand,splitSubType):
 
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
@@ -1257,8 +1270,10 @@ def generateKmlLicenceBody(licences,sites,links,expand,splitNs):
         l = licences[licence]
         t = l.licType
         b = l.band()
-        if splitNs and 'National System' in l.name:
-            b = b + ' National System'
+        if splitSubType:
+            for s in LICENCE_SUB_TYPES:
+                if s in l.name:
+                    b = b + ' ' +s
         if b not in list(kmlByType[t].keys()):
             kmlByType[t][b] = ""
         kmlByType[t][b] += licences[licence].kmlPlacemark(sites[licences[licence].site])
@@ -1270,33 +1285,40 @@ def generateKmlLicenceBody(licences,sites,links,expand,splitNs):
                     kml += '    <Folder><name>%s</name><open>0</open>\n' % b.name
                     kml += kmlByType[t][b.name]
                     kml += '    </Folder>\n'
-                if b.name + ' National System' in list(kmlByType[t].keys()):
-                    kml += '    <Folder><name>%s</name><open>0</open>\n' % (b.name + ' National System')
-                    kml += kmlByType[t][b.name + ' National System']
-                    kml += '    </Folder>\n'
+                for s in LICENCE_SUB_TYPES:
+                    if b.name + ' ' + s in list(kmlByType[t].keys()):
+                        kml += '    <Folder><name>%s</name><open>0</open>\n' % (b.name + ' ' + s)
+                        kml += kmlByType[t][b.name + ' ' + s]
+                        kml += '    </Folder>\n'
             kml += '    </Folder>'
     return kml
 
-def generateKmlLinksBody(links, splitNs):
+def generateKmlLinksBody(links, splitSubType):
     general = ''
-    ns = ''
+    subTypes = {}
+    if splitSubType:
+        for s in LICENCE_SUB_TYPES:
+            subTypes[s] = ''
     for link in links:
-        if splitNs and 'National System' in link.name:
-            ns += link.kmlPlacemark()
+        if splitSubType:
+            for s in LICENCE_SUB_TYPES:
+                if s in link.name:
+                    subTypes[s] += link.kmlPlacemark()
         else:
             general += link.kmlPlacemark()
     kml = ''
     if len(links) > 0:
-        if splitNs:
+        if splitSubType:
             kml += '    <Folder><name>Links</name><open>1</open>\n'
             if len(general) >0:
                 kml += '    <Folder><name>General</name><open>0</open>\n'
                 kml += general
                 kml += '    </Folder>\n'
-            if len(ns) >0:
-                kml += '    <Folder><name>National System</name><open>0</open>\n'
-                kml += ns
-                kml += '    </Folder>\n'
+            for s in LICENCE_SUB_TYPES:
+                if len(subTypes[s]) >0:
+                    kml += '    <Folder><name>%s</name><open>0</open>\n' % s
+                    kml += subTypes[s]
+                    kml += '    </Folder>\n'
             kml += '    </Folder>\n'
         else:
             kml += '    <Folder><name>Links</name><open>0</open>\n'
@@ -1349,8 +1371,7 @@ def htmlTableHeader(full=False, licType=T_REPEATER):
         repeater = False
         rowspan = ''
     header =  '<table><tr>'
-    if licType == T_BEACON:
-        header += '<th' + rowspan + '>Callsign</th>'
+    header += '<th' + rowspan + '>Callsign</th>'
     header += '<th' + rowspan + '>Name</th>'
     if repeater:
         header += '<th colspan=2>Frequency</th>'

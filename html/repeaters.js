@@ -78,7 +78,7 @@
     var leaves = tree.getNodesByProperty('children',false)
     for (var i = 0; i < leaves.length; i++) {
       leafState =  (leaves[i].highlightState == 1);
-      if (leaves[i].label == 'Links' || leaves[i].label == 'General' || leaves[i].label == 'National System') {
+      if (leaves[i].label == 'Links' || leaves[i].label == 'General' || leaves[i].label == 'National System' || leaves[i].label == 'DMR') {
         if (leaves[i].label == 'Links') {
           leafName = 'General';
         } else {
