@@ -276,7 +276,7 @@ class Licence:
         '''
         # 6m
         if 50.0 <= self.frequency <= 54.0:
-            offset = 1.0
+            offset = -1.0
         # 2m
         elif 145.325 <= self.frequency <= 147.0:
             offset = -0.6
