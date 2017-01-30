@@ -40,7 +40,7 @@ UNNEEDED_TABLES=(associatedlicences
 
 # Get and unzip the source database file
 wget -q ${URL_PATH} -O ${URL_FILE}
-unzip -qf ${URL_FILE}
+unzip -qof ${URL_FILE}
 
 # remove zip file
 rm ${URL_FILE}
