@@ -167,6 +167,7 @@
 242376,Auckland D-STAR DV,86,ZL1WOT,ZL1BFB,
 243842,Colonial Knob,74,,,
 243362,Hamilton (Raglan) Voice & D-Star,83,,,
+252992,Christchurch D-STAR,05,,,
 
 # 70CM National System Repeaters
 177228,"Kaimai National System",81,"ZL1GWP","ZL3GR",
@@ -211,7 +212,7 @@
 251251,Auckland DMR,,,,
 249985,Tasman DMR,,,,
 249599,Manawatu DMR,20,,,
-9999999,Christchurch DMR,,,,
+252921,Christchurch DMR,05,,,
 
 # 23CM Repeaters
 177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
