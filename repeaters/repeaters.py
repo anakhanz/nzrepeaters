@@ -39,7 +39,7 @@ import zipfile
 from mapping.nz_coords import nztmToTopo50
 
 #import topo50
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 T_BEACON = 'Amateur Beacon'
 T_DIGI = 'Amateur Digipeater'
@@ -108,7 +108,7 @@ class band:
         assert type(name) == str
         assert type(minF) == float
         assert type(maxF) == float
-        assert minF < maxF
+        assert minF <= maxF
         self.name = name
         self.minF = minF
         self.maxF = maxF
@@ -143,7 +143,8 @@ bands = [band('1800 meters',0.13,0.19),
          band('3 cm',10000.0,10500.0),
          band('1.2 cm',24000.0,24250.0),
          band('6 mm',47000.0,47200.0),
-         band('4 mm',75000.0,81000.0)]
+         band('4 mm',75000.0,81000.0),
+         band('Digital TV',506.0,506.0)]
 
 
 class Coordinate:
