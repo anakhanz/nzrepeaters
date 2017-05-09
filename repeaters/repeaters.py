@@ -1812,7 +1812,7 @@ def main():
 
 def updateData(dataFolder, localDate):
     f = urllib.request.urlopen(UPDATE_URL + 'version')
-    remoteDate = datetime.datetime(*time.strptime(f.read(10), "%d/%m/%Y")[0:5])
+    remoteDate = datetime.datetime(*time.strptime(f.read(10).decode('utf-8'), "%d/%m/%Y")[0:5])
     if localDate >= remoteDate:
         print('Data already up to date, continuing without downloading data')
         return (True)
@@ -1830,9 +1830,8 @@ def urlDownload(url, folder=None, fileName=None):
     if folder != None:
         fileName = os.path.join(folder, fileName)
     u = urllib.request.urlopen(url)
-    f = open(fileName, 'w')
-    meta = u.info()
-    fileSize = int(meta.getheaders("Content-Length")[0])
+    f = open(fileName, 'wb')
+    fileSize = int(u.headers["Content-Length"])
     print("Downloading: %s Bytes: %s" % (fileName, fileSize))
 
     fileSizeDl = 0
