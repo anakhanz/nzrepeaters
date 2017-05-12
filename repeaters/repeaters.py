@@ -489,7 +489,7 @@ class Licence:
             subType = ' ' + self.licSubType
         else:
             subType = ''
-        return "createMarker('%s','%s%s',%f, %f, '%s', '<h2>%s - %s</h2>%s');\n" % (
+        return "    createMarker('%s','%s%s',%f, %f, '%s', '<h2>%s - %s</h2>%s');\n" % (
             self.licType, self.band(), subType,
             site.coordinates.lat, site.coordinates.lon,
             self.formatName(),
@@ -571,7 +571,7 @@ class Link:
             ltype = self.subType
         else:
             ltype = 'General'
-        return "createLink('%s', %f, %f, %f, %f,'%s');\n" % (
+        return "    createLink('%s', %f, %f, %f, %f,'%s');\n" % (
             ltype,
             self.end1.lat, self.end1.lon,
             self.end2.lat, self.end2.lon,
@@ -700,7 +700,7 @@ class Site:
             return description
 
     def js (self):
-        return "createMarker('Site','site',%f, %f, '%s', '<h2>%s</h2>%s');\n" % (
+        return "    createMarker('Site','site',%f, %f, '%s', '<h2>%s</h2>%s');\n" % (
             self.coordinates.lat, self.coordinates.lon,
             self.name, self.name, self.htmlDescription())
 
@@ -994,32 +994,34 @@ def generateCsv(filename,licences,sites):
     f.write(csv)
     f.close()
 
-def generateHtml(filename, licences, sites, links, byLicence, bySite):
+def generateHtml(filename, licences, sites, links, byLicence, bySite, dataDate):
+    dateLine = '<p>Data updated on %s</p>\n' % dataDate.strftime("%d/%m/%Y")
     if bySite:
         logging.debug('exporting htmlfile %s by site' % filename)
-        html = generateHtmlSite(sites)
+        html = generateHtmlSite(sites, dateLine)
     elif byLicence:
         logging.debug('exporting htmfile %s by site' % filename)
-        html= generateHtmlLicence(licences, sites, links)
+        html= generateHtmlLicence(licences, sites, links, dateLine)
     else:
         logging.debug('exporting htmfile %s by licence and site' % filename)
-        html= generateHtmlAll(licences, sites, links)
+        html= generateHtmlAll(licences, sites, links, dateLine)
 
     f = open(filename,mode='w')
     f.write(html)
     f.close()
 
-def generateHtmlAll(licences,sites,links):
+def generateHtmlAll(licences,sites,links,dateLine):
     [lHeader, lBody] = generateHtmlLicenceBody(licences,sites,links)
     [sHeader, sBody] = generateHtmlSiteBody(sites)
-    return htmlHeader('Amateur Licences and Sites') +\
+    return htmlHeader() +\
+           dateLine +\
            lHeader + sHeader +\
            lBody +sBody +\
            htmlFooter()
 
-def generateHtmlLicence(licences,sites,links):
+def generateHtmlLicence(licences,sites,links,dateLine):
     [header, body] = generateHtmlLicenceBody(licences,sites,links)
-    return htmlHeader('Amateur Sites') + header + body +htmlFooter()
+    return htmlHeader() + dateLine + header + body +htmlFooter()
 
 def generateHtmlLicenceBody(licences,sites,links):
 
@@ -1062,9 +1064,9 @@ def generateHtmlLicenceBody(licences,sites,links):
 
     return (header, body)
 
-def generateHtmlSite(sites):
+def generateHtmlSite(sites, dataDate,dateLine):
     [header, body] = generateHtmlSiteBody(sites)
-    return htmlHeader('Amateur Sites') + header + body +htmlFooter()
+    return htmlHeader() + dateLine + header + body +htmlFooter()
 
 def generateHtmlSiteBody(sites):
     header = '<h1>Amateur Sites</h1>'
@@ -1078,16 +1080,19 @@ def generateHtmlSiteBody(sites):
         body += sites[site].html()
     return (header, body)
 
-def generateJs(filename, licences, sites, links, byLicence, bySite):
+def generateJs(filename, licences, sites, links, byLicence, bySite, dataDate):
+    js = "  function setDataDate() {\n"
+    js += "    updateDataDate('Data updated on %s');\n" % dataDate.strftime("%d/%m/%Y")
+    js += "  }\n\n"
     if bySite:
         logging.debug('exporting javascript file %s by site' % filename)
-        js = generateJsSite(sites)
+        js += generateJsSite(sites)
     elif byLicence:
         logging.debug('exporting javascript file %s by site' % filename)
-        js = generateJsLicence(licences, sites, links)
+        js += generateJsLicence(licences, sites, links)
     else:
         logging.debug('exporting javascript file %s by licence and site' % filename)
-        js= generateJsAll(licences, sites, links)
+        js += generateJsAll(licences, sites, links)
 
     f = open(filename,mode='w')
     f.write(js)
@@ -1193,10 +1198,10 @@ def generateJsSiteTree():
     return "    typeNode = new YAHOO.widget.TextNode('Sites', root, false);\n"
 
 def generateJsLinksMarkers(links, splitSubType):
-    js = "links['General'] = new Array();\n"
+    js = "    links['General'] = new Array();\n"
     if splitSubType:
         for s in LICENCE_SUB_TYPES:
-            js += "links['%s'] = new Array();\n" % s
+            js += "    links['%s'] = new Array();\n" % s
     for link in links:
         js += link.js(splitSubType)
     return js
@@ -1213,45 +1218,61 @@ def generateJsLinksTree(splitSubType, expand):
             js += "    tmpNode = new YAHOO.widget.TextNode('%s', typeNode, false);\n" % s
     return js
 
-def generateJson(filename, indent, licences, sites, links):
+def generateJson(filename, indent, licences, sites, links, dataDate):
     f = open(filename,mode='w')
-    f.write("var sites = " + json.dumps(sites,default=jsonDefault, indent=indent))
-    f.write("var links = " + json.dumps(links,default=jsonDefault, indent=indent))
+    f.write("var dataDate = %s\n" % dataDate.strftime("%d/%m/%Y"))
+    f.write("var sites = " + json.dumps(sites,default=jsonDefault, indent=indent) + '\n')
+    f.write("var links = " + json.dumps(links,default=jsonDefault, indent=indent) + '\n')
     f.close()
 
 
-def generateKml(filename, licences, sites, links, byLicence, bySite):
+def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate):
+    '''
+    Generates a KML (Google Earth) file of the selected licences, links & sites
+
+    Arguments:
+    fileName  - Filename to use for KML file
+    licences  - list of licences
+    sites     - list of repeater sites
+    links     - list of inter repeater links
+    byLicence - boolean include listing of licences by licence type only
+    bySite    - doolean include listing of licences by site only
+    dataDate  - creation date for data file
+    '''    
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
-        kml = generateKmlSite(sites)
+        kml = generateKmlSite(sites, dataDate)
     elif byLicence:
         logging.debug('exporting kmlfile %s by licence' % filename)
-        kml = generateKmlLicence(licences, sites, links,1)
+        kml = generateKmlLicence(licences, sites, dataDate, links,1)
     else:
         logging.debug('exporting kmlfile %s by site and licence' % filename)
-        kml = generateKmlAll(licences, sites, links)
+        kml = generateKmlAll(licences, sites, links, dataDate)
 
     f = open(filename,mode='w')
     f.write(kml)
     f.close()
 
-def generateKmlAll(licences, sites, links):
+def generateKmlAll(licences, sites, links, dataDate):
     kml = kmlHeader()
-    kml += '    <name>Amateur Licences and Sites</name><open>1</open>\n'
+    kml += '    <name>Amateur Licences and Sites (data extracted %s)</name><open>1</open>\n'
+    kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += '    <Folder><name>Licences</name><open>1</open>\n'
+    kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += generateKmlLicenceBody(licences,sites,links,0,True)
     kml += '    </Folder>\n'
     kml += generateKmlLinksBody(links,True)
     kml += '    <Folder><name>Sites</name><open>0</open>\n'
+    kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += generateKmlSiteBody(sites)
     kml += '    </Folder>\n'
     kml += kmlFooter()
     return kml
 
-def generateKmlLicence(licences,sites,links,expand=1,splitNs=False):
-
+def generateKmlLicence(licences, sites, links, dataDate, expand=1,splitNs=False):
     kml = kmlHeader()
     kml += '    <name>Amateur Licences</name><open>1</open>\n'
+    kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += generateKmlLicenceBody(licences,sites,links,expand,splitNs)
     kml += generateKmlLinksBody(links,splitNs)
     kml += kmlFooter()
@@ -1327,9 +1348,10 @@ def generateKmlLinksBody(links, splitSubType):
             kml += '    </Folder>\n'
     return kml
 
-def generateKmlSite(sites):
+def generateKmlSite(sites, dataDate):
     kml = kmlHeader()
     kml += '    <name>Amateur Sites</name><open>1</open>\n'
+    kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += generateKmlSiteBody(sites)
     kml += kmlFooter()
     return kml
@@ -1342,11 +1364,23 @@ def generateKmlSiteBody(sites):
         kml += sites[site].kmlPlacemark()
     return kml
 
-def generateKmz(filename, licences, sites, links, byLicence, bySite):
+def generateKmz(filename, licences, sites, links, byLicence, bySite, dataDate):
+    '''
+    Generates a KMZ (Google Earth) file of the selected licences, links & sites
+
+    Arguments:
+    fileName  - Filename to use for KMZ file
+    licences  - list of licences
+    sites     - list of repeater sites
+    links     - list of inter repeater links
+    byLicence - boolean include listing of licences by licence type only
+    bySite    - doolean include listing of licences by site only
+    dataDate  - creation date for data file
+    '''
     logging.debug('exporting kmlfile %s' % filename)
     tempDir = tempfile.mkdtemp()
     kmlFilename = os.path.join(tempDir,'doc.kml')
-    generateKml(kmlFilename, licences, sites, links, byLicence ,bySite)
+    generateKml(kmlFilename, licences, sites, links, byLicence ,bySite, dataDate)
     archive = zipfile.ZipFile(filename,
                               mode='w',
                               compression=zipfile.ZIP_DEFLATED)
@@ -1354,7 +1388,7 @@ def generateKmz(filename, licences, sites, links, byLicence, bySite):
     archive.close()
     shutil.rmtree(tempDir)
 
-def htmlHeader(title):
+def htmlHeader():
     header = '<html><head>'
     header += '<style type="text/css">th,td{border: 2px solid #d3e7f4;}</style>'
     header += '</head><body>'
@@ -1727,10 +1761,12 @@ def main():
             parser.error('Can not determine data date for the chosen data folder %s' % data_dir)
 
     if options.update:
-        if not updateData(data_dir, dataDate):
+        updateDate = updateData(data_dir, dataDate)
+        if updateDate is None:
             logging.error('Unable to update data files')
-            exit()
-    elif not os.path.isfile(dataDate_file):
+        else:
+            dataDate = updateDate
+    if not os.path.isfile(dataDate_file):
         logging.error('Missing data date file please update')
         exit()
     else:
@@ -1796,33 +1832,48 @@ def main():
         generateCsv(options.csvfilename, licences, sites)
 
     if options.htmlfilename != None:
-        generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site)
+        generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site, dataDate)
 
     if options.jsfilename != None:
-        generateJs(options.jsfilename, licences, sites, links, options.licence, options.site)
+        generateJs(options.jsfilename, licences, sites, links, options.licence, options.site, dataDate)
 
     if options.jsonfilename != None:
-        generateJson(options.jsonfilename, options.indent, licences, sites, links)
+        generateJson(options.jsonfilename, options.indent, licences, sites, links, dataDate)
 
     if options.kmlfilename != None:
-        generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site)
+        generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site, dataDate)
 
     if options.kmzfilename != None:
-        generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site)
+        generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site, dataDate)
 
 def updateData(dataFolder, localDate):
-    f = urllib.request.urlopen(UPDATE_URL + 'version')
-    remoteDate = datetime.datetime(*time.strptime(f.read(10).decode('utf-8'), "%d/%m/%Y")[0:5])
-    if localDate >= remoteDate:
-        print('Data already up to date, continuing without downloading data')
-        return (True)
-    urlDownload(UPDATE_URL + 'data.zip', dataFolder)
-    z = zipfile.ZipFile(os.path.join(dataFolder,'data.zip'))
-    z.extractall(dataFolder)
-    f = open(os.path.join(dataFolder,'version'),'w')
-    f.write(remoteDate.strftime("%d/%m/%Y"))
-    f.close()
-    return(True)
+    '''
+    Updates the local data for the application from the internet if the files on
+    the internet are newer than the local copy.
+
+    Arguments:
+    dataFolder - folder to place downloaded data files in
+    localDate  - date of the existing data files (or None if it does not exist)
+
+    Returns:
+    newDate    - date that the updated files were generated
+    
+    '''
+    try:
+        f = urllib.request.urlopen(UPDATE_URL + 'version')
+        remoteDate = datetime.datetime(*time.strptime(f.read(10).decode('utf-8'), "%d/%m/%Y")[0:5])
+        if localDate >= remoteDate:
+            print('Data already up to date, continuing without downloading data')
+            return (localDate)
+        urlDownload(UPDATE_URL + 'data.zip', dataFolder)
+        z = zipfile.ZipFile(os.path.join(dataFolder,'data.zip'))
+        z.extractall(dataFolder)
+        f = open(os.path.join(dataFolder,'version'),'w')
+        f.write(remoteDate.strftime("%d/%m/%Y"))
+        f.close()
+        return(remoteDate)
+    except:
+        return(None)
 
 def urlDownload(url, folder=None, fileName=None):
     if fileName == None:

@@ -16,11 +16,21 @@
   var tree;
   
   function initialize() {
+    setDataDate();
     mapInit()
     treeInit();
     updateMapDisp();
   }
   
+  function updateDataDate(newDate) {
+    var span = document.getElementById('dataDate');
+    if ('textContent' in span) {
+      span.textContent = newDate;
+}   else {
+      span.innerText = newDate;
+}
+    };
+	  
   function mapInit() {
     var latlng = new gm.LatLng(-41.079351, 173.254395)
     var myOptions = {
