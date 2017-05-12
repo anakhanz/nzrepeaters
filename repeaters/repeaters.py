@@ -1064,7 +1064,7 @@ def generateHtmlLicenceBody(licences,sites,links):
 
     return (header, body)
 
-def generateHtmlSite(sites, dataDate,dateLine):
+def generateHtmlSite(sites, dateLine):
     [header, body] = generateHtmlSiteBody(sites)
     return htmlHeader() + dateLine + header + body +htmlFooter()
 
@@ -1244,7 +1244,7 @@ def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate):
         kml = generateKmlSite(sites, dataDate)
     elif byLicence:
         logging.debug('exporting kmlfile %s by licence' % filename)
-        kml = generateKmlLicence(licences, sites, dataDate, links,1)
+        kml = generateKmlLicence(licences, sites, links, dataDate, 1)
     else:
         logging.debug('exporting kmlfile %s by site and licence' % filename)
         kml = generateKmlAll(licences, sites, links, dataDate)
