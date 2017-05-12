@@ -401,32 +401,10 @@ class Licence:
         NZART website for HTML output
         '''
         try:
-            b = int(self.branch)
-            if b < 11:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-01-10/'
-            elif b < 21:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-11-20/'
-            elif b < 31:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-21-30/'
-            elif b < 41:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-31-40/'
-            elif b < 51:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-41-50/'
-            elif b < 61:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-51-60/'
-            elif b < 71:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-61-70/'
-            elif b < 81:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-71-80/'
-            else:
-                url = 'http://www.nzart.org.nz/branches/branch-data/branches-81-90/'
-            br = '%02i' % b
-            brl = br
+            br = '%02i' % int(self.branch)
         except:
-            url = 'http://www.nzart.org.nz/branches/branch-data/affiliated-clubs'
             br = self.branch
-            brl = 'Af'
-        return '<a href="%s#%s">%s</a>' % (url, brl, br)
+        return '<a href="http://nzart.org.nz/contact/branches/%s">%s</a>' % (br, br)
 
     def htmlNote(self):
         '''
