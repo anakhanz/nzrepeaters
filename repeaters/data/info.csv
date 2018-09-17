@@ -203,16 +203,17 @@
 
 
 # 70CM DMR Repeaters
-245589,Porirua (master) DMR,74,,,
+253000,Porirua (Central Master) DMR,74,,,
 246799,Wairarapa DMR,46,,,
 247596,Kapiti DMR,69,,,
 248901,Hamilton DMR,,,,
 250794,Wellington DMR,74,,,
+252921,Christchurch (Midland Master) DMR,05,,,
 248897,Dunedin DMR,,,,
-251251,Auckland DMR,,,,
 249985,Tasman DMR,,,,
+251251,Auckland DMR,,,,
 249599,Manawatu DMR,20,,,
-252921,Christchurch DMR,05,,,
+253589,Tauranga DMR,88,,,
 
 # 23CM Repeaters
 177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
