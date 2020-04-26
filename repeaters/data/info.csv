@@ -6,7 +6,7 @@
 239944,Colonial Knob,74,ZL3TC,ZL4JY,Under Construction
 163358,Cass Peak,CARDS,ZL2BCF,ZL3TMB,
 236498,Climie,63,ZL2BRG,ZL2TDN,
-245318,Arowhana,,,,
+245318,Arowhana,,,,Privatley Licenced
 
 # 2M Repeaters
 70440,"Rotorua Linear",33,"ZL1JP","ZL1BWC",
@@ -66,7 +66,7 @@
 59684,Egmont,87,"ZL2AFE",ZL2GLM,Linked to Opunake 540
 216482,Christchurch,05,ZL3RX,ZL3VP,
 217516,"Mercury Bay",85,"ZL1AAF","ZL1BCJ",
-228006,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode Analogue Voice and Digital Voice P25  NAC 293"
+252998,"Colonial Knob Voice and Data",74,"ZL3TC","ZL4JY","Dual mode Analogue Voice and Digital Voice P25  NAC 293"
 55694,Far North,78,ZL1BG,ZL1FC,"Linked to Doubtless Bay 7225, Akatere 6775 and Dawson Road 6175"
 179109,Dawson Road,78,,,"Linked to Doubtless Bay 7225, Akatere 6775 and Far North 710"
 216134,"Belmont",74,"ZL3TC","ZL2TVM",
@@ -110,9 +110,26 @@
 243361,Hamilton (Raglan) Voice & D-Star,83,,,
 250528,Timaru,34,,,
 247021,Tauranga (Voice & D-Star),39,,,
-250805,Taumarnui,,,,
+250805,Taumarnui,38,,,
 243453,New Plymouth,27,,,
 246517,Waihi North,81,,,"Waiplenty Network, IRLP 6549"
+131963,12 PECKHAM LANE,,,,Privatley Licenced
+253001,148 Forest Hill Road,,,,Privatley Licenced
+252962,177 Mcleod Road Helensville,,,,Privatley Licenced
+225959,Tauranga City,53,,,
+246587,Te Puke,53,,,
+232948,Mosgiel,30,,,
+241962,Halfway Bush Road,30,,,
+252091,Mt Freeth,22,,,
+252092,Mt Freeth,22,,,
+243769,Masterton,46,,,
+253589,Tauranga,39,,,
+253517,Whakatanae,51,,,
+233130,Taupo,60,,,
+213218,Oeo Road,87,,,
+257089,MT Barton,46,,,
+255857,Napier,25,,,
+
 
 # STSP
 159314,"Branch 12 STSP",12,"ZL1PK","ZL1GWP",
@@ -151,7 +168,7 @@
 224760,"Nelson",26,"ZL2BCA","ZL2RP",
 213219,"Hawkes Bay",13,"ZL2AJ","ZL2DW",
 179120,"Mt Victoria",74,"ZL3TC","ZL2TVM",
-207488,Gisborne,,ZL2CC,,
+207488,Gisborne,,ZL2CC,,Privatley Licenced
 231999,Ngaio,74,ZL3TC,ZL2SX,
 179114,Wharite Voice and Datac,6,,,Linked to Hawkes Bay 879
 227635,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
@@ -168,6 +185,15 @@
 243842,Colonial Knob,74,,,
 243362,Hamilton (Raglan) Voice & D-Star,83,,,
 252992,Christchurch D-STAR,05,,,
+255059,177 Mcleod Road Helensville,,,,Privatley Licenced
+179113,Dawson Road,78,,,
+254053,Whakatanae,51,,,
+257405,Hamilton,89,,,
+251874,Mt Threave,13,,,
+236730,Auclkand,66,,,
+239293,Nelson,26,,,
+250309,Gore,08,,,
+
 
 # 70CM National System Repeaters
 177228,"Kaimai National System",81,"ZL1GWP","ZL3GR",
@@ -191,7 +217,7 @@
 177329,"Rotorua National System",33,"ZL1BTB","ZL1BWC",
 177653,"Rangitoto National System",55,"ZL4SQ","ZL1HJ",
 207983,"Kapiti National System",69,"ZL2GO","ZL4VV",
-177364,"Saddle Hill National System",,,,
+177364,"Saddle Hill National System",26,,,
 228947,"Opito Bay National System",85,"ZL1AAF","ZL1BCJ",
 223033,"Nelson National System",26,"ZL2BCA","ZL2RP",
 177304,"Dunedin National System",30,"ZL4JH","ZL4GR",
@@ -203,17 +229,17 @@
 
 
 # 70CM DMR Repeaters
-253000,Porirua (Central Master) DMR,74,,,
+253000,Porirua DMR,74,ZL3TC,ZL4JY,Central Master
 246799,Wairarapa DMR,46,,,
 247596,Kapiti DMR,69,,,
-248901,Hamilton DMR,,,,
-250794,Wellington DMR,74,,,
-252921,Christchurch (Midland Master) DMR,05,,,
-248897,Dunedin DMR,,,,
-249985,Tasman DMR,,,,
-251251,Auckland DMR,,,,
+248901,Hamilton DMR,81,,,
+250794,Wellington DMR,74,ZL3TC,ZL4JY,
+248897,Dunedin DMR,30,,,
+251251,Auckland DMR,66,,,
+249985,Tasman DMR,24,,,
 249599,Manawatu DMR,20,,,
 253589,Tauranga DMR,88,,,
+252921,Christchurch DMR,05,,,Midland Master
 
 # 23CM Repeaters
 177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
@@ -233,7 +259,7 @@
 174404,Western Suburbs APRS,3,ZL1NE,ZL1RCA,
 207909,"Whitford APRS",66,"ZL1WTT","ZL1VFO",
 221036,"Taupo APRS",60,"ZL1BU","ZL1KU",
-224331,"Te Kapua APRS",,"ZL2CC",,
+224331,"Te Kapua APRS",,"ZL2CC",,Privatley Licenced
 218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
 221226,Manawatu  APRS,20,,,
 220125,"Forest Lakes Road APRS",74,"ZL2KG","ZL4SJ",
@@ -264,7 +290,7 @@
 222944,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
 222945,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
 222946,"Auckland D-Star Data",86,"ZL1WO","ZL1BFB","D-Star Data"
-235500,Collingwood APRS,,ZL2BVO,,
+235500,Collingwood APRS,,ZL2BVO,,Privatley Licenced
 236295,Timaru APRS,34,ZL3OZ,ZL3GL,
 236722,Kapiti APRS,69,ZL2GO,ZL4VV,
 224637,Te Ahioteatua APRS,13,ZL2AJ,ZL2DW,
@@ -274,6 +300,10 @@
 228788,Makatiti APRS,33,ZL1PJ,ZL1BWC,
 231658,Kauahei APRS,,ZL2AJ,,
 232950,Taihape APRS,20,,,
+207807,Hamilton,81,,,
+228226,Hamilton,81,,,
+245107,Rotorua,33,,,
+
 
 #BEACONS
 202338,"International Beacon Project, NCDX",46,ZL2BFY,,
@@ -283,12 +313,12 @@
 215939,Upper Hutt 6m,63,ZL2HM,ZL2BRG,
 202048,Blenheim 6m,22,ZL2BK,ZL2BJV,
 250050,Greymouth 6m,49,ZL3TY,ZL3ADH,
-250014,Waipuna 2m,,ZL2WHO,,
-153344,Rolleston Railway Station 10m,,,,
-250081,Rolleston Railway Station 6m,,,,
+250014,Waipuna 2m,,ZL2WHO,,Privatley Licenced
+153344,Rolleston Railway Station 10m,,,,Privatley Licenced
+250081,Rolleston Railway Station 6m,,,,Privatley Licenced
 215921,Auckland 2m,66,ZL1JD,ZL1TPH,
 224659,Waikato 2m,81,ZL1THG,ZL1UJG,
-237684,Waipuna 2m,,ZL2WHO,,
+237684,Waipuna 2m,,ZL2WHO,,Privatley Licenced
 243021,Hawkins Hill 2m,74,ZL3TC,ZL2TVM,
 241794,Christchurch 2m,05,ZL3RX,ZL3VP,Under Construction
 241800,Greymouth 2m,49,ZL3TY,ZL3ADH,Under Construction
@@ -296,7 +326,7 @@
 55710,Hawkes Bay 2 m,25,ZL2TC,ZL2DW,
 215920,Auckland 70 cm,66,ZL1JD,ZL1TPH,
 224660,Waikato 70cm,81,ZL1THG,ZL1UJG,
-239391,Waipuna 70cm,,ZL2WHO,,
+239391,Waipuna 70cm,,ZL2WHO,,Privatley Licenced
 246787,Waipuna 23cm,74,ZL2WHO,ZL2BKC,
 236082,Hawkins Hill 70cm,74,ZL3TC,ZL2TVM,
 241793,Christchurch 70cm,05,ZL3RX,ZL3VP,Under Construction
@@ -308,9 +338,16 @@
 221252,Waikato 12cm,81,ZL1THG,ZL1UJG,
 202076,Muriwai 5cm,74,ZL1TBG,ZL1AVZ,
 246751,Climie 3cm,63,,,
-249395,Colonial Knob 9cm,74,,,
+249395,Colonial Knob 9cm,74,ZL2BKC,ZL3TC,
+253005,Colonial Knob 32cm,74,ZL2BKC,ZL3TC,
+255472,Napier 6m,25,,,
+257826,Napier 2m,25,,,
+250018,Far North 6m,,,,Privatley Licenced
 
 #ATV
 175154,Ngaio ATV,74,ZL2HD,ZL2TAR,
 175654,Whitford ATV (Not Working),3,ZL1VRR,ZL1RCA,
 174765,Oamaru ATV,64,ZL4DB,ZL4SN,
+
+#DATV
+256129,Belmony DATV,74,ZL2TAR,ZL3TC,Under test
