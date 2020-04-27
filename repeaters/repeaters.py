@@ -1233,7 +1233,7 @@ def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate):
 
 def generateKmlAll(licences, sites, links, dataDate):
     kml = kmlHeader()
-    kml += '    <name>Amateur Licences and Sites (data extracted %s)</name><open>1</open>\n'
+    kml += '    <name>Amateur Licences and Sites (data extracted %s)</name><open>1</open>\n' % dataDate.strftime("%d/%m/%Y")
     kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += '    <Folder><name>Licences</name><open>1</open>\n'
     kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
@@ -1781,7 +1781,7 @@ def main():
             parser.error('Atleast one of the -a -b ,-d, -r or -t options must be specified for output to be generated.')
 
     if not (options.minFreq == None or options.maxFreq == None):
-        if passoptions.minFreq > options.maxFreq:
+        if options.minFreq > options.maxFreq:
             parser.error('The maximum frequency must be greater than the minimum frequency.')
 
     if options.licence and options.site:
