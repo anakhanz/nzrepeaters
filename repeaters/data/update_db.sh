@@ -14,7 +14,8 @@
 # Download URL & file name
 #URL_PATH="http://www.rsm.govt.nz/cms/pdf-library/resource-library/spectrum-search-lite/spectrum-search-lite-database"
 #URL_FILE="spectrum-search-lite-database.zip"
-URL_PATH="http://www.rsm.govt.nz/online-services-resources/pdf-and-documents-library/tools/spectrum-search-lite/prism.zip"
+#URL_PATH="http://www.rsm.govt.nz/online-services-resources/pdf-and-documents-library/tools/spectrum-search-lite/prism.zip"
+URL_PATH="https://www.rsm.govt.nz/assets/Uploads/documents/prism/prism.zip"
 URL_FILE="prism.zip"
 # Database file names
 DB_MDB="prism.mdb"
@@ -43,7 +44,7 @@ wget -q ${URL_PATH} -O ${URL_FILE}
 unzip -qof ${URL_FILE}
 
 # remove zip file
-rm ${URL_FILE}
+#rm ${URL_FILE}
 
 # create backup of destination sqlite file
 mv ${DB_SQLITE} ${DB_SQLITE}.bak
