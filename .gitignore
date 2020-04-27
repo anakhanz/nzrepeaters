@@ -42,8 +42,8 @@ MANIFEST
 build/*
 
 # Application Output files
-*.kml
-*.kmz
+/*.kml
+/*.kmz
 # Application output files in the root of the project
 /*.csv
 /*.html
