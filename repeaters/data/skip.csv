@@ -7,7 +7,7 @@
 177327,0,"Auckland National System Link"
 177333,0,"Auckland National System Link"
 177233,0,"Hamilton National System Link"
-177230,0,"Edgecumbe National System Link"
+259629,0,"Edgecumbe National System Link"
 228947,434.975,"Mercury Bay National System Link"
 177328,0,"Rotorua National System Link"
 177648,0,"Waitomo National System Link"
@@ -42,7 +42,6 @@
 207933,0,"Dunedin BBS link to National System"
 179126,0,"Dunedin Link to Queenstown"
 225451,0,Dougs personal ATV set-up
-242336,0,Dont know make it work for now
 226281,0,Hamilton Link
 225719,0,Hamilton Link
 225720,0,Hamilton Link
@@ -53,3 +52,6 @@
 217534,0,Mercuary Bay to Tairua linking
 246515,0,Waiplenty Network Linking ?
 246516,0,Waiplenty Network Linking ?
+242336,0,Amateur Fixed - Skip this type for Network
+267478,0,Amateur Fixed - Skip this type for Network
+266923,0,Wanganui Linking

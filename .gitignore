@@ -13,16 +13,21 @@
 .project
 .pydevproject
 
+#VS code project files
+.vscode
+
 # private scripts
 all.sh
 full.sh
-map_build.sh
+#map_build.sh
 map_upload.sh
 repeaters/data/upload_data.sh
 
 # generated data files
 repeaters/data/data.zip
 repeaters/data/data.zip.bak
+repeaters/data/prism.ldb
+repeaters/data/prism.mdb
 repeaters/data/prism.sqlite
 repeaters/data/prism.sqlite.bak
 repeaters/data/version
