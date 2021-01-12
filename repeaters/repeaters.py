@@ -21,7 +21,7 @@
 ## along with this program. If not, see <http://www.gnu.org/licences/>.
 
 
-import cgi
+import html
 import csv
 import datetime
 import json
@@ -388,19 +388,19 @@ class Licence:
             ctcss = self.ctcss.html()
         row =  '<tr>'
         row += '<td>%s</td>' % self.callsign
-        row += '<td>'+ cgi.escape(self.formatName())
+        row += '<td>'+ html.escape(self.formatName())
         row += '</td><td>' +'%0.4f MHz' % self.frequency
         if self.licType == T_REPEATER:
             row += '</td><td>' +'%0.4f MHz' % self.calcInput()
             row += '</td><td>' +'%s' % ctcss
         if site != None:
-            row += '</td><td>' + cgi.escape(site.name)
+            row += '</td><td>' + html.escape(site.name)
             row += '</td><td>' + site.mapRef
             row += '</td><td>' + '%i m' % site.height
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
-        row += '</td><td>' + cgi.escape(self.note)
-        row += '</td><td>' + cgi.escape(self.licensee)
+        row += '</td><td>' + html.escape(self.note)
+        row += '</td><td>' + html.escape(self.licensee)
         row += '</td><td>' +str(self.number)
         row += '</td></tr>'
         return row
@@ -421,9 +421,9 @@ class Licence:
         Returns an html formatted note including coverage link for digipeaters
         '''
         if self.licType == T_DIGI and self.callsign != None and self.frequency == 144.575:
-            return cgi.escape(self.note) + '<a href="http://aprs.fi/#!v=heard&ym=1207&call=a%2F' + self.callsign + '&timerange=3600" target="_blank"> APRS.FI Coverage Map</a>'
+            return html.escape(self.note) + '<a href="http://aprs.fi/#!v=heard&ym=1207&call=a%2F' + self.callsign + '&timerange=3600" target="_blank"> APRS.FI Coverage Map</a>'
         else:
-            return cgi.escape(self.note)
+            return html.escape(self.note)
 
     def htmlDescription(self, site):
         '''
@@ -448,12 +448,12 @@ class Licence:
         description += '<tr><th align="left" colspan=%i>Branch</th><td>%s</td></tr>' % (colSpan, self.htmlBranch())
         description += '<tr><th align="left" colspan=%i>Trustees</th><td>%s</td></tr>' % (colSpan, self.htmlTrustees())
         description += '<tr><th align="left" colspan=%i>Notes</th><td>%s</td></tr>' % (colSpan, self.htmlNote())
-        description += '<tr><th align="left" colspan=%i>Site Name</th><td>%s</td></tr>' % (colSpan, cgi.escape(self.site))
+        description += '<tr><th align="left" colspan=%i>Site Name</th><td>%s</td></tr>' % (colSpan, html.escape(self.site))
         description += '<tr><th align="left" colspan=%i>Map Reference</th><td>%s</td></tr>' % (colSpan, site.mapRef)
         description += '<tr><th align="left" colspan=%i>Coordinates</th><td>%f %f</td></tr>' % (colSpan, site.coordinates.lat, site.coordinates.lon)
         description += '<tr><th align="left" colspan=%i>Height</th><td>%i m</td></tr>' % (colSpan, site.height)
         description += '<tr><th align="left" colspan=%i>Licence Number</th><td>%s</td></tr>' % (colSpan, self.number)
-        description += '<tr><th align="left" colspan=%i>Licensee</th><td>%s</td></tr>' % (colSpan, cgi.escape(self.licensee))
+        description += '<tr><th align="left" colspan=%i>Licensee</th><td>%s</td></tr>' % (colSpan, html.escape(self.licensee))
         description += '</table>'
         return description
 
@@ -481,7 +481,7 @@ class Licence:
             self.licType, self.band(), subType,
             site.coordinates.lat, site.coordinates.lon,
             self.formatName(),
-            self.licType, cgi.escape(self.formatName()), self.htmlDescription(site))
+            self.licType, html.escape(self.formatName()), self.htmlDescription(site))
 
     def kmlPlacemark(self, site):
         '''
@@ -491,7 +491,7 @@ class Licence:
         site - Site information for printing with the licence
         '''
         placemark = '    <Placemark>\n'
-        placemark += '      <name>'+ cgi.escape(self.formatName())+'</name>\n'
+        placemark += '      <name>'+ html.escape(self.formatName())+'</name>\n'
         placemark += '      <description><![CDATA['
         placemark += self.htmlDescription(site)
         placemark += ']]></description>\n'
@@ -563,14 +563,14 @@ class Link:
             ltype,
             self.end1.lat, self.end1.lon,
             self.end2.lat, self.end2.lon,
-            cgi.escape(self.name))
+            html.escape(self.name))
 
     def kmlPlacemark(self):
         '''
         Returns a kml placemark (line) for the link
         '''
         placemark = '    <Placemark>\n'
-        placemark += '      <name>%s</name>\n' % cgi.escape(self.name)
+        placemark += '      <name>%s</name>\n' % html.escape(self.name)
         #placemark += '      <description>description</description>\n'
         placemark += '      <styleUrl>#repeaterLink</styleUrl>\n'
         placemark += '      <LineString>\n'
@@ -655,7 +655,7 @@ class Site:
            (len(self.digipeaters) > 0) or\
            (len(self.repeaters) > 0) or\
            (len(self.tvRepeaters) >0):
-            logging.debug('Creating placemark for: %s' % cgi.escape(self.name))
+            logging.debug('Creating placemark for: %s' % html.escape(self.name))
             #description += '<h2>Amateur Site</h2>'
             description += '<table>'
             description += '<tr><th align="left">Map Reference</th><td>%s</td></tr>' % self.mapRef
@@ -701,7 +701,7 @@ class Site:
         desc = self.htmlDescription()
         if len(desc) > 0:
             placemark = '    <Placemark>\n'
-            placemark += '      <name>'+ cgi.escape(self.name) + '</name>\n'
+            placemark += '      <name>'+ html.escape(self.name) + '</name>\n'
             placemark += '      <description><![CDATA['
             placemark += desc
             placemark += ']]></description>\n'
