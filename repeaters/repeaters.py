@@ -271,9 +271,9 @@ class Licence:
         '''
         return calcBand(self.frequency)
 
-    def calcInput(self):
+    def calcOffset(self):
         '''
-        Returns the input frequency for the repeater.
+        Returns the input offset for the repeater.
         '''
         # 6m
         if 50.0 <= self.frequency <= 54.0:
@@ -305,7 +305,13 @@ class Licence:
             logging.error('Error no offset calculation for No: %i %s %0.4fMHz' % (
                            self.number, self.name, self.frequency))
             offset = 0
-        return self.frequency + offset
+        return offset
+
+    def calcInput(self):
+        '''
+        Returns the input frequency for the repeater.
+        '''
+        return self.frequency + self.calcOffset()
 
     def formatName (self):
         '''
@@ -328,6 +334,10 @@ class Licence:
         else:
             csv += ',"%s"' % self.callsign
         csv += ',%f' % self.frequency
+        if self.licType =='Amateur Repeater':
+            csv += ',%f' % self.calcOffset()
+        else:
+            csv +=',N/A'
         if self.branch == None:
             csv += ',""'
         else:
@@ -965,7 +975,7 @@ def generateCsv(filename,licences,sites):
 
     licenceNos = sorted(list(licences.keys()), key=sortKey)
 
-    csv = '"Name","Number","Type","Callsign","Frequency","Branch","Trustees 1","Trustees 2","Notes","Licensee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
+    csv = '"Name","Number","Type","Callsign","Frequency","Offset","Branch","Trustees 1","Trustees 2","Notes","Licensee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
     for licence in licenceNos:
         csv += licences[licence].csvLine(sites[licences[licence].site])
     f = open(filename,mode='w')
