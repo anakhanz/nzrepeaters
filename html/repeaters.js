@@ -204,5 +204,5 @@
         type = 'pin';
         text = '+';
     }
-    return 'http://chart.googleapis.com/chart?chst=' + chst + '&chld=' + type + '|' + text + '|' + color + '|000000|ffff00';
+    return 'https://chart.googleapis.com/chart?chst=' + chst + '&chld=' + type + '|' + text + '|' + color + '|000000|ffff00';
   }
