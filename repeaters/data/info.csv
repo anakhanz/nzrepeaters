@@ -6,7 +6,7 @@
 268481,Colonial Knob,74,ZL3TC,ZL4JY,Under Construction
 163358,Cass Peak,CARDS,ZL2BCF,ZL3TMB,
 236498,Climie,63,ZL2BRG,ZL2TDN,
-245318,Arowhana,,,,Privatley Licenced
+245318,Arowhana,,,,Privately Licenced
 
 # 2M Repeaters
 70440,"Rotorua Linear",33,"ZL1JP","ZL1BWC",
@@ -114,8 +114,8 @@
 250805,Taumarnui,38,,,
 243453,New Plymouth,27,,,
 246517,Waihi North,81,,,"Waiplenty Network, IRLP 6549"
-131963,12 PECKHAM LANE,,,,Privatley Licenced
-253001,148 Forest Hill Road,,,,Privatley Licenced
+131963,12 PECKHAM LANE,,,,Privately Licenced
+253001,148 Forest Hill Road,,,,Privately Licenced
 225959,Tauranga City,53,,,
 246587,Te Puke,53,,,
 232948,Mosgiel,30,,,
@@ -129,18 +129,18 @@
 213218,Oeo Road,87,,,
 257089,MT Barton,46,,,
 255857,Napier,25,,,
-263888,177 MCLEOD ROAD HELENSVILLE,,,,Privatley Licenced
+263888,177 MCLEOD ROAD HELENSVILLE,,,,Privately Licenced
 271070,Te Puke,53,,,
-259248,"40 J GREENWOOD ROAD, LEIGH.",,,,Privatley Licenced
-259198,ABNERS HEAD,,,,Privatley Licenced
+259248,"40 J GREENWOOD ROAD, LEIGH.",,,,Privately Licenced
+259198,ABNERS HEAD,,,,Privately Licenced
 261221,MereMere,87,,,Linked to MereMere 147.05
 273018,Invercargill,37,,,
 273023,Ashburton,1,,,
 266837,Wanganui,48,,,
 263788,Mount St Bathans,61,,,
 261176,Clime,63,ZL2BRG,ZL2TDN,
-271128,Mt Tuhua,,ZL2AJ,,Privatley Licenced
-271127,Pukawa 2,,ZL2AJ,,Privatley Licenced
+271128,Mt Tuhua,,ZL2AJ,,Privately Licenced
+271127,Pukawa 2,,ZL2AJ,,Privately Licenced
 263139,Whakatane,51,,,
 268852,York Rd,27,,,
 
@@ -181,7 +181,7 @@
 224760,"Nelson",26,"ZL2BCA","ZL2RP",
 213219,"Hawkes Bay",13,"ZL2AJ","ZL2DW",
 179120,"Mt Victoria",74,"ZL3TC","ZL2TVM",
-207488,Gisborne,,ZL2CC,,Privatley Licenced
+207488,Gisborne,,ZL2CC,,Privately Licenced
 231999,Ngaio,74,ZL3TC,ZL2TVM,
 179114,Wharite Voice and Datac,6,,,Linked to Hawkes Bay 879
 227635,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
@@ -206,22 +206,22 @@
 239293,Nelson,26,,,
 250309,Gore,08,,,
 276409,Raglan,83,,,
-263889,177 MCLEOD ROAD HELENSVILLE,,,,Privatley Licenced
+263889,177 MCLEOD ROAD HELENSVILLE,,,,Privately Licenced
 261222,MereMere,87,,,Linked to MereMere 488.80
 267755,Ashburton Voice & Fusion,1,,,
 263532,Colonial Knob,74,ZL3TC,ZL4JY,
 273019,Invercargill,37,,,
 272581,Christchurch,5,,,
-264395,MENZIES BUILDING INVERCARGILL,,,,Privatley Licenced
+264395,MENZIES BUILDING INVERCARGILL,,,,Privately Licenced
 270020,Gore,8,,,
 265536,Tauranga D-Star,39,,,
 272624,Tauranga,39,,,
 271104,Mt Grey,68,,,
-271140,Mt Tuhua,,ZL2AJ,,Privatley Licenced
+271140,Mt Tuhua,,ZL2AJ,,Privately Licenced
 276301,Remarkables,61,,,
 266963,Te Puke,88,,,
-267881,	Waiheke Island,,ZL1PMY,,Privatley Licenced
-263159,Woolston,,,,Privatley Licenced
+267881,	Waiheke Island,,ZL1PMY,,Privately Licenced
+263159,Woolston,,,,Privately Licenced
 268574,York Rd,27,,,
 
 # 70CM National System Repeaters
@@ -273,6 +273,13 @@
 263532,Oamaru DMR,64,ZL4SN,,
 
 
+# 33cm DMR
+289712,Porirua DMR,74,ZL4JY,ZL2KG,
+290324,Mt Victoria DMR,74,ZL2BRF,ZL3TC,
+
+# 33cm ATV
+291138,33cm Maungaraki ATV,,ZL2TAR,,Under Test
+
 # 23CM Repeaters
 177977,"Mt Victoria",74,"ZL3TC","ZL4JY",
 169950,"Auckland",66,"ZL1TGC","ZL1JD",
@@ -293,7 +300,7 @@
 174404,Western Suburbs APRS,3,ZL1NE,ZL1RCA,
 207909,"Whitford APRS",66,"ZL1WTT","ZL1VFO",
 221036,"Taupo APRS",60,"ZL1BU","ZL1KU",
-224331,"Te Kapua APRS",,"ZL2CC",,Privatley Licenced
+224331,"Te Kapua APRS",,"ZL2CC",,Privately Licenced
 218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
 221226,Manawatu  APRS,20,,,
 220125,"Forest Lakes Road APRS",74,"ZL2KG","ZL4SJ",
@@ -324,7 +331,7 @@
 222944,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
 222945,"Auckland D-Star Voice",86,"ZL1WOT","ZL1BFB","D-Star Voice"
 222946,"Auckland D-Star Data",86,"ZL1WO","ZL1BFB","D-Star Data"
-235500,Collingwood APRS,,ZL2BVO,,Privatley Licenced
+235500,Collingwood APRS,,ZL2BVO,,Privately Licenced
 236295,Timaru APRS,34,ZL3OZ,ZL3GL,
 236722,Kapiti APRS,69,ZL2GO,ZL4VV,
 224637,Te Ahioteatua APRS,13,ZL2AJ,ZL2DW,
@@ -337,9 +344,9 @@
 207807,Hamilton,81,,,
 228226,Hamilton,81,,,
 245107,Rotorua,33,,,
-264784,AIRSTRIP HILL IWITAUA RD,,,,Privatley Licenced
+264784,AIRSTRIP HILL IWITAUA RD,,,,Privately Licenced
 270636,Colonial Knob,,ZL4JY,,
-272570,Takaurunga,ZL2AJ,,,Privatley Licenced
+272570,Takaurunga,ZL2AJ,,,Privately Licenced
 
 
 #BEACONS
@@ -350,12 +357,12 @@
 215939,Upper Hutt 6m,63,ZL2HM,ZL2BRG,
 202048,Blenheim 6m,22,ZL2BK,ZL2BJV,
 250050,Greymouth 6m,49,ZL3TY,ZL3ADH,
-250014,Waipuna 2m,,ZL2WHO,,Privatley Licenced
-153344,Rolleston Railway Station 10m,,,,Privatley Licenced
-250081,Rolleston Railway Station 6m,,,,Privatley Licenced
+250014,Waipuna 2m,,ZL2WHO,,Privately Licenced
+153344,Rolleston Railway Station 10m,,,,Privately Licenced
+250081,Rolleston Railway Station 6m,,,,Privately Licenced
 215921,Auckland 2m,66,ZL1JD,ZL1TPH,
 224659,Waikato 2m,81,ZL1THG,ZL1UJG,
-237684,Waipuna 2m,,ZL2WHO,,Privatley Licenced
+237684,Waipuna 2m,,ZL2WHO,,Privately Licenced
 243021,Hawkins Hill 2m,74,ZL3TC,ZL2BKC,
 241794,Christchurch 2m,05,ZL3RX,ZL3VP,Under Construction
 241800,Greymouth 2m,49,ZL3TY,ZL3ADH,Under Construction
@@ -363,7 +370,7 @@
 55710,Hawkes Bay 2 m,25,ZL2TC,ZL2DW,
 215920,Auckland 70 cm,66,ZL1JD,ZL1TPH,
 224660,Waikato 70cm,81,ZL1THG,ZL1UJG,
-239391,Waipuna 70cm,,ZL2WHO,,Privatley Licenced
+239391,Waipuna 70cm,,ZL2WHO,,Privately Licenced
 246787,Waipuna 23cm,74,ZL2WHO,ZL2BKC,
 236082,Hawkins Hill 70cm,74,ZL3TC,ZL2BKC,
 241793,Christchurch 70cm,05,ZL3RX,ZL3VP,Under Construction
@@ -379,7 +386,7 @@
 253005,Colonial Knob 32cm,74,ZL2BKC,ZL3TC,
 255472,Napier 6m,25,,,
 257826,Napier 2m,25,,,
-250018,Far North 6m,,,,Privatley Licenced
+250018,Far North 6m,,,,Privately Licenced
 261227,Christchurch 10m,5,,,
 261220,Christchurch 6m,5,,,
 267408,Hamilton 2m,81,,,
