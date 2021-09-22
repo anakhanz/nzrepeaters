@@ -135,7 +135,7 @@ bands = [band('1800 meters',0.13,0.19),
          band('6 meters',50.0,54.0),
          band('2 meters',144.0,148.0),
          band('70 cm',430.0,440.0),
-         band('32 cm',921.0,929.0),
+         band('33 cm',921.0,929.0),
          band('23 cm',1240.0,1300.0),
          band('12 cm',2396.0,2450.0),
          band('9 cm',3300.0,3410.0),
@@ -291,6 +291,9 @@ class Licence:
             offset = -5.0
         elif 433.0 <= self.frequency <435.0:
             offset = 5.0
+        #33cm
+        elif 927.0 <= self.frequency <928.0:
+            offset = -12.0
         # 23cm
         # Special case for Mt Victoria
         elif self.frequency == 1271.2:
