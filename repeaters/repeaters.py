@@ -868,6 +868,11 @@ WHERE c.clientid = l.clientid
                 skipping = True
                 logging.info('Skipping Licensee No: %d, frequency %0.4f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
 
+        licenceName = licenceLocation.title()
+        licenceBranch = ''
+        licenceTrustee1 = ''
+        licenceTrustee2 = ''
+        licenceNote = 'No info record available'
         if not skipping:
             if licenceNumber in list(info.keys()):
                     licenceName = info[licenceNumber][I_NAME]
@@ -877,11 +882,7 @@ WHERE c.clientid = l.clientid
                     licenceNote = info[licenceNumber][I_NOTE]
             else:
                 logging.error('Licence No: %i on frequency %0.4fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
-                licenceName = licenceLocation.title()
-                licenceBranch = ''
-                licenceTrustee1 = ''
-                licenceTrustee2 = ''
-                licenceNote = 'No info record available'
+                
 
         if include != None:
             skipping = skipping or (include not in licenceName)
