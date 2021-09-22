@@ -1743,12 +1743,11 @@ def main():
         parser.error('Chosen data folder %s does not exist' % data_dir)
 
     dataDate_file = os.path.join(data_dir,'version')
+    dataDate = datetime.datetime.min
     try:
         dataDate = datetime.datetime(*time.strptime(open(dataDate_file).read()[:10], "%d/%m/%Y")[0:5])
     except:
-        if options.update:
-            dataDate = datetime.datetime.min
-        else:
+        if not options.update:
             parser.error('Can not determine data date for the chosen data folder %s' % data_dir)
 
     if options.update:
