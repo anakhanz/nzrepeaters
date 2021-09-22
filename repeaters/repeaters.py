@@ -279,30 +279,42 @@ class Licence:
         if 50.0 <= self.frequency <= 54.0:
             offset = -1.0
         # 2m
+        # Standard
         elif 145.325 <= self.frequency <= 147.0:
             offset = -0.6
         elif 147.025 <= self.frequency <= 148.0:
             offset = +0.6
-        # special case for Rotorua Linear
-        elif self.frequency == 144.35:
-            offset = +0.6
         # 70cm
+        # Standard
         elif 438.0 <= self.frequency <440.0:
             offset = -5.0
+        # Inverted
         elif 433.0 <= self.frequency <435.0:
             offset = 5.0
         #33cm
         elif 927.0 <= self.frequency <928.0:
             offset = -12.0
         # 23cm
-        # Special case for Mt Victoria
-        elif self.frequency == 1271.2:
-            offset = 20.0
+        # Standard
         elif 1240.0 <= self.frequency <1300.0:
             offset = -20.0
+        # Inverted
+        elif 1270.0 <= self.frequency < 1274.0:
+            offset = +20.0
         # Simplex repeaters eg VoIP
         elif 'simplex' in self.note.lower():
             offset = 0.0
+
+        # Special cases
+        # Oeo Road
+        elif self.number == 213218:
+            offset = -0.6
+        # 12 Peckham Lane cross band
+        elif self.number == 131963:
+            offset = 433.8 - 144.935
+        # Rotorua Linear
+        elif self.number == 244752:
+            offset = +0.6
 
         else:
             logging.error('Error no offset calculation for No: %i %s %0.4fMHz' % (

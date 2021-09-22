@@ -9,11 +9,10 @@
 245318,Arowhana,,,,Privately Licenced
 
 # 2M Repeaters
-70440,"Rotorua Linear",33,"ZL1JP","ZL1BWC",
 155626,"Kapiti Voice and Data",69,"ZL2GO","ZL4VV",
 101944,"Opunake",87,"ZL2QP","ZL2ADU",Linked to Egmont 705"
 101945,"Brynderwyn",28,ZL1TX,ZL1DTE,
-159316,"Ward",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Picton 7225 and Blenheim 695"
+278558,"Ward",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Picton 7225 and Blenheim 695, IRLP 6285"
 173091,Butters Voice and Data,6,ZL1AFZ,,Linked to Wharite 690
 207722,Cass Peak,CARDS,ZL2BCF,ZL3TMB,"Linked to Tekapo 680, IRLP 6900"
 223698,"Te Uku",81,"ZL1TAT","ZL1THG","Waiplenty Network, IRLP 6549"
@@ -53,7 +52,7 @@
 66594,"Kaikoura",22,"ZL2BK","ZL2BJV",
 178981,"Dunedin",30,"ZL4JH","ZL4GR",
 54120,"Waikato",81,"ZL1TAT","ZL1THG","IRLP 6549"
-66590,"Blenheim",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Picton 7225 and Ward 560"
+66590,"Blenheim",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Picton 7225 and Ward 560, IRLP 6285"
 55721,Greymouth,49,ZL3TY,ZL3ADH,
 59678,Waitaki,34,ZL3OZ,ZL3GL,
 55687,Gore,8,ZL4TCS,ZL4LC,
@@ -81,7 +80,7 @@
 65587,"Nelson",26,"ZL2BCA","ZL2RP",
 159308,Doubtless Bay,78,ZL1AUI,ZL1BQK,"Linked to Far North 710, Akatere 6775 and Dawson Road 6175"
 215880,Herangi,55,ZL4SQ,ZL1HJ,
-159304,"Picton",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Blenheim 695 and Ward 560"
+252092,"Picton",22,"ZL2BK","ZL2BJV","Linked to Golden Bay 7375, Blenheim 695 and Ward 560, IRLP 6285"
 55711,Hawkes Bay,25,ZL2TC,ZL2DW,IRLP 6793
 207982,Canterbury,5,ZL3RX,ZL3VP,
 97461,"Kakaramea",38,"ZL1UTH","ZL1TIG",
@@ -92,7 +91,7 @@
 174755,"Rotorua",33,"ZL1JP","ZL1BWC",
 215191,"Rewa",46,"ZL2BA","ZL4JS",
 101964,Waitomo,55,ZL4SQ,ZL1HJ,
-175649,"Golden Bay",22,"ZL2BCG","ZL2VBO","Linked to Picton 7225, Blenheim 695 and Ward 560"
+175649,"Golden Bay",22,"ZL2BCG","ZL2VBO","Linked to Picton 7225, Blenheim 695 and Ward 560, IRLP 6285"
 227865,Maungapikopiko,88,ZL1IE,ZL1RTY,
 227633,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
 225629,"Rodney",71,ZL2BCB,ZL2MR,
@@ -107,7 +106,7 @@
 242588,Kapiti,69,ZL2GO,ZL4VV,
 236193,Lower Hutt,18,ZL2TVM,ZL2TWS,
 235015,Hamilton,89,ZL1PO,ZL1SAD,
-244752,Rotorua Linear,33,ZL1JP,ZL1BWC,
+244752,Rotorua Linear,33,ZL1JP,ZL1BWC,Inverted input
 243361,Hamilton (Raglan) Voice & D-Star,83,,,
 250528,Timaru,34,,,
 247021,Tauranga (Voice & D-Star),39,,,
@@ -120,20 +119,18 @@
 246587,Te Puke,53,,,
 232948,Mosgiel,30,,,
 241962,Halfway Bush Road,30,,,
-252091,Mt Freeth,22,,,
-252092,Mt Freeth,22,,,
 243769,Masterton,46,,,
 253589,Tauranga,39,,,
 253517,Whakatanae,51,,,
 233130,Taupo,60,,,
-213218,Oeo Road,87,,,
+213218,Oeo Road,87,,,"+600 split. Linked to MereMere 147.05, MereMere 438.8 & Oeo Road 144.8"
 257089,MT Barton,46,,,
 255857,Napier,25,,,
 263888,177 MCLEOD ROAD HELENSVILLE,,,,Privately Licenced
 271070,Te Puke,53,,,
 259248,"40 J GREENWOOD ROAD, LEIGH.",,,,Privately Licenced
 259198,ABNERS HEAD,,,,Privately Licenced
-261221,MereMere,87,,,Linked to MereMere 147.05
+261221,MereMere,87,,,Linked to MereMere 438.8 & Oeo Road 144.8
 273018,Invercargill,37,,,
 273023,Ashburton,1,,,
 266837,Wanganui,48,,,
@@ -141,8 +138,11 @@
 261176,Clime,63,ZL2BRG,ZL2TDN,
 271128,Mt Tuhua,,ZL2AJ,,Privately Licenced
 271127,Pukawa 2,,ZL2AJ,,Privately Licenced
-263139,Whakatane,51,,,
 268852,York Rd,27,,,
+281602,Hamilton (Raglan),83,,,
+292091,Whakatanae,51,,,
+276982,Whakatanae,51,,,
+292141,Auckland,02,,,
 
 # STSP
 159314,"Branch 12 STSP",12,"ZL1PK","ZL1GWP",
@@ -207,7 +207,7 @@
 250309,Gore,08,,,
 276409,Raglan,83,,,
 263889,177 MCLEOD ROAD HELENSVILLE,,,,Privately Licenced
-261222,MereMere,87,,,Linked to MereMere 488.80
+261222,MereMere,87,,,Linked to MereMere 147.5 & Oeo Road 144.8
 267755,Ashburton Voice & Fusion,1,,,
 263532,Colonial Knob,74,ZL3TC,ZL4JY,
 273019,Invercargill,37,,,
@@ -219,10 +219,12 @@
 271104,Mt Grey,68,,,
 271140,Mt Tuhua,,ZL2AJ,,Privately Licenced
 276301,Remarkables,61,,,
-266963,Te Puke,88,,,
 267881,	Waiheke Island,,ZL1PMY,,Privately Licenced
 263159,Woolston,,,,Privately Licenced
 268574,York Rd,27,,,
+281881,New Plymouth,27,,,
+278282,Motueka,24,ZL2BCG,ZL2ASF,
+290325,415 Southland Place Hastings 965,,ZL2RO,ZL2ROR,Privately Licenced
 
 # 70CM National System Repeaters
 177228,"Kaimai National System",81,"ZL1GWP","ZL3GR",
@@ -267,10 +269,10 @@
 251251,Auckland DMR,66,ZL1JD,,
 249985,Tasman DMR,24,ZL2ASF,,
 249599,Manawatu DMR,20,ZL21FX,,
-253589,Tauranga DMR,88,ZL1WIN,,
 252921,Christchurch DMR,05,ZL3VP,,Midland Master
 272752,Hawkes Bay DMR,13,ZL2DW,,
 263532,Oamaru DMR,64,ZL4SN,,
+266963,Tauranga DMR,88,ZL1WIN,,
 
 
 # 33cm DMR
@@ -346,8 +348,12 @@
 245107,Rotorua,33,,,
 264784,AIRSTRIP HILL IWITAUA RD,,,,Privately Licenced
 270636,Colonial Knob,,ZL4JY,,
-272570,Takaurunga,ZL2AJ,,,Privately Licenced
-
+272570,Takaurunga APRS,ZL2AJ,,,Privately Licenced
+277822,Christchurch APRS,05,,,
+290653,Taumatamaire APRS,ZL2AJ,,,Privately Licenced
+290654,Pomarangai APRS,ZL2AJ,,,Privately Licenced
+290655,Mt Threave APRS,ZL2AJ,,,Privately Licenced
+263139,Whakatane APRS,51,,,
 
 #BEACONS
 202338,"International Beacon Project, NCDX",46,ZL2BFY,,
@@ -400,3 +406,6 @@
 
 #DATV
 256129,Belmont DATV,74,ZL2TAR,ZL3TC,Under test
+
+#Fixed Stations
+289209,Airstrip Hill Iwitua Road,,ZL1SEA,ZL2SEA,Privately Licenced

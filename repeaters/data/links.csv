@@ -35,7 +35,7 @@
 223698,235418,"Waiplenty Network, IRLP 6549"
 246517,228212,"Waiplenty Network, IRLP 6549" 
 101944,59684,"Opunake - Egmont"
-173091,179114"Tararua Voice and Data - Wharite Voice and Data"
+173091,179114,"Tararua Voice and Data - Wharite Voice and Data"
 161729,209643,"Greymouth - North Canterbury"
 215875,70240,"Wharite - Hawkes Bay"
 59684,101944,"Egmont - Opunake"
@@ -43,8 +43,10 @@
 159308,179006,"Doubtless Bay - Akatere"
 159308,55694,"Doubtless Bay - Far North"
 159308,179109,Doubtless Bay - Dawson Road"
-175649,163368,"Golden Bay - Blenhiem"
-159304,163368,"Picton - Blenhiem"
-163368,159316,"Blenhiem - Ward"
+175649,66590,"Golden Bay - Blenhiem, IRLP 6285"
+252092,66590,"Picton - Blenhiem, IRLP 6285"
+66590,278558,"Blenhiem - Ward, IRLP 6285"
 207722,59677,"Canterbury - Tekapo"
 55698,236314,"Queenstown - Dunedin"
+261222,213218,MereMere - Oeo Road
+
