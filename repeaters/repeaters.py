@@ -20,6 +20,7 @@
 ## You should have received a copy of the GNU General Public Licence
 ## along with this program. If not, see <http://www.gnu.org/licences/>.
 
+# TODO Implement display of "Amatuer Fixed" stations
 
 import html
 import csv
@@ -43,12 +44,14 @@ __version__ = '0.2.1'
 
 T_BEACON = 'Amateur Beacon'
 T_DIGI = 'Amateur Digipeater'
+T_FIXED = 'Amateur Fixed'
 T_REPEATER = 'Amateur Repeater'
 T_TV = 'Amateur TV Repeater'
 
 LICENCE_TYPES = ['',
                  T_BEACON,
                  T_DIGI,
+                 T_FIXED,
                  T_REPEATER,
                  T_TV]
 
@@ -57,6 +60,7 @@ LICENCE_SUB_TYPES = ['DMR',
 
 STYLE_MAP = {T_BEACON:'#msn_beacon',
              T_DIGI:'#msn_digipeater',
+             T_FIXED:'#msn_fixed',
              T_REPEATER:'#msn_repeater',
              T_TV:'#msn_repeater'}
 
@@ -1630,6 +1634,46 @@ def kmlHeader():
       </ItemIcon>
     </ListStyle>
   </Style>
+
+  <StyleMap id="msn_fixed">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#sn_fixed</styleUrl>
+    </Pair>
+    <Pair>
+    <key>highlight</key>
+      <styleUrl>#sh_fixed</styleUrl>
+    </Pair>
+  </StyleMap>
+  <Style id="sn_fixed">
+      <IconStyle>
+        <scale>1.1</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href>
+        </Icon>
+        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+    <ItemIcon>
+      <href>http://maps.google.com/mapfiles/kml/paddle/red-blank-lv.png</href>
+    </ItemIcon>
+  </ListStyle>
+  </Style>
+  <Style id="sh_fixed">
+    <IconStyle>
+      <scale>1.3</scale>
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href>
+      </Icon>
+      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+      <ItemIcon>
+        <href>http://maps.google.com/mapfiles/kml/paddle/red-blank-lv.png</href>
+      </ItemIcon>
+    </ListStyle>
+  </Style>
+
   <Style id="repeaterLink">
     <LineStyle>
       <color>FF5AFD82</color>
@@ -1742,6 +1786,11 @@ def main():
                       dest='tv',
                       default=False,
                       help='Include digipeaters in the generated file')
+    parser.add_option('-S','--fixed',
+                      action='store_true',
+                      dest='fixed',
+                      default=False,
+                      help='Include fixed stations in the generated file')
     parser.add_option('-a','--all',
                       action='store_true',
                       dest='allTypes',
@@ -1854,14 +1903,15 @@ def main():
     if options.allTypes:
         options.beacon = True
         options.digi = True
+        options.fixed = True
         options.repeater = True
         options.tv = True
 
-    if not (options.beacon or options.digi or options.repeater or options.tv):
+    if not (options.beacon or options.digi or options.fixed or options.repeater or options.tv):
         if options.update:
             exit()
         else:
-            parser.error('Atleast one of the -a -b ,-d, -r or -t options must be specified for output to be generated.')
+            parser.error('Atleast one of the -a -b ,-d, -r -t or -x options must be specified for output to be generated.')
 
     if not (options.minFreq == None or options.maxFreq == None):
         if options.minFreq > options.maxFreq:
