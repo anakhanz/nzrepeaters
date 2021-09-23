@@ -78,6 +78,10 @@ C_LICENCE = 0
 C_FREQ = 1
 C_NOTE = 2
 
+COLUMN_HEADERS = "Name","Number","Type","Callsign","Frequency","Offset",\
+                 "Branch", "Trustees","Notes","Licensee",\
+                 "CTCSS Tone","CTCSS Note","Site Name","Map reference",\
+                 "Latitude","Longitude","Height"
 
 UPDATE_URL = 'http://www.wallace.gen.nz/maps/data/'
 
@@ -340,46 +344,32 @@ class Licence:
         else:
             return self.name
 
-    def csvLine(self, site):
-        csv = '"%s"' % self.name
-        csv += ',%i' % self.number
-        csv += ',"%s"' % self.licType
+    def dataRow(self, site):
+        row = [self.name, self.number, self.licType]
         if self.callsign == None:
-            csv += ','
+            row += ['']
         else:
-            csv += ',"%s"' % self.callsign
-        csv += ',%f' % self.frequency
+            row += [self.callsign]
+        row += [self.frequency]
         if self.licType =='Amateur Repeater':
-            csv += ',%f' % self.calcOffset()
+            row += [self.calcOffset()]
         else:
-            csv +=',N/A'
+            row += ['N/A']
         if self.branch == None:
-            csv += ',""'
+            row += ['']
         else:
-            csv += ',"%s"' % self.branch
-        if self.trustee1 == None:
-            csv += ',""'
+            row += [self.branch]
+        if self.trustee2 == '':
+            row += [self.trustee1]
         else:
-            csv += ',"%s"' % self.trustee1
-        if self.trustee2 == None:
-            csv += ',""'
-        else:
-            csv += ',"%s"' % self.trustee2
-        csv += ',"%s"' % self.note
-        csv += ',"%s"' % self.licensee
+            row += ['%s %s' % (self.trustee1, self.trustee2)]
+        row += [self.note, self.licensee]
         if self.ctcss == None:
-            csv += ',,'
+            row += ['','']
         else:
-            csv += ',%0.1f' % self.ctcss.freq
-            csv += ',"%s"' % self.ctcss.note
-        csv += ',"%s"' % self.site
-        csv += ',"%s"' % site.mapRef
-        csv += ',"%s"' % site.coordinates.lat
-        csv += ',"%f"' % site.coordinates.lon
-        csv += ',"%i"' % site.height
-        csv += '\n'
-        return csv
-
+            row += ['%0.1f ' % self.ctcss.freq, self.ctcss.note]
+        row += [self.site, site.mapRef, site.coordinates.lat, site.coordinates.lon, site.height]
+        return row
 
     def htmlRow(self,site=None):
         '''
@@ -983,20 +973,80 @@ def readLinks(fileName, licences, sites):
                                 name, end1, end2))
     return links
 
-
 def generateCsv(filename,licences,sites):
+    def sortKey(item):
+        return (licences[item].name, licences[item].frequency)
+
+    licenceNos = sorted(list(licences.keys()), key=sortKey)
+
+    with open(filename, 'w',  newline='') as csvfile:
+        logWriter = csv.writer(csvfile, dialect='excel')
+        logWriter.writerow(COLUMN_HEADERS)
+        for licence in licenceNos:
+            logWriter.writerow(licences[licence].dataRow(sites[licences[licence].site]))
+    return
+def as_text(value):
+    """Returns the value as a str"""
+    if value is None:
+        return ""
+    else:
+        return str(value)
+
+def generateXlsx(filename,licences,sites):
+    # TODO Add number formatting fro Frequency and offset
+    # Check if openpyxl is missing and change output format to CSV if it is
+    try:
+        import openpyxl
+        from openpyxl import Workbook
+        from openpyxl.formatting.rule import Rule
+        from openpyxl.styles import PatternFill
+        from openpyxl.styles.differential import DifferentialStyle
+        from openpyxl.worksheet.table import Table, TableStyleInfo
+    except ModuleNotFoundError:
+        print('The openpyxl module is not installed please try another output',
+              'format or install the openpyxl package.')
+        sys.exit(1)
 
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
 
     licenceNos = sorted(list(licences.keys()), key=sortKey)
 
-    csv = '"Name","Number","Type","Callsign","Frequency","Offset","Branch","Trustees 1","Trustees 2","Notes","Licensee","CTCSS Tone","CTCSS Note","Site Name","Map reference","Latitude","Longitude","Height"\n'
+    tableRange = 'A1:Q' + str(len(licences)+1)
+    tableName = 'TABLE_LICENCES'
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Licences"
+
+    # Insert header
+    ws.append(COLUMN_HEADERS)
+    # Insert Licences
     for licence in licenceNos:
-        csv += licences[licence].csvLine(sites[licences[licence].site])
-    f = open(filename,mode='w')
-    f.write(csv)
-    f.close()
+        ws.append(licences[licence].dataRow(sites[licences[licence].site]))
+
+    # Convert licences entries into a table
+    tab = Table(displayName=tableName, ref=tableRange)
+    # Add a default style with striped rows and banded columns
+    style = TableStyleInfo(name="TableStyleMedium9",
+                           showFirstColumn=False,
+                           showLastColumn=False,
+                           showRowStripes=True,
+                           showColumnStripes=False)
+    tab.tableStyleInfo = style
+    ws.add_table(tab)
+    # Freeze the top row
+    ws.freeze_panes = 'A2'
+    # Adjust the columns to fit the text
+    if float(openpyxl.__version__[0:3]) >= 2.6:
+        for column_cells in ws.columns:
+            length = max(len(as_text(cell.value)) for cell in column_cells)
+            ws.column_dimensions[column_cells[0].column_letter].width = length
+    else:
+        for column_cells in ws.columns:
+            length = max(len(as_text(cell.value)) for cell in column_cells)
+            ws.column_dimensions[column_cells[0].column].width = length
+    wb.save(filename)
 
 def generateHtml(filename, licences, sites, links, byLicence, bySite, dataDate):
     dateLine = '<p>Data updated on %s</p>\n' % dataDate.strftime("%d/%m/%Y")
@@ -1653,6 +1703,13 @@ def main():
                       default=None,
                       help='Output to csv file, may be in addition to other output types')
 
+    parser.add_option('-x','--xlsx',
+                      action='store',
+                      type='string',
+                      dest='xlsxfilename',
+                      default=None,
+                      help='Output to xlsx file, may be in addition to other output types')
+
     parser.add_option('-s','--site',
                       action='store_true',
                       dest='site',
@@ -1790,6 +1847,7 @@ def main():
        options.kmlfilename == None and\
        options.kmzfilename == None and\
        options.csvfilename == None and\
+       options.xlsxfilename == None and\
        not options.update:
         parser.error('Atleast one output file type must be defined or no output will be generated')
 
@@ -1834,6 +1892,9 @@ def main():
     if options.csvfilename != None:
         generateCsv(options.csvfilename, licences, sites)
 
+    if options.xlsxfilename != None:
+        generateXlsx(options.xlsxfilename, licences, sites)
+
     if options.htmlfilename != None:
         generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site, dataDate)
 
@@ -1860,7 +1921,6 @@ def updateData(dataFolder, localDate):
 
     Returns:
     newDate    - date that the updated files were generated
-    
     '''
     try:
         f = urllib.request.urlopen(UPDATE_URL + 'version')
