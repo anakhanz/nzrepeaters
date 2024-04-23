@@ -37,9 +37,9 @@ data please email zl2wal@nzart.org.nz, this is:
 ##Updating the data files
 
 An updated data file is made available every week on thursday mornings,
-and can be fetched by the program using the following command: 
+and can be fetched by the program using the following command:
 ```
-rpt -u 
+rpt -u
 ```
 
 #Installation
@@ -82,10 +82,13 @@ Options:
 - `-r, --repeater` -  Include digipeaters in the generated file
 - `-t, --tv` -  Include digipeaters in the generated file
 - `-a, --all` - Include all types in the generated file
-- `-f MINFREQ, --minfreq=MINFREQ` - Filter out all below the specified frequency 
+- `-f MINFREQ, --minfreq=MINFREQ` - Filter out all below the specified frequency
 - `-F MAXFREQ, --maxfreq=MAXFREQ` - Filter out all above the specified frequency
 - `-i INCLUDE, --include=INCLUDE` - Filter licences to only include licences that contain [include] in their name
 - `-e EXCLUDE, --exclude=EXCLUDE` - Filter licences to exclude licences that contain [exclude] in their name
 - `-B BRANCH, --branch=BRANCH` - Filter licences to only include those from the selected branch
 - `-u, --update` - Update data files from the Internet
 - `-A DATADIR, --datafolder=DATADIR` - Modify the data folder location from the default
+
+#Graphics
+The icons used in the maps are supplied by Maps Icons Collection https://mapicons.mapsmarker.com under the Creative Commons Attribution-Share Alike 3.0 Unported license (CC BY SA 3.0) which lets you remix, tweak, and build upon our work even for commercial reasons, as long as you credit the project and license your new creations under the identical terms.

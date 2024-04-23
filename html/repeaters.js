@@ -170,6 +170,46 @@
         } else {
           color = '5588FF';
         }
+        break;
+      case 'Amateur Digipeater':
+        if (spiderified) {
+          color = 'FF71FF';
+        } else {
+          color = 'EE4499';
+        }
+        break;
+      case 'Amateur Repeater':
+        if (spiderified) {
+          color = '90EE90';
+        } else {
+          color = '00FF00';
+        }
+        break;
+        case 'Amateur TV Repeater':
+          if (spiderified) {
+            color = 'EEBB22';
+          } else {
+            color = 'FFEE22';
+          }
+          break;
+      default:
+        if (spiderified) {
+          color = '333333';
+        } else {
+          color = '000000';
+        }
+    }
+    return 'images/radio-station-' + color + '.png';
+  }
+
+  function itemIconOld(type, spiderified) {
+    switch(type) {
+      case 'Amateur Beacon':
+        if (spiderified) {
+          color = '55DAFF';
+        } else {
+          color = '5588FF';
+        }
         chst='d_map_xpin_letter';
         type = 'pin';
         text = '+';

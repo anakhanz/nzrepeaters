@@ -42,7 +42,7 @@ data please email zl2wal@nzart.org.nz, this is:
  * Notes
 
 An updated data file is made available every week on thursday mornings,
-and can be fetched by the program using the command "rpt -u". 
+and can be fetched by the program using the command "rpt -u".
 
 
 Installation
@@ -84,7 +84,7 @@ Options:
                         Output to JSON file, may be in addition to other
                         output types
   -k KMLFILENAME, --kml=KMLFILENAME
-                        Output to kml file, may be in addition to other 
+                        Output to kml file, may be in addition to other
                         output types
   -z KMZFILENAME, --kmz=KMZFILENAME
                         Output to kmz file, may be in addition to other
@@ -115,3 +115,7 @@ Options:
   -u, --update          Update data files from the Internet
   -A DATADIR, --datafolder=DATADIR
                         Modify the data folder location from the default
+
+Graphics
+========
+The icons used in the maps are supplied by Maps Icons Collection https://mapicons.mapsmarker.com under the Creative Commons Attribution-Share Alike 3.0 Unported license (CC BY SA 3.0) which lets you remix, tweak, and build upon our work even for commercial reasons, as long as you credit the project and license your new creations under the identical terms.
