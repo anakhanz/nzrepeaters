@@ -3,7 +3,7 @@
   var bounds = new gm.LatLngBounds();
   var map;
   var oms;
-  
+
   var shadow = new gm.MarkerImage(
         'https://www.google.com/intl/en_ALL/mapfiles/shadow50.png',
         new gm.Size(37, 34),  // size   - for sprite clipping
@@ -14,14 +14,14 @@
   var markers = new Array();
   var links = new Array();
   var tree;
-  
+
   function initialize() {
     setDataDate();
     mapInit()
     treeInit();
     updateMapDisp();
   }
-  
+
   function updateDataDate(newDate) {
     var span = document.getElementById('dataDate');
     if ('textContent' in span) {
@@ -30,7 +30,7 @@
       span.innerText = newDate;
 }
     };
-	  
+
   function mapInit() {
     var latlng = new gm.LatLng(-41.079351, 173.254395)
     var myOptions = {
@@ -40,11 +40,11 @@
     };
     map = new gm.Map(document.getElementById("map_canvas"),
         myOptions);
-        
+
     // set-up spiderer
     var iw = new gm.InfoWindow();
     oms = new OverlappingMarkerSpiderfier(map);
-    
+
     oms.addListener('click', function(marker) {
       iw.setContent(marker.desc);
       iw.open(map, marker);
@@ -53,7 +53,7 @@
       for(var i = 0; i < markers.length; i ++) {
         markers[i].setIcon(itemIcon(markers[i].type, true));
         markers[i].setShadow(null);
-      } 
+      }
       iw.close();
     });
     oms.addListener('unspiderfy', function(markers) {
@@ -70,18 +70,18 @@
     tree = new YAHOO.widget.TreeView("treeDiv1");
     loadTree();
     tree.subscribe('clickEvent',onTreeClick);
-    tree.setNodesProperty('propagateHighlightUp',true); 
+    tree.setNodesProperty('propagateHighlightUp',true);
     tree.setNodesProperty('propagateHighlightDown',true);
     highlightTree();
     tree.render();
   }
-  
+
   function onTreeClick(oArgs){
     tree.onEventToggleHighlight(oArgs);
     updateMapDisp();
     return(false);
   }
-  
+
   function updateMapDisp() {
     var leafName;
     var leafState;
@@ -141,7 +141,7 @@
     markers[typeBand].push(marker);
     return (marker);
   }
-  
+
   function createLink(type, lat1 , lon1, lat2, lon2, name) {
     var linkLatLng1 = new google.maps.LatLng(lat1, lon1);
     var linkLatLng2 = new google.maps.LatLng(lat2, lon2);
@@ -199,50 +199,11 @@
           color = '000000';
         }
     }
-    return 'images/radio-station-' + color + '.png';
-  }
-
-  function itemIconOld(type, spiderified) {
-    switch(type) {
-      case 'Amateur Beacon':
-        if (spiderified) {
-          color = '55DAFF';
-        } else {
-          color = '5588FF';
-        }
-        chst='d_map_xpin_letter';
-        type = 'pin';
-        text = '+';
-        break;
-      case 'Amateur Digipeater':
-        if (spiderified) {
-          color = 'FF71FF';
-        } else {
-          color = 'EE4499';
-        }
-        chst='d_map_xpin_letter';
-        type = 'pin';
-        text = '+';
-        break;
-      case 'Amateur Repeater':
-        if (spiderified) {
-          color = '90EE90';
-        } else {
-          color = '00FF00';
-        }
-        chst='d_map_xpin_letter';
-        type = 'pin';
-        text = '+';
-        break;
-      default:
-        if (spiderified) {
-          color = 'FFEE22';
-        } else {
-          color = 'EEBB22';
-        }
-        chst='d_map_xpin_letter';
-        type = 'pin';
-        text = '+';
+    if (type == 'Site'){
+      icon = 'mobilephonetower';
     }
-    return 'https://chart.googleapis.com/chart?chst=' + chst + '&chld=' + type + '|' + text + '|' + color + '|000000|ffff00';
+    else {
+      icon = 'radio-station';
+    }
+    return 'images/' + icon + '-' + color + '.png';
   }

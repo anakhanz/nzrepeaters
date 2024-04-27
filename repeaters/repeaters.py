@@ -48,7 +48,7 @@ T_FIXED = 'Amateur Fixed'
 T_REPEATER = 'Amateur Repeater'
 T_TV = 'Amateur TV Repeater'
 
-LICENCE_TYPES = ['',
+LICENCE_TYPES = [#'',
                  T_BEACON,
                  T_DIGI,
                  T_FIXED,
@@ -58,11 +58,35 @@ LICENCE_TYPES = ['',
 LICENCE_SUB_TYPES = ['DMR',
                      'National System']
 
-STYLE_MAP = {T_BEACON:'#msn_beacon',
-             T_DIGI:'#msn_digipeater',
-             T_FIXED:'#msn_fixed',
-             T_REPEATER:'#msn_repeater',
-             T_TV:'#msn_repeater'}
+#KML/KMZ Styles
+STYLE_NAMES = {T_BEACON:'beacon',
+             T_DIGI:'digipeater',
+             T_FIXED:'fixed',
+             T_REPEATER:'repeater',
+             T_TV:'tv_repeater'}
+
+# Highlighted Marker Colours
+LICENCE_COLOUR_HI = {T_BEACON:'55DAFF',
+                     T_DIGI:'FF71FF',
+                     T_FIXED:'333333',
+                     T_REPEATER:'90EE90',
+                     T_TV:'EEBB22'}
+
+# Marker Colours
+LICENCE_COLOUR = {T_BEACON:'5588FF',
+                  T_DIGI:'EE4499',
+                  T_FIXED:'000000',
+                  T_REPEATER:'00FF00',
+                  T_TV:'FFEE22'}
+
+# Licence Iccon
+LICENCE_ICON = 'radio-station'
+
+
+# Site Marker Colours & Icon
+SITE_COLOUR_HI = '333333'
+SITE_COLOUR = '000000'
+SITE_ICON = 'mobilephonetower'
 
 # Columns in info array
 I_NAME = 0
@@ -230,7 +254,7 @@ class Licence:
         ctcss    - CTCSS Tone squelch frequency
         '''
         assert type(licType) == str
-        assert licType in LICENCE_TYPES
+        assert licType in LICENCE_TYPES or licType == ''
         assert type(frequency) == float
         assert type(site) == str
         assert type(licensee) == str
@@ -504,7 +528,7 @@ class Licence:
         placemark += '      <description><![CDATA['
         placemark += self.htmlDescription(site)
         placemark += ']]></description>\n'
-        placemark += '      <styleUrl>' + STYLE_MAP[self.licType] + '</styleUrl>\n'
+        placemark += '      <styleUrl>#msn_' + STYLE_NAMES[self.licType] + '</styleUrl>\n'
         placemark += '      <Point>\n'
         placemark += '        <coordinates>'
         placemark += '%s,0' % (site.coordinates.kml())
@@ -780,7 +804,7 @@ def readRowCsv(fileName,length):
         if len(row) == length:
             ret[int(row[0])] = row[1:]
         elif len(row) > 1:
-            logging.error('Row of bad length read')
+            logging.error('Row of bad length read' + str(row))
             logging.error(row)
     return ret
 
@@ -888,7 +912,6 @@ WHERE c.clientid = l.clientid
                     licenceNote = info[licenceNumber][I_NOTE]
             else:
                 logging.error('Licence No: %i on frequency %0.4fMHz at location "%s" does not have an info record' % (licenceNumber,licenceFrequency,licenceLocation))
-                
 
         if include != None:
             skipping = skipping or (include not in licenceName)
@@ -1284,7 +1307,7 @@ def generateJson(filename, indent, licences, sites, links, dataDate):
     f.close()
 
 
-def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate):
+def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate, outputKmz=False):
     '''
     Generates a KML (Google Earth) file of the selected licences, links & sites
 
@@ -1296,23 +1319,25 @@ def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate):
     byLicence - boolean include listing of licences by licence type only
     bySite    - doolean include listing of licences by site only
     dataDate  - creation date for data file
-    '''    
+    '''
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
-        kml = generateKmlSite(sites, dataDate)
+        kml = generateKmlSite(sites, dataDate, outputKmz)
     elif byLicence:
         logging.debug('exporting kmlfile %s by licence' % filename)
-        kml = generateKmlLicence(licences, sites, links, dataDate, 1)
+        kml = generateKmlLicence(licences, sites, links, dataDate, 1, outputKmz=outputKmz)
     else:
         logging.debug('exporting kmlfile %s by site and licence' % filename)
-        kml = generateKmlAll(licences, sites, links, dataDate)
+        kml = generateKmlAll(licences, sites, links, dataDate, outputKmz)
 
     f = open(filename,mode='w')
     f.write(kml)
     f.close()
 
-def generateKmlAll(licences, sites, links, dataDate):
+def generateKmlAll(licences, sites, links, dataDate,  outputKmz):
     kml = kmlHeader()
+    kml += kmlStylesLicences(outputKmz)
+    kml += kmlStylesSites(outputKmz)
     kml += '    <name>Amateur Licences and Sites (data extracted %s)</name><open>1</open>\n' % dataDate.strftime("%d/%m/%Y")
     kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += '    <Folder><name>Licences</name><open>1</open>\n'
@@ -1327,8 +1352,9 @@ def generateKmlAll(licences, sites, links, dataDate):
     kml += kmlFooter()
     return kml
 
-def generateKmlLicence(licences, sites, links, dataDate, expand=1,splitNs=False):
+def generateKmlLicence(licences, sites, links, dataDate, expand=1, splitNs=False, outputKmz = False):
     kml = kmlHeader()
+    kml += kmlStylesLicences(outputKmz)
     kml += '    <name>Amateur Licences</name><open>1</open>\n'
     kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += generateKmlLicenceBody(licences,sites,links,expand,splitNs)
@@ -1406,8 +1432,9 @@ def generateKmlLinksBody(links, splitSubType):
             kml += '    </Folder>\n'
     return kml
 
-def generateKmlSite(sites, dataDate):
+def generateKmlSite(sites, dataDate, outputKmz):
     kml = kmlHeader()
+    kml += kmlStylesSites(outputKmz)
     kml += '    <name>Amateur Sites</name><open>1</open>\n'
     kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
     kml += generateKmlSiteBody(sites)
@@ -1438,11 +1465,30 @@ def generateKmz(filename, licences, sites, links, byLicence, bySite, dataDate):
     logging.debug('exporting kmlfile %s' % filename)
     tempDir = tempfile.mkdtemp()
     kmlFilename = os.path.join(tempDir,'doc.kml')
-    generateKml(kmlFilename, licences, sites, links, byLicence ,bySite, dataDate)
+    generateKml(kmlFilename, licences, sites, links, byLicence ,bySite, dataDate, True)
     archive = zipfile.ZipFile(filename,
                               mode='w',
                               compression=zipfile.ZIP_DEFLATED)
     archive.write(kmlFilename, os.path.basename(kmlFilename))
+    if not bySite:
+        for lt in LICENCE_TYPES:
+            srcFile  = os.path.join('html',
+                                    'images',
+                                    LICENCE_ICON + '-' + LICENCE_COLOUR[lt] +'.png')
+            destFile = 'images/' + os.path.basename(srcFile)
+            archive.write(srcFile, destFile)
+            srcFile  = os.path.join('html',
+                                    'images',
+                                    LICENCE_ICON + '-' + LICENCE_COLOUR_HI[lt] +'.png')
+            destFile = 'images/' + os.path.basename(srcFile)
+            archive.write(srcFile, destFile)
+    if not byLicence:
+        srcFile  = os.path.join('html', 'images', SITE_ICON + '-' + SITE_COLOUR +'.png')
+        destFile = 'images/' + os.path.basename(srcFile)
+        archive.write(srcFile, destFile)
+        srcFile  = os.path.join('html', 'images', SITE_ICON + '-' + SITE_COLOUR_HI +'.png')
+        destFile = 'images/' + os.path.basename(srcFile)
+        archive.write(srcFile, destFile)
     archive.close()
     shutil.rmtree(tempDir)
 
@@ -1484,204 +1530,78 @@ def htmlTableHeader(full=False, licType=T_REPEATER):
         header += '<tr><th>Output</th><th>Input</th></tr>'
     return header
 
+def kmlStyle(styleName, styleIcon, styleColour, styleColourHl, outputKmz=False):
+    styleText = '''
+<StyleMap id="msn_[[Name]]">
+    <Pair>
+      <key>normal</key>
+      <styleUrl>#sn_[[Name]]</styleUrl>
+    </Pair>
+    <Pair>
+    <key>highlight</key>
+      <styleUrl>#sh_[[Name]]</styleUrl>
+    </Pair>
+  </StyleMap>
+  <Style id="sn_[[Name]]">
+      <IconStyle>
+        <scale>1.1</scale>
+        <Icon>
+          <href>https://vhf.nz/maps/images/[[Icon]]-[[Colour]].png</href>
+        </Icon>
+        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+    <ItemIcon>
+      <href>https://vhf.nz/maps/images/[[Icon]]-[[Colour]].png</href>
+    </ItemIcon>
+  </ListStyle>
+  </Style>
+  <Style id="sh_[[Name]]">
+    <IconStyle>
+      <scale>1.3</scale>
+      <Icon>
+        <href>https://vhf.nz/maps/images/[[Icon]]-[[ColourHL]].png</href>
+      </Icon>
+      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+    </IconStyle>
+    <ListStyle>
+      <ItemIcon>
+        <href>https://vhf.nz/maps/images/[[Icon]]-[[ColourHL]].png</href>
+      </ItemIcon>
+    </ListStyle>
+  </Style>'''
+    styleText = styleText.replace('[[Name]]', styleName)
+    styleText = styleText.replace('[[Icon]]', styleIcon)
+    styleText = styleText.replace('[[Colour]]', styleColour)
+    styleText = styleText.replace('[[ColourHL]]',styleColourHl)
+    if outputKmz: styleText = styleText.replace('https://vhf.nz/maps/','')
+    return styleText
+
 def kmlHeader():
     header = '<?xml version="1.0" encoding="UTF-8"?>\n'
     header += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
     header += '<Document>\n'
-    header += '''
-  <StyleMap id="msn_site">
-    <Pair>
-      <key>normal</key>
-      <styleUrl>#sn_site</styleUrl>
-    </Pair>
-    <Pair>
-      <key>highlight</key>
-      <styleUrl>#sh_site_highlight</styleUrl>
-    </Pair>
-  </StyleMap>
-  <Style id="sh_site_highlight">
-    <IconStyle>
-      <scale>1.2</scale>
-      <Icon>
-        <href>http://maps.google.com/mapfiles/kml/shapes/placemark_square_highlight.png</href>
-      </Icon>
-    </IconStyle>
-    <ListStyle>
-    </ListStyle>
-  </Style>
-  <Style id="sn_site">
-    <IconStyle>
-      <scale>1.2</scale>
-      <Icon>
-        <href>http://maps.google.com/mapfiles/kml/shapes/placemark_square.png</href>
-      </Icon>
-    </IconStyle>
-    <ListStyle>
-    </ListStyle>
-  </Style>
-  <StyleMap id="msn_beacon">
-    <Pair>
-      <key>normal</key>
-      <styleUrl>#sn_beacon</styleUrl>
-    </Pair>
-    <Pair>
-    <key>highlight</key>
-      <styleUrl>#sh_beacon</styleUrl>
-    </Pair>
-  </StyleMap>
-  <Style id="sn_beacon">
-      <IconStyle>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank.png</href>
-        </Icon>
-        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-    <ItemIcon>
-      <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank-lv.png</href>
-    </ItemIcon>
-  </ListStyle>
-  </Style>
-  <Style id="sh_beacon">
-    <IconStyle>
-      <scale>1.3</scale>
-      <Icon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank.png</href>
-      </Icon>
-      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-      <ItemIcon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/blu-blank-lv.png</href>
-      </ItemIcon>
-    </ListStyle>
-  </Style>
-  <StyleMap id="msn_repeater">
-    <Pair>
-      <key>normal</key>
-      <styleUrl>#sn_repeater</styleUrl>
-    </Pair>
-    <Pair>
-    <key>highlight</key>
-      <styleUrl>#sh_repeater</styleUrl>
-    </Pair>
-  </StyleMap>
-  <Style id="sn_repeater">
-      <IconStyle>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href>
-        </Icon>
-        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-    <ItemIcon>
-      <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png</href>
-    </ItemIcon>
-  </ListStyle>
-  </Style>
-  <Style id="sh_repeater">
-    <IconStyle>
-      <scale>1.3</scale>
-      <Icon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank.png</href>
-      </Icon>
-      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-      <ItemIcon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png</href>
-      </ItemIcon>
-    </ListStyle>
-  </Style>
+    return header
 
-  <StyleMap id="msn_digipeater">
-    <Pair>
-      <key>normal</key>
-      <styleUrl>#sn_digipeater</styleUrl>
-    </Pair>
-    <Pair>
-    <key>highlight</key>
-      <styleUrl>#sh_digipeater</styleUrl>
-    </Pair>
-  </StyleMap>
-  <Style id="sn_digipeater">
-      <IconStyle>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank.png</href>
-        </Icon>
-        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-    <ItemIcon>
-      <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
-    </ItemIcon>
-  </ListStyle>
-  </Style>
-  <Style id="sh_digipeater">
-    <IconStyle>
-      <scale>1.3</scale>
-      <Icon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank.png</href>
-      </Icon>
-      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-      <ItemIcon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
-      </ItemIcon>
-    </ListStyle>
-  </Style>
-
-  <StyleMap id="msn_fixed">
-    <Pair>
-      <key>normal</key>
-      <styleUrl>#sn_fixed</styleUrl>
-    </Pair>
-    <Pair>
-    <key>highlight</key>
-      <styleUrl>#sh_fixed</styleUrl>
-    </Pair>
-  </StyleMap>
-  <Style id="sn_fixed">
-      <IconStyle>
-        <scale>1.1</scale>
-        <Icon>
-          <href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href>
-        </Icon>
-        <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-    <ItemIcon>
-      <href>http://maps.google.com/mapfiles/kml/paddle/red-blank-lv.png</href>
-    </ItemIcon>
-  </ListStyle>
-  </Style>
-  <Style id="sh_fixed">
-    <IconStyle>
-      <scale>1.3</scale>
-      <Icon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/red-blank.png</href>
-      </Icon>
-      <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
-    </IconStyle>
-    <ListStyle>
-      <ItemIcon>
-        <href>http://maps.google.com/mapfiles/kml/paddle/red-blank-lv.png</href>
-      </ItemIcon>
-    </ListStyle>
-  </Style>
-
+def kmlStylesLicences(OutputKmz=False):
+    styleText = ''
+    for lt in LICENCE_TYPES:
+        styleText += kmlStyle(STYLE_NAMES[lt],
+                           LICENCE_ICON,
+                           LICENCE_COLOUR[lt],
+                           LICENCE_COLOUR_HI[lt],
+                           OutputKmz)
+    styleText += '''
   <Style id="repeaterLink">
     <LineStyle>
       <color>FF5AFD82</color>
       <width>4</width>
     </LineStyle>
-  </Style>
-'''
-    return header
+  </Style>'''
+    return styleText
+
+def kmlStylesSites (outputKmz=False):
+        return kmlStyle('site',SITE_ICON, SITE_COLOUR, SITE_COLOUR_HI, outputKmz)
 
 def kmlFooter():
     footer = '</Document>\n'
