@@ -34,7 +34,7 @@ follows:
  * Licencee
 
 Other data is sourced from the NZART call book for corrections to this
-data please email zl2wal@nzart.org.nz, this is:
+data please email zl2wal@vhf.nz, this is:
  * Callsign
  * CTCSS
  * Branch
