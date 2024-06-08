@@ -114,10 +114,18 @@ COLUMN_HEADERS = "Name","Number","Type","Callsign","Frequency","Offset",\
 UPDATE_URL = 'http://www.wallace.gen.nz/maps/data/'
 
 USAGE = """%s [options]
-NZ Repeaters %s by Rob Wallace (C)2014, Licence GPLv3
+NZ Repeaters %s by Rob Wallace (C)2024, Licence GPLv3
 http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters""" % ("%prog",__version__)
 
-def calcBand(f):
+def calcBand(f: float) -> str:
+    """Calculate the  Amateur Radio Band that a given frequency is in
+
+    Args:
+        f (float): Frequency to calcuate band for
+
+    Returns:
+        str: Amateur Radio band name
+    """
     for band in bands:
         if band.fIsIn(f):
             return band.name
@@ -125,18 +133,16 @@ def calcBand(f):
     return 'Band Not Found'
 
 class band:
-    '''
-    Band
-    '''
-    def __init__(self,name,minF,maxF):
-        '''
-        Constructor for band
+    """Band
+    """
+    def __init__(self, name: str, minF: float, maxF: float):
+        """Constructor for band
 
-        Arguments:
-        name - Name of the band
-        minF - Minimum frequency im MHz
-        maxF - Maximum frequency in MHz
-        '''
+        Args:
+            name (str): Name of the band
+            minF (float): Minimum frequency im MHz
+            maxF (float): Maximum frequency in MHz
+        """
         assert type(name) == str
         assert type(minF) == float
         assert type(maxF) == float
@@ -145,10 +151,15 @@ class band:
         self.minF = minF
         self.maxF = maxF
 
-    def fIsIn(self,f):
-        '''
-        Returns if the given frequency is within the band limits
-        '''
+    def fIsIn(self,f: float) -> bool:
+        """Returns if the given frequency is within the band limits
+
+        Args:
+            f (float): Frequency to check
+
+        Returns:
+            bool: True if the frequency is within the band limits, False otherwise
+        """
         assert type(f) == float
         return f >= self.minF and f <= self.maxF
 
@@ -180,17 +191,16 @@ bands = [band('1800 meters',0.13,0.19),
 
 
 class Coordinate:
-    '''
+    """
     Coordinate
-    '''
-    def __init__(self, lat=0.0, lon=0.0):
-        '''
-        Constructor for a coordinate
+    """
+    def __init__(self, lat: float = 0.0, lon: float = 0.0) -> None:
+        """Constructor for a coordinate
 
-        Arguments:
-        lat - Latitude of the coordinate (float)
-        lon - Longitude of the coordinate (float)
-        '''
+        Args:
+            lat (float, optional): Latitude of the coordinate. Defaults to 0.0.
+            lon (float, optional): Longitude of the coordinate. Defaults to 0.0.
+        """
         assert type(lat) == float
         assert type(lon) == float
         assert -90.0 <= lat <= 90.0
@@ -198,61 +208,61 @@ class Coordinate:
         self.lat = lat
         self.lon = lon
 
-    def kml(self):
-        '''
-        Returns the coordinates in the correct format for kml files
-        '''
+    def kml(self) -> str:
+        """Returns the coordinates in the correct format for kml files
+
+        Returns:
+            string: kml coordinates
+        """
         return '%f,%f' % (self.lon, self.lat)
 
 class Ctcss:
-    '''
+    """
     CTCSS
-    '''
-    def __init__(self,freq,note):
-        '''
-        Constructor for a CTCSS code
+    """
+    def __init__(self,freq: float,note: str) -> None:
+        """Constructor for a CTCSS code
 
-        Arguments:
-        freq - Frequency in decimal Hz of the tone
-        note - the use of the tone
-        '''
+        Args:
+            freq (float): Frequency in decimal Hz of the tone
+            note (str): Note on the use of the tone
+        """
         assert type(freq) == float
         assert type(note) == str
         self.freq = freq
         self.note = note
 
-    def html(self):
-        '''
-        Returns the CTCSS information formatted for HTML
-        '''
+    def html(self) -> str:
+        """Returns the CTCSS information formatted for HTML
+
+        Returns:
+            str: CTCSS information formatted for HTML
+        """
         return '%0.1f Hz<br>%s' % (self.freq, self.note)
 
 class Licence:
     '''
     Amateur radio licence
     '''
-    def __init__(self,licType,frequency,site,licensee,
-                 number,name='',branch='',trustee1='',trustee2='',
-                 note='',callsign='', ctcss=None):
-        '''
-        Constructor for a licence - creates the licence
+    def __init__(self,licType: str,frequency: float,site: str,licensee: str,
+                 number: int,name: str='',branch: str='',trustee1: str='',trustee2: str='',
+                 note: str='',callsign: str='', ctcss: float=None) -> None:
+        """Constructor for a licence - creates the licence
 
-        Arguments:
-        licType   - Type of Licence (Repeater, Beacon etc)
-        frequency - Frequency for the licence
-        site      - Site name
-        licensee  - Name of the Licence
-        number    - Licence number
-
-        Keyword Arguments:
-        name     - Name for the licence
-        branch   - NZART Branch that owns licence
-        trustee1 - Repeater trustee 1
-        trustee2 - Repeater trustee 2
-        note     - Note containing misc info about the repeater
-        callsign - Callsign for the licence
-        ctcss    - CTCSS Tone squelch frequency
-        '''
+        Args:
+            licType (str): Type of Licence (Repeater, Beacon etc)
+            frequency (float): Frequency for the licence
+            site (str): Site name
+            licensee (str): Name of the Licence
+            number (int): Licence number
+            name (str, optional): Name for the licence. Defaults to ''.
+            branch (str, optional): NZART Branch that owns licence. Defaults to ''.
+            trustee1 (str, optional): Repeater trustee 1. Defaults to ''.
+            trustee2 (str, optional): Repeater trustee 2. Defaults to ''.
+            note (str, optional): Note containing misc info about the repeater. Defaults to ''.
+            callsign (str, optional): Callsign for the licence. Defaults to ''.
+            ctcss (float, optional): CTCSS Tone squelch frequency. Defaults to None.
+        """
         assert type(licType) == str
         assert licType in LICENCE_TYPES or licType == ''
         assert type(frequency) == float
@@ -285,28 +295,36 @@ class Licence:
             if subType in name:
                 self.licSubType = subType
 
-    def setCallsign(self,callsign):
-        '''
-        Sets the call sign associated with the licence.
-        '''
+    def setCallsign(self,callsign: str) -> None:
+        """Sets the call sign associated with the licence.
+
+        Args:
+            callsign (str): New callsign
+        """
         self.callsign = callsign
 
-    def setCtcss(self,ctcss):
-        '''
-        Sets the CTCSS tone frequency associated with the licence.
-        '''
+    def setCtcss(self,ctcss: float) -> None:
+        """Sets the CTCSS tone frequency associated with the licence.
+
+        Args:
+            ctcss (float): New CTCSS tone frequency
+        """
         self.ctcss = ctcss
 
-    def band(self):
-        '''
-        Return the band name
-        '''
+    def band(self) -> str:
+        """Return the band name
+
+        Returns:
+            _type_: Band name
+        """
         return calcBand(self.frequency)
 
-    def calcOffset(self):
-        '''
-        Returns the input offset for the repeater.
-        '''
+    def calcOffset(self) -> float:
+        """Returns the input offset for the repeater.
+
+        Returns:
+            float: Offset in MHz
+        """
         # 6m
         if 50.0 <= self.frequency <= 54.0:
             offset = -1.0
@@ -354,16 +372,20 @@ class Licence:
             offset = 0
         return offset
 
-    def calcInput(self):
-        '''
-        Returns the input frequency for the repeater.
-        '''
+    def calcInput(self) -> float:
+        """Returns the input frequency for the repeater.
+
+        Returns:
+            float: Input frequency for the repeater
+        """
         return self.frequency + self.calcOffset()
 
-    def formatName (self):
-        '''
-        Returns the formatted name including the frequency designator
-        '''
+    def formatName (self) -> str:
+        """Returns the formatted name including the frequency designator
+
+        Returns:
+            str: Formatted name including the frequency designator
+        """
         if self.licType == 'Amateur Repeater':
             formattedName = self.name + ' %i' % ((self.frequency*1000)%10000)
             if formattedName[-1:] == '0':
@@ -372,7 +394,15 @@ class Licence:
         else:
             return self.name
 
-    def dataRow(self, site):
+    def dataRow(self, site: 'Site') -> 'list[str]':
+        """Generates list of the attributes of the licence
+
+        Args:
+            site (_type_): site related tot eh licence for site details
+
+        Returns:
+            list[str]: licence attributes
+        """
         row = [self.name, self.number, self.licType]
         if self.callsign == None:
             row += ['']
@@ -399,9 +429,8 @@ class Licence:
         row += [self.site, site.mapRef, site.coordinates.lat, site.coordinates.lon, site.height]
         return row
 
-    def htmlRow(self,site=None):
-        '''
-        Returns an HTML table row containing the licence information including
+    def htmlRow(self,site: 'Site'=None) -> str:
+        """Returns an HTML table row containing the licence information including
         input frequency for a repeater, formatted as follows:
         | Name | Output Freq  | Branch | Trustees | Notes | Licensee | Number |
 
@@ -414,12 +443,18 @@ class Licence:
         If a site is passed to the function the following is added before Branch
         Input frequency and CTCSS:
           Site Name | Map ref | Height
-        '''
+
+        Args:
+            site (Site, optional): Site information to be added to the record. Defaults to None.
+
+        Returns:
+            str: HTML table row contining the description of the licence
+        """
         if self.ctcss is None:
             ctcss = 'None'
         else:
             ctcss = self.ctcss.html()
-        row =  '<tr>'
+        row: str =  '<tr>'
         row += '<td>%s</td>' % self.callsign
         row += '<td>'+ html.escape(self.formatName())
         row += '</td><td>' +'%0.4f MHz' % self.frequency
@@ -432,17 +467,19 @@ class Licence:
             row += '</td><td>' + '%i m' % site.height
         row += '</td><td>' + self.htmlBranch()
         row += '</td><td>' + self.htmlTrustees()
-        row += '</td><td>' + html.escape(self.note)
+        row += '</td><td>' + self.htmlNote()
         row += '</td><td>' + html.escape(self.licensee)
         row += '</td><td>' +str(self.number)
         row += '</td></tr>'
         return row
 
-    def htmlBranch(self):
-        '''
-        Returns the branch no formatted as a link to the information on the
+    def htmlBranch(self) -> str:
+        """Returns the branch no formatted as HTML a link to the information on the
         NZART website for HTML output
-        '''
+
+        Returns:
+            str: HTML formated link to branch page
+        """
         try:
             br = '%02i' % int(self.branch)
         except:
@@ -450,21 +487,25 @@ class Licence:
         return '<a href="http://nzart.org.nz/contact/branches/%s">%s</a>' % (br, br)
 
     def htmlNote(self):
-        '''
-        Returns an html formatted note including coverage link for digipeaters
-        '''
+        """Returns an HTML formatted note including coverage link for digipeaters
+
+        Returns:
+            str: HTML formatted note
+        """
         if self.licType == T_DIGI and self.callsign != None and self.frequency == 144.575:
             return html.escape(self.note) + '<a href="http://aprs.fi/#!v=heard&ym=1207&call=a%2F' + self.callsign + '&timerange=3600" target="_blank"> APRS.FI Coverage Map</a>'
         else:
             return html.escape(self.note)
 
-    def htmlDescription(self, site):
-        '''
-        Returns a html description for the licence.
+    def htmlDescription(self, site: 'Site') -> str:
+        """Returns a HTML description for the licence.
 
-        Keyword Argument:
-        site - Site information for printing with the licence
-        '''
+        Args:
+            site (Site): Site information for printing with the licence
+
+        Returns:
+            _type_: HTML site description
+        """
         description = '<table>'
         if self.licType in [T_REPEATER]:
             colSpan = 2
@@ -491,21 +532,26 @@ class Licence:
         return description
 
     def htmlTrustees(self):
-        '''
-        Returns the trustees formatted as HTML
-        '''
+        """Returns the trustees formatted as HTML
+
+        Returns:
+            str: HTML trustees list
+        """
         if self.trustee2 == '':
             return self.trustee1
         else:
             return self.trustee1 + '<br>' + self.trustee2
 
-    def js(self,site, splitSubType=False):
-        '''
-        Returns a java script placemark generation call placemark for the licence.
+    def js(self, site: 'Site', splitSubType: bool=False) -> str:
+        """Returns a JavaScript placemark generation call placemark for the licence.
 
-        Keyword Argument:
-        site - Site information for printing with the licence
-        '''
+        Args:
+            site (Site): Site information for printing with the licence
+            splitSubType (bool, optional): True if licence subtypes should be split for each band. Defaults to False.
+
+        Returns:
+            str: JavaScript call for creating licence placemark
+        """
         if splitSubType and self.licSubType != '':
             subType = ' ' + self.licSubType
         else:
@@ -516,13 +562,15 @@ class Licence:
             self.formatName(),
             self.licType, html.escape(self.formatName()), self.htmlDescription(site))
 
-    def kmlPlacemark(self, site):
-        '''
-        Returns a kml placemark for the licence.
+    def kmlPlacemark(self, site: 'Site') -> str:
+        """Returns a KML placemark for the licence.
 
-        Keyword Argument:
-        site - Site information for printing with the licence
-        '''
+        Args:
+            site (Site): Site information to display with the licence
+
+        Returns:
+            str: _description_
+        """
         placemark = '    <Placemark>\n'
         placemark += '      <name>'+ html.escape(self.formatName())+'</name>\n'
         placemark += '      <description><![CDATA['
@@ -541,16 +589,15 @@ class Licensee:
     '''
     Licensee for a amateur radio licences
     '''
-    def __init__(self, name, address1, address2, address3):
-        '''
-        Licensee constructor
+    def __init__(self, name: str, address1: str, address2: str, address3: str) -> str:
+        """Licensee constructor
 
-        Arguments:
-        name     - Name of the licensee
-        address1 - First line of the address
-        address2 - Second line of the address
-        address3 - Third line of the address
-        '''
+        Args:
+            name (str): Name of the licensee
+            address1 (str): First line of the address
+            address2 (str): Second line of the address
+            address3 (str): Third line of the address
+        """
         assert type(name) == str
         assert type(address1) == str or address1 == None
         assert type(address2) == str or address2 == None
@@ -564,15 +611,16 @@ class Link:
     '''
     Link between Licences
     '''
-    def __init__(self, name="", end1=Coordinate(0.0,0.0), end2=Coordinate(0.0,0.0)):
-        '''
-        Link construtor
+    def __init__(self, name: str="",
+                 end1: Coordinate=Coordinate(0.0,0.0),
+                 end2: Coordinate=Coordinate(0.0,0.0)) -> None:
+        """Link construtor
 
-        Arguments:
-        name - name of the link
-        end1 - coordinates for the first end of the link
-        end2 - coordinates for the second end of the link
-        '''
+        Args:
+            name (str, optional): name of the link. Defaults to "".
+            end1 (Coordinate, optional): coordinates for the first end of the link. Defaults to Coordinate(0.0,0.0).
+            end2 (Coordinate, optional): coordinates for the second end of the link. Defaults to Coordinate(0.0,0.0).
+        """
         assert type(name) == str
         assert isinstance(end1, Coordinate)
         assert isinstance(end2, Coordinate)
@@ -584,10 +632,15 @@ class Link:
             if subType in name:
                 self.subType  = subType
 
-    def js(self, splitSubType=False):
-        '''
-        Returns a java script function call for the link
-        '''
+    def js(self, splitSubType: bool=False) -> str:
+        """Returns a JavaScript function call for the link
+
+        Args:
+            splitSubType (bool, optional): True if licence subtypes should be split for each band. Defaults to False.
+
+        Returns:
+            str: JavaScript call for creating the ling
+        """
         if splitSubType and self.subType != '':
             ltype = self.subType
         else:
@@ -598,10 +651,12 @@ class Link:
             self.end2.lat, self.end2.lon,
             html.escape(self.name))
 
-    def kmlPlacemark(self):
-        '''
-        Returns a kml placemark (line) for the link
-        '''
+    def kmlPlacemark(self) -> str:
+        """Returns a KML placemark (line) for the link
+
+        Returns:
+            str: KML placemark for the link
+        """
         placemark = '    <Placemark>\n'
         placemark += '      <name>%s</name>\n' % html.escape(self.name)
         #placemark += '      <description>description</description>\n'
@@ -621,16 +676,16 @@ class Site:
     '''
     Amateur radio site containing the licences associated with it.
     '''
-    def __init__(self,name,mapRef,coordinates,height):
-        '''
-        Site constructor
+    def __init__(self, name: str ,mapRef :str ,coordinates: Coordinate,
+                 height: int) -> None:
+        """Site constructor
 
-        Arguments:
-        name        - MED name of the site
-        mapRef      - The Topo 50 map reference for the site
-        coordinates - A coordinate object containing the coordinates for the site
-        height      - Height above sea level in meters
-        '''
+        Args:
+            name (str): RSM name of the site
+            mapRef (str): The Topo 50 map reference for the site
+            coordinates (Coordinate): A coordinate object containing the coordinates for the site
+            height (int): Height above sea level in meters
+        """
         assert type(name) == str
         assert type(mapRef) == str
         assert type(coordinates) == type(Coordinate(1.0,1.0))
@@ -645,35 +700,48 @@ class Site:
         self.repeaters = []
         self.tvRepeaters = []
 
-    def addBeacon(self,beacon):
-        '''
-        Adds the given beacon licence to the site
-        '''
+    def addBeacon(self, beacon: Licence) -> None:
+        """Adds the given beacon licence to the site
+
+        Args:
+            beacon (Licence): Beacon licence to be added to the site
+        """
         assert type(beacon) == type(Licence('',1.1,'','',1))
         self.beacons.append(beacon)
 
-    def addDigipeater(self,digipeater):
-        '''
-        Adds the given digipeater licence to the site
-        '''
+    def addDigipeater(self, digipeater: Licence) -> None:
+        """Adds the given digipeater licence to the site
+
+        Args:
+            digipeater (Licence): Digipeater licence to be added to the site
+        """
         assert type(digipeater) == type(Licence('',1.1,'','',1))
         self.digipeaters.append(digipeater)
 
-    def addRepeater(self,repeater):
-        '''
-        Adds the given repeater licence to the site
-        '''
+    def addRepeater(self, repeater: Licence) -> None:
+        """Adds the given repeater licence to the site
+
+        Args:
+            repeater (Licence): Repeater licence to be added to the site
+        """
         assert type(repeater) == type(Licence('',1.1,'','',1))
         self.repeaters.append(repeater)
 
-    def addTvRepeater(self,tvRepeater):
-        '''
-        Adds the given TV repeater licence to the site
-        '''
+    def addTvRepeater(self, tvRepeater: Licence) -> None:
+        """Adds the given TV repeater licence to the site
+
+        Args:
+            tvRepeater (Licence): TV repeater licence to be added to the site
+        """
         assert type(tvRepeater) == type(Licence('',1.1,'','',1))
         self.tvRepeaters.append(tvRepeater)
 
-    def html(self):
+    def html(self) -> str:
+        """Build and return HTML description of the site with heading
+
+        Returns:
+            str: Site description with heading
+        """
         ret = ''
         desc = self.htmlDescription()
         if len(desc) > 0:
@@ -682,14 +750,18 @@ class Site:
             ret += desc
         return ret
 
-    def htmlDescription(self):
+    def htmlDescription(self) -> str:
+        """Build and return HTML description of the site
+
+        Returns:
+            str: Site description
+        """
         description = ""
         if (len(self.beacons) > 0) or\
            (len(self.digipeaters) > 0) or\
            (len(self.repeaters) > 0) or\
            (len(self.tvRepeaters) >0):
             logging.debug('Creating placemark for: %s' % html.escape(self.name))
-            #description += '<h2>Amateur Site</h2>'
             description += '<table>'
             description += '<tr><th align="left">Map Reference</th><td>%s</td></tr>' % self.mapRef
             description += '<tr><th align="left">Coordinates</th><td>%f %f</td></tr>' % (self.coordinates.lat, self.coordinates.lon)
@@ -701,10 +773,15 @@ class Site:
             description += self.htmlItemTable(self.tvRepeaters, 'TV Repeater')
         return description
 
-    def htmlNameLink(self):
+    def htmlNameLink(self) -> str:
+        """Return a HTML link to the site
+
+        Returns:
+            str: HTML link
+        """
         return '<a href="#%s">%s</a><br>' % (self.name, self.name)
 
-    def htmlItemTable(self, items, text):
+    def htmlItemTable(self, items, text) -> str:
         if len(items) == 0:
             return ""
         else:
@@ -720,17 +797,20 @@ class Site:
             description += '</table>'
             return description
 
-    def js (self):
+    def js (self) -> str:
+
         return "    createMarker('Site','site',%f, %f, '%s', '<h2>%s</h2>%s');\n" % (
             self.coordinates.lat, self.coordinates.lon,
             self.name, self.name, self.htmlDescription())
 
-    def kmlPlacemark(self):
-        '''
-        Returns a kml placemark for the site containing the requested
+    def kmlPlacemark(self) -> str:
+        """Returns a kml placemark for the site containing the requested
         information or an empty string if there are no licences to display
         in the requested information.
-        '''
+
+        Returns:
+            str: KML placemark
+        """
         desc = self.htmlDescription()
         if len(desc) > 0:
             placemark = '    <Placemark>\n'
@@ -751,41 +831,49 @@ class Site:
         return placemark
 
 
-def jsonDefault(o):
+def jsonDefault(o) -> dict:
     """Returns a dictionary for the given object
     This is used when serialising objects to a json file
 
-    Argument
-    o - the object to be turned into a dictionary"""
-
-    return o.__dict__
-
-def we_are_frozen():
-    """Returns whether we are frozen via py2exe.
-    This will affect how we find out where we are located."""
-
-    return hasattr(sys, "frozen")
-
-def module_path():
-    """ This will get us the program's directory,
-    even if we are frozen using py2exe"""
-
-    if we_are_frozen():
-        return os.path.dirname(str(sys.executable, sys.getfilesystemencoding( )))
-
-    return os.path.dirname(str(__file__, sys.getfilesystemencoding( )))
-
-def readCtcss(fileName):
-    '''
-    Reads the CTCSS information from the given csv file and returns
-    a dictionary of CTCSS information indexed by licence number
-
-    Arguments:
-    fileName     - Filename to use for CSV file
+    Args:
+        o (object): _description_
 
     Returns:
-    links     - A dictionary of CTCSS information indexed by licence number
-    '''
+        dict: Object serialised into a dictionary
+    """
+    return o.__dict__
+
+def we_are_frozen() -> bool:
+    """Returns True if we are frozen via py2exe.
+    This will affect how we find out where we are located.
+
+    Returns:
+        bool: True if frozen via py2exe
+    """
+    return hasattr(sys, "frozen")
+
+def module_path() -> str:
+    """This will get us the program's directory,
+    even if we are frozen using py2exe
+
+    Returns:
+        str: Path to the program's directory
+    """
+    if we_are_frozen():
+        return os.path.dirname(str(sys.executable, sys.getfilesystemencoding( )))
+    else:
+        return os.path.dirname(str(__file__, sys.getfilesystemencoding( )))
+
+def readCtcss(fileName: str) -> dict:
+    """Reads the CTCSS information from the given csv file and returns
+    a dictionary of CTCSS information indexed by licence number
+
+    Args:
+        fileName (str): Filename to use for CSV file
+
+    Returns:
+        dict: A dictionary of CTCSS information indexed by licence number
+    """
     ctcss = {}
 
     for row in csv.reader(open(fileName)):
@@ -793,12 +881,18 @@ def readCtcss(fileName):
             ctcss[int(row[C_LICENCE])]= Ctcss(float(row[C_FREQ]),row[C_NOTE])
     return ctcss
 
-def readRowCsv(fileName,length):
-    '''
-    Reads a rows from the from the given csv file and returns them as a
+def readRowCsv(fileName: str, length: int) -> dict:
+    """Reads a rows from the from the given csv file and returns them as a
     dictionary indexed by the licence number (first item) without the first
     item in the array.
-    '''
+
+    Args:
+        fileName (str): Filename to use for CSV file
+        length (int): Expected number of items in each row
+
+    Returns:
+        dict: Rows read from file
+    """
     ret = {}
     for row in csv.reader(open(fileName)):
         if len(row) == length:
@@ -808,46 +902,50 @@ def readRowCsv(fileName,length):
             logging.error(row)
     return ret
 
-def readTextCsv(fileName):
-    '''
-    Reads a set of text values associated with licence numbers from the given csv
+def readTextCsv(fileName: str) -> dict:
+    """Reads a set of text values associated with licence numbers from the given csv
     file and returns them as a dictionary indexed by the licence number.
-    '''
+
+    Args:
+        fileName (str): Filename to use for CSV file
+
+    Returns:
+        dict: Rows read from file
+    """
     ret = {}
     for row in csv.reader(open(fileName)):
         if len(row) >= 2:
             ret[int(row[0])] = row[1]
     return ret
 
-def readLicences(fileName,callsigns,ctcss,info,skip,
-                 fMin,fMax,
-                 shBeacon,shDigipeater,shRepeater,shTvRepeater,
-                 include,exclude,branch):
-    '''
-    Reads the licence information from the given database file and returns
+def readLicences(fileName: str ,callsigns: dict, ctcss: dict, info: dict ,skip: dict,
+                 fMin: float, fMax: float,
+                 shBeacon: bool, shDigipeater: bool ,shRepeater: bool ,shTvRepeater: bool,
+                 include: str, exclude: str, branch: str) -> list:
+    """Reads the licence information from the given database file and returns
     the dictionaries below
 
-    Arguments:
-    fileName     - Filename to use for DB
-    callsigns    - A dictionary of call signs indexed by Licnence number
-    ctcss        - A dictionary of ctcss tones indexed by Licnense number
-    info         - A dictionary of additional info indexed by Linense number
-    skip         - A dictionary of licences to skip by Linense number
-    fMin         - minimum frequency to include
-    fMax         - maximum frequency to include
-    shBeacon     - Include beacons ?
-    shDigipeater - Include digis ?
-    shRepeater   - Include repeaters ?
-    shTvRepeater - Include TV repeaters ?
-    include      - Filter licences to only include those that have this in their name
-    exclude      - Filter licences to exclude those that have this in their name
-    branch       - Filter licences to only include those allocated to this branch
+    Args:
+        fileName (str): Filename to use for DB
+        callsigns (dict): A dictionary of call signs indexed by Licnence number
+        ctcss (dict): A dictionary of ctcss tones indexed by Licnense number
+        info (dict): A dictionary of additional info indexed by Linense number
+        skip (dict): A dictionary of licences to skip by Linense number
+        fMin (float): minimum frequency to include
+        fMax (float): maximum frequency to include
+        shBeacon (bool): Include beacons ?
+        shDigipeater (bool): Include digis ?
+        shRepeater (bool): Include repeaters ?
+        shTvRepeater (bool): Include TV repeaters ?
+        include (str): Filter licences to only include those that have this in their name
+        exclude (str): Filter licences to exclude those that have this in their name
+        branch (str): Filter licences to only include those allocated to this branch
 
     Returns:
-    sites     - A list of sites and their associated licences
-    licences  - A list of licences
-    licensees - A list of the named licensees and their details
-    '''
+        list: sites     - A list of sites and their associated licences
+        list: licences  - A list of licences
+        list: licensees - A list of the named licensees and their details
+    """
     sites = {}
     licences = {}
     licensees = {}
@@ -971,19 +1069,18 @@ WHERE c.clientid = l.clientid
                 licences[licenceNumber] = (licence)
     return sites, licences, licensees
 
-def readLinks(fileName, licences, sites):
-    '''
-    Reads the link information from the given csv file and returns
-    a list of the links
+def readLinks(fileName: str, licences: dict, sites: dict) -> list:
+    """Reads the link information from the given csv file and returns
+    a list of the link
 
-    Arguments:
-    fileName     - Filename to use for CSV file
-    licences     - A dictionary of licences indexed by Linense number
-    sites        - A dictionary of sites indexed by site name
+    Args:
+        fileName (str): Filename to use for CSV file
+        licences (dict): A dictionary of licences indexed by Linense number
+        sites (dict): A dictionary of sites indexed by site name
 
     Returns:
-    links     - A list of links
-    '''
+        list: A list of links
+    """
     links = []
 
     for row in csv.reader(open(fileName)):
@@ -1000,7 +1097,14 @@ def readLinks(fileName, licences, sites):
                                 name, end1, end2))
     return links
 
-def generateCsv(filename,licences,sites):
+def generateCsv(filename: str,licences: Licence, sites: Site) -> None:
+    """Generate a CSV file of the given licences
+
+    Args:
+        filename (str): filename to save the CSV file to
+        licences (Licence): licences to generates CSV file for
+        sites (Site): listes to get site information from
+    """
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
 
@@ -1012,16 +1116,23 @@ def generateCsv(filename,licences,sites):
         for licence in licenceNos:
             logWriter.writerow(licences[licence].dataRow(sites[licences[licence].site]))
     return
-def as_text(value):
+def as_text(value: any) -> str:
     """Returns the value as a str"""
     if value is None:
         return ""
     else:
         return str(value)
 
-def generateXlsx(filename,licences,sites):
-    # TODO Add number formatting fro Frequency and offset
-    # Check if openpyxl is missing and change output format to CSV if it is
+def generateXlsx(filename: str,licences: Licence, sites: Site) -> None:
+    """Generate a XLSX file of the given licences
+
+    Args:
+        filename (str): filename to save the XLSX file to
+        licences (Licence): licences to generates XLSX file for
+        sites (Site): istes to get site information from
+    """
+    # TODO Add number formatting for Frequency and offset
+    # Check if openpyxl is missing and termintae if it is missing
     try:
         import openpyxl
         from openpyxl import Workbook
@@ -1075,7 +1186,19 @@ def generateXlsx(filename,licences,sites):
             ws.column_dimensions[column_cells[0].column].width = length
     wb.save(filename)
 
-def generateHtml(filename, licences, sites, links, byLicence, bySite, dataDate):
+def generateHtml(filename: str, licences: Licence, sites: Site, links: Link,
+                 byLicence: bool, bySite: bool, dataDate: datetime) -> None:
+    """Generate HTML file from the given licences and sites
+
+    Args:
+        filename (str): filename to save the generated HTML to
+        licences (Licence): licences to generate HTML for
+        sites (Site): sites to generate HTML for
+        links (Link): links to generate HTML for
+        byLicence (bool): if True only generate HTML by licence
+        bySite (bool): if True only generate HTML by site
+        dataDate (datyetime): Data upfdate date
+    """
     dateLine = '<p>Data updated on %s</p>\n' % dataDate.strftime("%d/%m/%Y")
     if bySite:
         logging.debug('exporting htmlfile %s by site' % filename)
@@ -1091,7 +1214,16 @@ def generateHtml(filename, licences, sites, links, byLicence, bySite, dataDate):
     f.write(html)
     f.close()
 
-def generateHtmlAll(licences,sites,links,dateLine):
+def generateHtmlAll(licences: Licence, sites: Site, links: Link, dateLine: datetime):
+    """Generate HTML file for the given licences and sites
+
+    Args:
+        filename (str): filename to save the generated HTML to
+        licences (Licence): licences to generate HTML for
+        sites (Site): sites to generate HTML for
+        links (Link): links to generate HTML for
+        dataDate (datyetime): Data upfdate date
+    """
     [lHeader, lBody] = generateHtmlLicenceBody(licences,sites,links)
     [sHeader, sBody] = generateHtmlSiteBody(sites)
     return htmlHeader() +\
@@ -1100,12 +1232,30 @@ def generateHtmlAll(licences,sites,links,dateLine):
            lBody +sBody +\
            htmlFooter()
 
-def generateHtmlLicence(licences,sites,links,dateLine):
+def generateHtmlLicence(licences: Licence, sites: Site, links: Link, dateLine: datetime):
+    """Generate HTML file for the given licences
+
+    Args:
+        filename (str): filename to save the generated HTML to
+        licences (Licence): licences to generate HTML for
+        sites (Site): sites to generate HTML for
+        links (Link): links to generate HTML for
+        dataDate (datyetime): Data update date
+    """
     [header, body] = generateHtmlLicenceBody(licences,sites,links)
     return htmlHeader() + dateLine + header + body +htmlFooter()
 
-def generateHtmlLicenceBody(licences,sites,links):
+def generateHtmlLicenceBody(licences: Licence, sites: Site, links: Link) -> str:
+    """Generate HTML licence information for inclusion in a HTML file
 
+    Args:
+        licences (Licence): licences to generate HTML for
+        sites (Site): Sites to generate licenec info from
+        links (Link): Links to generate licence info from
+
+    Returns:
+        str: HTML licence information
+    """
     def sortKey(item):
         return (licences[item].frequency, licences[item].name)
 
@@ -1145,11 +1295,28 @@ def generateHtmlLicenceBody(licences,sites,links):
 
     return (header, body)
 
-def generateHtmlSite(sites, dateLine):
+def generateHtmlSite(sites: Site, dateLine: datetime) -> str:
+    """Generates HTML sites file
+
+    Args:
+        sites (Site): Sites to generate HTML for
+        dateLine (datetime): Data update date
+
+    Returns:
+        str: Generated HTML
+    """
     [header, body] = generateHtmlSiteBody(sites)
     return htmlHeader() + dateLine + header + body +htmlFooter()
 
-def generateHtmlSiteBody(sites):
+def generateHtmlSiteBody(sites: Site) -> str:
+    """Generate HTML site information
+
+    Args:
+        sites (Site): Sites to generate HTML for
+
+    Returns:
+        str: HTML for inclusion in a  HTML file
+    """
     header = '<h1>Amateur Sites</h1>'
     body = '<h1>Amateur Sites</h1>'
     siteNames = list(sites.keys())
@@ -1161,7 +1328,19 @@ def generateHtmlSiteBody(sites):
         body += sites[site].html()
     return (header, body)
 
-def generateJs(filename, licences, sites, links, byLicence, bySite, dataDate):
+def generateJs(filename: str, licences: Licence, sites: Site, links: Link,
+               byLicence: bool, bySite: bool, dataDate: datetime):
+    """Generate JavaScript file for online map
+
+   Args:
+        filename (str): filename to save the generated JavaScript to
+        licences (Licence): licences to generate Java Script for
+        sites (Site): sites to generate JavaScript for
+        links (Link): links to generate JavaScript for
+        byLicence (bool): if True only generate JavaScript by licence
+        bySite (bool): if True only generate JavaScript by site
+        dataDate (datyetime): Data upfdate date
+    """
     js = "  function setDataDate() {\n"
     js += "    updateDataDate('Data updated on %s');\n" % dataDate.strftime("%d/%m/%Y")
     js += "  }\n\n"
@@ -1179,7 +1358,17 @@ def generateJs(filename, licences, sites, links, byLicence, bySite, dataDate):
     f.write(js)
     f.close()
 
-def generateJsAll(licences, sites, links):
+def generateJsAll(licences: Licence, sites: Site, links: Link) -> str:
+    """Generate JavaScript content for licencses, sites and links
+
+    Args:
+        licences (Licence): licences to generate Java Script for
+        sites (Site): sites to generate JavaScript for
+        links (Link): links to generate JavaScript for
+
+    Returns:
+        str: JavaScript content
+    """
     [lMarkers ,lTree] = generateJsLicenceMarkersTree(licences, sites, True, False)
     js = "  function loadLayers() {\n"
     js += lMarkers
@@ -1200,7 +1389,17 @@ def generateJsAll(licences, sites, links):
     js += "  }\n"
     return js
 
-def generateJsLicence(licences, sites, links):
+def generateJsLicence(licences: Licence, sites: Site, links: Link) -> str:
+    """Generate JavaScript content for licencses, sirtes and links
+
+    Args:
+        licences (Licence): licences to generate Java Script for
+        sites (Site): sites to generate JavaScript for
+        links (Link): links to generate JavaScript for
+
+    Returns:
+        str: JavaScript content
+    """
     [markers ,tree] = generateJsLicenceMarkersTree(licences, sites, True, True)
     js = "  function loadLayers() {\n"
     js += markers
@@ -1216,8 +1415,20 @@ def generateJsLicence(licences, sites, links):
     js += "  }\n"
     return js
 
-def generateJsLicenceMarkersTree(licences, sites, splitSubType, expand):
+def generateJsLicenceMarkersTree(licences: Licence, sites: Site,
+                                 splitSubType: bool, expand: bool
+                                 )-> "tuple[str, str]":
+    """Generates Licence markers and the menu tree of the licence markers
 
+    Args:
+        licences (Licence): licences to generate Java Script for
+        sites (Site): sites to generate JavaScript for
+        splitSubType (bool): True if the sub types of licences are to be split
+        expand (bool): True if the menu tree is to be expanded
+
+    Returns:
+        tuple[str, str]: menu tree and licence markers
+    """
     arrays = ""
     markers = ""
     tree = "    var baseNode = new YAHOO.widget.TextNode('Licences', root, true);\n"
@@ -1252,7 +1463,15 @@ def generateJsLicenceMarkersTree(licences, sites, splitSubType, expand):
                         tree += "    tmpNode = new YAHOO.widget.TextNode('%s %s', typeNode, false);\n" % (b.name, s)
     return (arrays + markers, tree)
 
-def generateJsSite(sites):
+def generateJsSite(sites: Site) -> str:
+    """Generates JavaScript for sites
+
+    Args:
+        sites (Site): Sites to generate JavaScript for
+
+    Returns:
+        str: Generated JavaScript
+    """
     js = "  function loadLayers() {\n"
     js += generateJsSiteMarkers(sites)
     js += "  }\n\n"
@@ -1267,7 +1486,15 @@ def generateJsSite(sites):
     js += "  }\n"
     return js
 
-def generateJsSiteMarkers(sites):
+def generateJsSiteMarkers(sites: Site) -> str:
+    """Generates JavaScript for site markers
+
+    Args:
+        sites (Site): Sites to generate markers for
+
+    Returns:
+        str: Generated JavaScript
+    """
     js = "    markers['Sites'] = new Array();\n"
     siteNames = list(sites.keys())
     siteNames.sort()
@@ -1275,10 +1502,24 @@ def generateJsSiteMarkers(sites):
         js += sites[site].js()
     return js
 
-def generateJsSiteTree():
+def generateJsSiteTree() -> str:
+    """Generates JavaScript root menu node for Sites
+
+    Returns:
+        str: Generated JavaScript
+    """
     return "    typeNode = new YAHOO.widget.TextNode('Sites', root, false);\n"
 
-def generateJsLinksMarkers(links, splitSubType):
+def generateJsLinksMarkers(links: Link, splitSubType: bool) -> str:
+    """Generate JavaScript for links
+
+    Args:
+        links (Link): Links to generated JavaScript for
+        splitSubType (bool): True if subtypes of links are to be split out
+
+    Returns:
+        str: Generated JavaScript
+    """
     js = "    links['General'] = new Array();\n"
     if splitSubType:
         for s in LICENCE_SUB_TYPES:
@@ -1287,9 +1528,19 @@ def generateJsLinksMarkers(links, splitSubType):
         js += link.js(splitSubType)
     return js
 
-def generateJsLinksTree(splitSubType, expand):
+def generateJsLinksTree(splitSubType: bool, expand: bool) -> str:
+    """Generate JavaScript  menu root entries for Links
+
+    Args:
+        splitSubType (bool): True if subtypes of links are to be split out
+        expand (bool): True if menu nodes are to be expanded
+
+    Returns:
+        str: Generated JavaScript
+    """
     if expand:
         expand = 'true'
+
     else:
         expand = 'false'
     js = "    typeNode = new YAHOO.widget.TextNode('Links', root, %s);\n" % expand
@@ -1299,7 +1550,18 @@ def generateJsLinksTree(splitSubType, expand):
             js += "    tmpNode = new YAHOO.widget.TextNode('%s', typeNode, false);\n" % s
     return js
 
-def generateJson(filename, indent, licences, sites, links, dataDate):
+def generateJson(filename: str, indent: int, licences: Licence, sites: Site,
+                 links: Link, dataDate: datetime) -> None:
+    """Generates JSON file from the given licences, sites and links
+
+    Args:
+        filename (str): File to output JSON data to
+        indent (int): indent size
+        licences (Licence): Licences to output
+        sites (Site): Sites to output
+        links (Link): links to output
+        dataDate (datetime): Date data file was created
+    """
     f = open(filename,mode='w')
     f.write("var dataDate = %s\n" % dataDate.strftime("%d/%m/%Y"))
     f.write("var sites = " + json.dumps(sites,default=jsonDefault, indent=indent) + '\n')
@@ -1307,19 +1569,21 @@ def generateJson(filename, indent, licences, sites, links, dataDate):
     f.close()
 
 
-def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate, outputKmz=False):
-    '''
-    Generates a KML (Google Earth) file of the selected licences, links & sites
+def generateKml(filename: str, licences: Licence, sites: Site, links: Link,
+                 byLicence: bool, bySite: bool, dataDate: bool,
+                 outputKmz: bool=False) -> None:
+    """_summary_
 
-    Arguments:
-    fileName  - Filename to use for KML file
-    licences  - list of licences
-    sites     - list of repeater sites
-    links     - list of inter repeater links
-    byLicence - boolean include listing of licences by licence type only
-    bySite    - doolean include listing of licences by site only
-    dataDate  - creation date for data file
-    '''
+    Args:
+        filename (str): Filename to use for KML file
+        licences (Licence): list of licences
+        sites (Site): list of repeater sites
+        links (Link): list of inter repeater links
+        byLicence (bool):  include listing of licences by licence type only
+        bySite (bool):  include listing of licences by site only
+        dataDate (bool): creation date for data file
+        outputKmz (bool, optional): If true this file is to be included in a KMZ file. Defaults to False.
+    """
     if bySite:
         logging.debug('exporting kmlfile %s by site' % filename)
         kml = generateKmlSite(sites, dataDate, outputKmz)
@@ -1334,7 +1598,20 @@ def generateKml(filename, licences, sites, links, byLicence, bySite, dataDate, o
     f.write(kml)
     f.close()
 
-def generateKmlAll(licences, sites, links, dataDate,  outputKmz):
+def generateKmlAll(licences: Licence, sites: Site, links: Link,
+                   dataDate: datetime,  outputKmz: bool) -> str:
+    """Generatre KML for licences, links and sites
+
+    Args:
+        licences (Licence): Licences to generate KML for
+        sites (Site): Sites to generate KML for
+        links (Link): Links to generate KML for
+        dataDate (datetime): Data update date
+        outputKmz (bool): True if this is for a KMZ file
+
+    Returns:
+        str: Generated KML for licences, links and sites
+    """
     kml = kmlHeader()
     kml += kmlStylesLicences(outputKmz)
     kml += kmlStylesSites(outputKmz)
@@ -1352,18 +1629,47 @@ def generateKmlAll(licences, sites, links, dataDate,  outputKmz):
     kml += kmlFooter()
     return kml
 
-def generateKmlLicence(licences, sites, links, dataDate, expand=1, splitNs=False, outputKmz = False):
+def generateKmlLicence(licences: Licence, sites: Site, links: Link,
+                       dataDate: datetime, expand: int=1,
+                       splitSubType: bool=False,
+                       outputKmz: bool= False) -> str:
+    """Generate KML for the given licences
+
+    Args:
+        licences (Licence): Licences to generate KML for
+        sites (Site): _description_
+        links (Link): _description_
+        dataDate (datetime): Data update date
+        expand (int, optional): If 1 all items should be expanded. Defaults to 1.
+        splitSubType (bool, optional): True if licence subtypes should be split for each band. Defaults to False.
+        outputKmz (bool, optional): True if this is for a KMZ file. Defaults to False.
+
+    Returns:
+        str: Generated KML for licences
+    """
     kml = kmlHeader()
     kml += kmlStylesLicences(outputKmz)
     kml += '    <name>Amateur Licences</name><open>1</open>\n'
     kml += '       <description>Data updated on %s</description>\n' % dataDate.strftime("%d/%m/%Y")
-    kml += generateKmlLicenceBody(licences,sites,links,expand,splitNs)
-    kml += generateKmlLinksBody(links,splitNs)
+    kml += generateKmlLicenceBody(licences,sites,links,expand,splitSubType)
+    kml += generateKmlLinksBody(links,splitSubType)
     kml += kmlFooter()
     return kml
 
-def generateKmlLicenceBody(licences,sites,links,expand,splitSubType):
+def generateKmlLicenceBody(licences: Licence, sites: Site, links: Link,
+                           expand: bool ,splitSubType: bool) -> str:
+    """Generate KML for the supplied licences
 
+    Args:
+        licences (Licence): licences to generate KML for
+        sites (Site): sites to include information from
+        links (Link): links to include information from
+        expand (int): If 1 all items should be expanded
+        splitSubType (bool): True if licence subtypes should be split for each band
+
+    Returns:
+        str: _description_
+    """
     def sortKey(item):
         return (licences[item].name, licences[item].frequency)
 
@@ -1399,7 +1705,16 @@ def generateKmlLicenceBody(licences,sites,links,expand,splitSubType):
             kml += '    </Folder>'
     return kml
 
-def generateKmlLinksBody(links, splitSubType):
+def generateKmlLinksBody(links: Link, splitSubType: bool) -> str:
+    """Generate KML for the supplied links
+
+    Args:
+        links (Link): Links to generate KML fro
+        splitSubType (bool): True if licence subtypes should be split for each band
+
+    Returns:
+        str: KML for links
+    """
     general = ''
     subTypes = {}
     if splitSubType:
@@ -1432,7 +1747,17 @@ def generateKmlLinksBody(links, splitSubType):
             kml += '    </Folder>\n'
     return kml
 
-def generateKmlSite(sites, dataDate, outputKmz):
+def generateKmlSite(sites: Site, dataDate: datetime, outputKmz: bool) -> str:
+    """Generate KML for the given sites
+
+    Args:
+        sites (Site): _description_
+        dataDate (datetime): _description_
+        outputKmz (bool): True if this is for a KMZ file
+
+    Returns:
+        str: KML by site
+    """
     kml = kmlHeader()
     kml += kmlStylesSites(outputKmz)
     kml += '    <name>Amateur Sites</name><open>1</open>\n'
@@ -1441,7 +1766,15 @@ def generateKmlSite(sites, dataDate, outputKmz):
     kml += kmlFooter()
     return kml
 
-def generateKmlSiteBody(sites):
+def generateKmlSiteBody(sites: Site) -> str:
+    """Generate KML for the suplied sites
+
+    Args:
+        sites (Site): Sites to build KML information for
+
+    Returns:
+        str: Generated KML for sites
+    """
     kml = ""
     siteNames = list(sites.keys())
     siteNames.sort()
@@ -1449,19 +1782,19 @@ def generateKmlSiteBody(sites):
         kml += sites[site].kmlPlacemark()
     return kml
 
-def generateKmz(filename, licences, sites, links, byLicence, bySite, dataDate):
-    '''
-    Generates a KMZ (Google Earth) file of the selected licences, links & sites
+def generateKmz(filename: str, licences: Licence, sites: Site, links: Link,
+                byLicence: bool, bySite: bool, dataDate: datetime) -> None:
+    """Generates a KMZ (Google Earth) file of the selected licences, links & sites
 
-    Arguments:
-    fileName  - Filename to use for KMZ file
-    licences  - list of licences
-    sites     - list of repeater sites
-    links     - list of inter repeater links
-    byLicence - boolean include listing of licences by licence type only
-    bySite    - doolean include listing of licences by site only
-    dataDate  - creation date for data file
-    '''
+    Args:
+        filename (str): Filename to use for KMZ file
+        licences (Licence): list of licences
+        sites (Site): list of repeater sites
+        links (Link): list of inter repeater links
+        byLicence (bool): include listing of licences by licence type only
+        bySite (bool): include listing of licences by site only
+        dataDate (datetime): creation date for data file
+    """
     logging.debug('exporting kmlfile %s' % filename)
     tempDir = tempfile.mkdtemp()
     kmlFilename = os.path.join(tempDir,'doc.kml')
@@ -1492,17 +1825,31 @@ def generateKmz(filename, licences, sites, links, byLicence, bySite, dataDate):
     archive.close()
     shutil.rmtree(tempDir)
 
-def htmlHeader():
+def htmlHeader() -> str:
     header = '<html><head>'
     header += '<style type="text/css">th,td{border: 2px solid #d3e7f4;}</style>'
     header += '</head><body>'
     return header
 
-def htmlFooter():
+def htmlFooter() -> str:
+    """Generated HTML file footer
+
+    Returns:
+        str: HTML file footer
+    """
     footer = '</body></html>'
     return footer
 
-def htmlTableHeader(full=False, licType=T_REPEATER):
+def htmlTableHeader(full=False, licType=T_REPEATER) -> str:
+    """Generate HTML licence table header
+
+    Args:
+        full (bool, optional): if True include site information in table. Defaults to False.
+        licType (str, optional): type of licence to generate table header for. Defaults to T_REPEATER.
+
+    Returns:
+        str: _description_
+    """
     if licType in (T_REPEATER):
         repeater =  True
         rowspan = ' rowspan=2'
@@ -1530,7 +1877,18 @@ def htmlTableHeader(full=False, licType=T_REPEATER):
         header += '<tr><th>Output</th><th>Input</th></tr>'
     return header
 
-def kmlStyle(styleName, styleIcon, styleColour, styleColourHl, outputKmz=False):
+def kmlStyle(styleName: str, styleIcon: str,
+             styleColour: str, styleColourHl: str,
+             outputKmz: bool=False):
+    """Generate a KML style
+
+    Args:
+        styleName (str): Name for the style
+        styleIcon (str): Icon Name
+        styleColour (str): Icon colour
+        styleColourHl (str): Icon colour when highlighted
+        outputKmz (bool, optional): True if this is for a KMZ file. Defaults to False.
+    """
     styleText = '''
 <StyleMap id="msn_[[Name]]">
     <Pair>
@@ -1577,13 +1935,26 @@ def kmlStyle(styleName, styleIcon, styleColour, styleColourHl, outputKmz=False):
     if outputKmz: styleText = styleText.replace('https://vhf.nz/maps/','')
     return styleText
 
-def kmlHeader():
+def kmlHeader() -> str:
+    """Generate KML file header
+
+    Returns:
+        str: KML header
+    """
     header = '<?xml version="1.0" encoding="UTF-8"?>\n'
     header += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
     header += '<Document>\n'
     return header
 
-def kmlStylesLicences(OutputKmz=False):
+def kmlStylesLicences(OutputKmz: bool=False) -> str:
+    """Generate KML styles for a licences
+
+    Args:
+        outputKmz (bool, optional): True if this is for a KMZ file. Defaults to False.
+
+    Returns:
+        str: Styles for KML licences
+    """
     styleText = ''
     for lt in LICENCE_TYPES:
         styleText += kmlStyle(STYLE_NAMES[lt],
@@ -1600,15 +1971,30 @@ def kmlStylesLicences(OutputKmz=False):
   </Style>'''
     return styleText
 
-def kmlStylesSites (outputKmz=False):
-        return kmlStyle('site',SITE_ICON, SITE_COLOUR, SITE_COLOUR_HI, outputKmz)
+def kmlStylesSites (outputKmz: bool=False) -> str:
+    """Generate KML style for a site
 
-def kmlFooter():
+    Args:
+        outputKmz (bool, optional): True if this is for a KMZ file. Defaults to False.
+
+    Returns:
+        str: Style for KML site
+    """
+    return kmlStyle('site',SITE_ICON, SITE_COLOUR, SITE_COLOUR_HI, outputKmz)
+
+def kmlFooter() -> str:
+    """Generate KML file footer
+
+    Returns:
+        str: KML footer
+    """
     footer = '</Document>\n'
     footer += '</kml>'
     return footer
 
-def main():
+def main() -> None:
+    """Main
+    """
     parser = optparse.OptionParser(usage=USAGE, version=("NZ Repeaters "+__version__))
     parser.add_option('-v','--verbose',action='store_true',dest='verbose',
                             help="Verbose logging")
@@ -1880,18 +2266,17 @@ def main():
     if options.kmzfilename != None:
         generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site, dataDate)
 
-def updateData(dataFolder, localDate):
-    '''
-    Updates the local data for the application from the internet if the files on
+def updateData(dataFolder: str, localDate: datetime):
+    """Updates the local data for the application from the internet if the files on
     the internet are newer than the local copy.
 
-    Arguments:
-    dataFolder - folder to place downloaded data files in
-    localDate  - date of the existing data files (or None if it does not exist)
+    Args:
+        dataFolder (str): folder to place downloaded data files in
+        localDate (datetime): date of the existing data files (or None if it does not exist)
 
     Returns:
-    newDate    - date that the updated files were generated
-    '''
+        datetime: Date of updated datafiles or None if data update unsusesful
+    """
     try:
         f = urllib.request.urlopen(UPDATE_URL + 'version')
         remoteDate = datetime.datetime(*time.strptime(f.read(10).decode('utf-8'), "%d/%m/%Y")[0:5])
@@ -1908,7 +2293,15 @@ def updateData(dataFolder, localDate):
     except:
         return(None)
 
-def urlDownload(url, folder=None, fileName=None):
+def urlDownload(url: str, folder: str=None, fileName: str=None) -> None:
+    """Download a file from the given URL and save to the given folder and file name.
+    If no filename is given use the filename from the url and if no folder is given use the current folder
+
+    Args:
+        url (str): URL to download form
+        folder (str, optional): Folder to download to. Defaults to None.
+        fileName (str, optional): File to download to. Defaults to None.
+    """
     if fileName == None:
         fileName = url.split('/')[-1]
     if folder != None:
