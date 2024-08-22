@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# setup the virtual environment
+source .venv/bin/activate
+
 # Make/clean build dir
 
 rm -r build
