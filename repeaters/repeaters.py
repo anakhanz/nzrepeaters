@@ -958,14 +958,9 @@ def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
 
     records = getLicenceList(licenceType=licenceTypes, fromFrequency=fMin, toFrequency=fMax, sortBy='frequency', gridRefDefault='TOPO50_T')
     for basicInfo  in records:
-        txDetail = getLicence(basicInfo['licenceID'],gridRefDefault='LAT_LONG_NZGD2000_D2000')
-        #rxDetail = getLicence(txDetail['associatedLicenceOrRecord'][0]['licenceId']
-        if basicInfo['licensee'] not in licensees:
-            licensees[basicInfo['licensee']] = Licensee(basicInfo['licensee'], [x.strip() for x in txDetail['clientDetails']['physicalAddress'].split(',')])
-        licenceLocation = basicInfo['location']
         licenceNumber = basicInfo['licenceNumber']
-        licenceFrequency = txDetail['summary']['frequency']
-        licenceCallsign = txDetail['baseCallsign']
+        licenceLocation = basicInfo['location']
+        licenceFrequency =basicInfo['frequency']
 
         skipping = False
         if licenceLocation == 'ALL NEW ZEALAND':
@@ -1001,6 +996,14 @@ def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
             skipping = skipping or (branch != licenceBranch)
 
         if not skipping:
+            txDetail = getLicence(basicInfo['licenceID'],gridRefDefault='LAT_LONG_NZGD2000_D2000')
+            #rxDetail = getLicence(txDetail['associatedLicenceOrRecord'][0]['licenceId']
+            licenceCallsign = txDetail['baseCallsign']
+
+            if basicInfo['licensee'] not in licensees:
+                licensees[basicInfo['licensee']] = Licensee(basicInfo['licensee'], [x.strip() for x in txDetail['clientDetails']['physicalAddress'].split(',')])
+
+
             if licenceNumber in list(callsigns.keys()):
                 if licenceCallsign != callsigns[licenceNumber]:
                     logging.info('Licence No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenceNumber, licenceCallsign, callsigns[licenceNumber]))
