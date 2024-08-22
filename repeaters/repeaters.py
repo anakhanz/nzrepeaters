@@ -2,10 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 ## NZ Repeater list/map builder
-## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
-## Copyright (C) 2014, Rob Wallace rob[at]wallace[dot]gen[dot]nz
-## Builds lists of NZ repeaters from the licence information avaliable from the
-## RSM's smart system.
+## URL: https://github.com/anakhanz/nzrepeaters
+## Copyright (C) 2024, Rob Wallace rob[at]wallace[dot]kiwi
+## Builds lists of NZ repeaters from the licence information avaliable
+## from the RSM's smart system.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public Licence as published by
@@ -21,6 +21,8 @@
 ## along with this program. If not, see <http://www.gnu.org/licences/>.
 
 # TODO Implement display of "Amatuer Fixed" stations
+
+__version__ = '0.3.0'
 
 import html
 import csv
@@ -38,9 +40,9 @@ import urllib.request, urllib.error, urllib.parse
 import zipfile
 
 from mapping.nz_coords import nztmToTopo50
+from rsmapi.licences import getLicence, getLicenceList
 
 #import topo50
-__version__ = '0.2.1'
 
 T_BEACON = 'Amateur Beacon'
 T_DIGI = 'Amateur Digipeater'
@@ -55,15 +57,21 @@ LICENCE_TYPES = [#'',
                  T_REPEATER,
                  T_TV]
 
+RSM_LIC_TYPES = {T_BEACON:'H2',
+                 T_DIGI:'H3',
+                 T_FIXED:'H4',
+                 T_REPEATER:'H1',
+                 T_TV:'H9'}
+
 LICENCE_SUB_TYPES = ['DMR',
                      'National System']
 
 #KML/KMZ Styles
 STYLE_NAMES = {T_BEACON:'beacon',
-             T_DIGI:'digipeater',
-             T_FIXED:'fixed',
-             T_REPEATER:'repeater',
-             T_TV:'tv_repeater'}
+               T_DIGI:'digipeater',
+               T_FIXED:'fixed',
+               T_REPEATER:'repeater',
+               T_TV:'tv_repeater'}
 
 # Highlighted Marker Colours
 LICENCE_COLOUR_HI = {T_BEACON:'55DAFF',
@@ -589,23 +597,16 @@ class Licensee:
     '''
     Licensee for a amateur radio licences
     '''
-    def __init__(self, name: str, address1: str, address2: str, address3: str) -> str:
+    def __init__(self, name: str, address: tuple) -> None:
         """Licensee constructor
 
         Args:
             name (str): Name of the licensee
-            address1 (str): First line of the address
-            address2 (str): Second line of the address
-            address3 (str): Third line of the address
+            address (tuple): Address
         """
         assert type(name) == str
-        assert type(address1) == str or address1 == None
-        assert type(address2) == str or address2 == None
-        assert type(address3) == str or address3 == None
         self.name = name
-        self.address1 = address1
-        self.address2 = address2
-        self.address3 = address3
+        self.address = address
 
 class Link:
     '''
@@ -860,9 +861,9 @@ def module_path() -> str:
         str: Path to the program's directory
     """
     if we_are_frozen():
-        return os.path.dirname(str(sys.executable, sys.getfilesystemencoding( )))
+        return os.path.dirname(sys.executable)
     else:
-        return os.path.dirname(str(__file__, sys.getfilesystemencoding( )))
+        return os.path.dirname(__file__)
 
 def readCtcss(fileName: str) -> dict:
     """Reads the CTCSS information from the given csv file and returns
@@ -918,15 +919,14 @@ def readTextCsv(fileName: str) -> dict:
             ret[int(row[0])] = row[1]
     return ret
 
-def readLicences(fileName: str ,callsigns: dict, ctcss: dict, info: dict ,skip: dict,
-                 fMin: float, fMax: float,
-                 shBeacon: bool, shDigipeater: bool ,shRepeater: bool ,shTvRepeater: bool,
-                 include: str, exclude: str, branch: str) -> list:
-    """Reads the licence information from the given database file and returns
+def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
+                   fMin: float, fMax: float,
+                   shBeacon: bool, shDigipeater: bool ,shRepeater: bool ,shTvRepeater: bool,
+                   include: str, exclude: str, branch: str) -> list:
+    """Gets the licence information from the RSM database API and returns
     the dictionaries below
 
     Args:
-        fileName (str): Filename to use for DB
         callsigns (dict): A dictionary of call signs indexed by Licnence number
         ctcss (dict): A dictionary of ctcss tones indexed by Licnense number
         info (dict): A dictionary of additional info indexed by Linense number
@@ -950,41 +950,22 @@ def readLicences(fileName: str ,callsigns: dict, ctcss: dict, info: dict ,skip: 
     licences = {}
     licensees = {}
 
-    con = sqlite3.connect(fileName)
-    con.row_factory = sqlite3.Row
-    c = con.cursor()
-    sql = '''
-SELECT l.licenceid, l.licencenumber, l.callsign, l.licencetype,
-       c.name, c.address1, c.address2, c.address3,
-       s.frequency,
-       lo.locationid, lo.locationname,lo.locationheight
-FROM licence l, clientname c, spectrum s, transmitconfiguration t, location lo
-WHERE c.clientid = l.clientid
-  AND s.licenceid = l.licenceid
-  AND t.licenceid = l.licenceid
-  AND t.locationid = lo.locationid
-  AND l.licencenumber NOT NULL
-  AND l.licencetype  LIKE "Amateur%"'''
-    if fMin != None:
-        sql += "\n  AND s.frequency >= %f" % fMin
-    if fMax != None:
-        sql += "\n  AND s.frequency <= %f" % fMax
+    licenceTypes = []
+    if shRepeater: licenceTypes.append('H1')
+    if shBeacon: licenceTypes.append('H2')
+    if shDigipeater: licenceTypes.append('H3')
+    if shTvRepeater: licenceTypes.append('H9')
 
-    sql +="\nORDER BY s.frequency, l.licencenumber;"
-
-    logging.info(sql)
-    c.execute(sql)
-    rows = c.fetchall()
-    for row in rows:
-        if row['name'] not in licensees:
-            licensees[row['name']]=Licensee(row['name'],
-                                              row['address1'],
-                                              row['address2'],
-                                              row['address3'])
-        licenceLocation = row['locationname']
-        licenceNumber = int(row['licencenumber'])
-        licenceFrequency = float(row['frequency'])
-        licenceCallsign = row['callsign']
+    records = getLicenceList(licenceType=licenceTypes, fromFrequency=fMin, toFrequency=fMax, sortBy='frequency', gridRefDefault='TOPO50_T')
+    for basicInfo  in records:
+        txDetail = getLicence(basicInfo['licenceID'],gridRefDefault='LAT_LONG_NZGD2000_D2000')
+        #rxDetail = getLicence(txDetail['associatedLicenceOrRecord'][0]['licenceId']
+        if basicInfo['licensee'] not in licensees:
+            licensees[basicInfo['licensee']] = Licensee(basicInfo['licensee'], [x.strip() for x in txDetail['clientDetails']['physicalAddress'].split(',')])
+        licenceLocation = basicInfo['location']
+        licenceNumber = basicInfo['licenceNumber']
+        licenceFrequency = txDetail['summary']['frequency']
+        licenceCallsign = txDetail['baseCallsign']
 
         skipping = False
         if licenceLocation == 'ALL NEW ZEALAND':
@@ -1022,30 +1003,27 @@ WHERE c.clientid = l.clientid
         if not skipping:
             if licenceNumber in list(callsigns.keys()):
                 if licenceCallsign != callsigns[licenceNumber]:
-                    logging.info('Licence No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenceNumber, row['callsign'], callsigns[licenceNumber]))
+                    logging.info('Licence No: %i callsign %s from the DB does not match the callsign %s from the CSV file' % (licenceNumber, licenceCallsign, callsigns[licenceNumber]))
                     licenceCallsign = callsigns[licenceNumber]
             if licenceLocation in sites:
                 site = sites[licenceLocation]
             else:
-                c.execute("SELECT locationid FROM location WHERE locationname = ?", (licenceLocation,))
-                locationId = c.fetchone()[0]
-                c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'LAT/LONG (NZGD2000)'", (locationId,))
-                coord = c.fetchone()
-                c.execute("SELECT easting, northing FROM geographicreference WHERE locationid = ? AND georeferencetype = 'NZTM2000'", (locationId,))
-                mapRef = c.fetchone()
+                easting,northing = txDetail['summary']['gridReference'].split()
+                easting = float(easting)
+                northing = float(northing)
                 site = Site(licenceLocation,
-                            nztmToTopo50(mapRef['easting'],mapRef['northing']),
-                            Coordinate(coord['northing'],coord['easting']),
-                            row['locationheight'])
+                            basicInfo['gridReference'],
+                            Coordinate(northing,easting),
+                            txDetail['transmitLocations'][0]['locationAltitude'])
                 sites[licenceLocation] = site
-            licType = row['licencetype']
+            licType = basicInfo['licenceType']
             if licenceFrequency in [144.575,144.65,144.7] and licType != 'Amateur Digipeater':
                 logging.info('Licence No: %i %s on frequency %0.4fMHz has the wrong licence type "%s" in the DB, it should be "Amateur Digipeater"' % (licenceNumber,licenceName,licenceFrequency,licType))
                 licType = 'Amateur Digipeater'
             licence = Licence(licType,
                               licenceFrequency,
                               licenceLocation,
-                              row['name'],
+                              basicInfo['location'],
                               licenceNumber,
                               licenceName,
                               licenceBranch,
@@ -1068,6 +1046,7 @@ WHERE c.clientid = l.clientid
                 site.addTvRepeater(licence)
                 licences[licenceNumber] = (licence)
     return sites, licences, licensees
+
 
 def readLinks(fileName: str, licences: dict, sites: dict) -> list:
     """Reads the link information from the given csv file and returns
@@ -1197,7 +1176,7 @@ def generateHtml(filename: str, licences: Licence, sites: Site, links: Link,
         links (Link): links to generate HTML for
         byLicence (bool): if True only generate HTML by licence
         bySite (bool): if True only generate HTML by site
-        dataDate (datyetime): Data upfdate date
+        dataDate (datyetime): Data update date
     """
     dateLine = '<p>Data updated on %s</p>\n' % dataDate.strftime("%d/%m/%Y")
     if bySite:
@@ -1222,7 +1201,7 @@ def generateHtmlAll(licences: Licence, sites: Site, links: Link, dateLine: datet
         licences (Licence): licences to generate HTML for
         sites (Site): sites to generate HTML for
         links (Link): links to generate HTML for
-        dataDate (datyetime): Data upfdate date
+        dataDate (datyetime): Data update date
     """
     [lHeader, lBody] = generateHtmlLicenceBody(licences,sites,links)
     [sHeader, sBody] = generateHtmlSiteBody(sites)
@@ -1339,7 +1318,7 @@ def generateJs(filename: str, licences: Licence, sites: Site, links: Link,
         links (Link): links to generate JavaScript for
         byLicence (bool): if True only generate JavaScript by licence
         bySite (bool): if True only generate JavaScript by site
-        dataDate (datyetime): Data upfdate date
+        dataDate (datyetime): Data update date
     """
     js = "  function setDataDate() {\n"
     js += "    updateDataDate('Data updated on %s');\n" % dataDate.strftime("%d/%m/%Y")
@@ -1889,51 +1868,47 @@ def kmlStyle(styleName: str, styleIcon: str,
         styleColourHl (str): Icon colour when highlighted
         outputKmz (bool, optional): True if this is for a KMZ file. Defaults to False.
     """
-    styleText = '''
-<StyleMap id="msn_[[Name]]">
+    if outputKmz: styleUrl=''
+    else: styleUrl='https://vhf.nz/maps/'
+    return f'''
+<StyleMap id="msn_{styleName}">
     <Pair>
       <key>normal</key>
-      <styleUrl>#sn_[[Name]]</styleUrl>
+      <styleUrl>#sn_{styleName}</styleUrl>
     </Pair>
     <Pair>
     <key>highlight</key>
-      <styleUrl>#sh_[[Name]]</styleUrl>
+      <styleUrl>#sh_{styleName}</styleUrl>
     </Pair>
   </StyleMap>
-  <Style id="sn_[[Name]]">
+  <Style id="sn_{styleName}">
       <IconStyle>
         <scale>1.1</scale>
         <Icon>
-          <href>https://vhf.nz/maps/images/[[Icon]]-[[Colour]].png</href>
+          <href>{styleUrl}images/{styleIcon}-{styleColour}.png</href>
         </Icon>
         <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
     </IconStyle>
     <ListStyle>
     <ItemIcon>
-      <href>https://vhf.nz/maps/images/[[Icon]]-[[Colour]].png</href>
+      <href>{styleUrl}images/{styleIcon}-{styleColour}.png</href>
     </ItemIcon>
   </ListStyle>
   </Style>
-  <Style id="sh_[[Name]]">
+  <Style id="sh_{styleName}">
     <IconStyle>
       <scale>1.3</scale>
       <Icon>
-        <href>https://vhf.nz/maps/images/[[Icon]]-[[ColourHL]].png</href>
+        <href>{styleUrl}images/{styleIcon}-{styleColourHl}.png</href>
       </Icon>
       <hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
     </IconStyle>
     <ListStyle>
       <ItemIcon>
-        <href>https://vhf.nz/maps/images/[[Icon]]-[[ColourHL]].png</href>
+        <href>{styleUrl}images/{styleIcon}-{styleColourHl}.png</href>
       </ItemIcon>
     </ListStyle>
   </Style>'''
-    styleText = styleText.replace('[[Name]]', styleName)
-    styleText = styleText.replace('[[Icon]]', styleIcon)
-    styleText = styleText.replace('[[Colour]]', styleColour)
-    styleText = styleText.replace('[[ColourHL]]',styleColourHl)
-    if outputKmz: styleText = styleText.replace('https://vhf.nz/maps/','')
-    return styleText
 
 def kmlHeader() -> str:
     """Generate KML file header
@@ -2186,8 +2161,9 @@ def main() -> None:
         exit()
     else:
         if (datetime.datetime.now() - dataDate) > datetime.timedelta(weeks=4):
-            print('the data is more than 4 weeks old so it is recommended that you update using -u')
+            print('the additional data files are more than 4 weeks old so it is recommended that you update using -u')
 
+    generationDate = datetime.datetime.now()
 
     callsigns_file = os.path.join(data_dir,'callsigns.csv')
     ctcss_file = os.path.join(data_dir,'ctcss.csv')
@@ -2232,7 +2208,8 @@ def main() -> None:
     ctcss = readCtcss(ctcss_file)
     info = readRowCsv(info_file,6)
     skip = readRowCsv(skip_file,3)
-    sites, licences, licensees = readLicences(licences_file,callsigns,ctcss,
+    #sites, licences, licensees = readLicences(licences_file,callsigns,ctcss, TODO: Tidy up
+    sites, licences, licensees = getLicenceInfo(callsigns,ctcss,
                                               info,skip,
                                               options.minFreq,options.maxFreq,
                                               options.beacon,options.digi,
@@ -2252,19 +2229,19 @@ def main() -> None:
         generateXlsx(options.xlsxfilename, licences, sites)
 
     if options.htmlfilename != None:
-        generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site, dataDate)
+        generateHtml(options.htmlfilename, licences, sites, links, options.licence, options.site, generationDate)
 
     if options.jsfilename != None:
-        generateJs(options.jsfilename, licences, sites, links, options.licence, options.site, dataDate)
+        generateJs(options.jsfilename, licences, sites, links, options.licence, options.site, generationDate)
 
     if options.jsonfilename != None:
-        generateJson(options.jsonfilename, options.indent, licences, sites, links, dataDate)
+        generateJson(options.jsonfilename, options.indent, licences, sites, links, generationDate)
 
     if options.kmlfilename != None:
-        generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site, dataDate)
+        generateKml(options.kmlfilename, licences, sites, links, options.licence, options.site, generationDate)
 
     if options.kmzfilename != None:
-        generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site, dataDate)
+        generateKmz(options.kmzfilename, licences, sites, links, options.licence, options.site, generationDate)
 
 def updateData(dataFolder: str, localDate: datetime):
     """Updates the local data for the application from the internet if the files on

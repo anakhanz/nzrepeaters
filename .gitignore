@@ -5,16 +5,15 @@
 # Backup files
 *.bak
 
-# Wing IDE project files
-*.wpr
-*.wpu
-
 # Eclipse/pydev project files
 .project
 .pydevproject
 
 #VS code project files
 .vscode
+
+# Private environment variables
+.env
 
 # private scripts
 all.sh
@@ -26,10 +25,6 @@ repeaters/data/upload_data.sh
 # generated data files
 repeaters/data/data.zip
 repeaters/data/data.zip.bak
-repeaters/data/prism.ldb
-repeaters/data/prism.mdb
-repeaters/data/prism.sqlite
-repeaters/data/prism.sqlite.bak
 repeaters/data/version
 
 # Build

@@ -1,1 +1,4 @@
 openpyxl
+types-openpyxl
+requests
+python-dotenv

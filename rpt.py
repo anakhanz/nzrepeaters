@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 ## NZ Repeater list/map builder
-## URL: http://rnr.wallace.gen.nz/redmine/projects/nzrepeaters
-## Copyright (C) 2014, Rob Wallace rob[at]wallace[dot]gen[dot]nz
+## URL: https://github.com/anakhanz/nzrepeaters
+## Copyright (C) 2024, Rob Wallace rob[at]wallace[dot]kiwi
 ## Builds lists of NZ repeaters from the licence information avaliable from the
 ## RSM's smart system.
 ##
