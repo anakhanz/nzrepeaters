@@ -182,7 +182,7 @@
 213219,"Hawkes Bay",13,"ZL2AJ","ZL2DW",
 179120,"Mt Victoria",74,"ZL3TC","ZL2TVM",
 207488,Gisborne,,ZL2CC,,Privately Licenced
-231999,Ngaio,74,ZL3TC,ZL2TVM,
+231999,Ngaio,74,ZL2BEZ,ZL3TC,
 179114,Wharite Voice and Datac,6,,,Linked to Hawkes Bay 879
 227635,"Hamilton Voice, Data and D-STAR",83,"ZL1HN","ZL1AT",
 231856,"Napier",25,"ZL2TC","ZL2DW",
@@ -232,12 +232,12 @@
 179219,"Blue Duck National System",5,ZL3RX,ZL3VP,
 177646,"Balclutha National System",35,"ZL4AS","ZL4TL",
 177300,"Doubtless Bay National System",78,ZL1AUI,ZL1BQK,
-177331,"Egmont National System",74,"ZL2KG","ZL4JY",
+177331,"Egmont National System",74,"ZL2SJ","ZL4JY",
 177318,"Waitaki National System",34,"ZL3OZ","ZL3GL",
 177303,"Brynderwyn National System ",28,ZL1TX,ZL1DTE,
 225932,"Wairarapa National System",46,"ZL2BA","ZL4JS",
 209686,"Murchison National System",26,"ZL2BCA","ZL2RP",
-209735,"Taupo National System",74,ZL2KG,ZL1KU,
+209735,"Taupo National System",74,ZL2SJ,ZL1KU,
 177326,"Auckland National System",66,ZL1TGC,ZL1TND,
 177887,"Gisborne National System",11,"ZL2TRG","ZL2HC",
 177650,"Wanganui National System",48,"ZL2THO","ZL1BNB",
@@ -255,16 +255,18 @@
 177299,"Far North National System",84,"ZL1IU","ZL1RS",
 177232,"Hamilton National System",81,"ZL1TAT","ZL1THG",
 259631,"Edgecumbe National System",67,"ZL1CAY","ZL1OW",
-177324,Wharite National System,74,ZL2KG,ZL3TC,
+177324,Wharite National System,74,ZL2SJ,ZL3TC,
 232974,Westoprt National System,62,,,
 
+# 2M DMR Repeaters
+293303,Tasman DMR,74,ZL4JY,ZL2SJ,
 
 # 70CM DMR Repeaters
-253000,Porirua DMR,74,ZL2KG,ZL4JY,Central Master
+253000,Porirua DMR,74,ZL2SJ,ZL4JY,Central Master
 246799,Wairarapa DMR,46,ZL2OA,,
-247596,Kapiti DMR,69,,,
+247596,Kapiti DMR,69,ZL2GO,ZL2DB,
 248901,Hamilton DMR,81,ZL1THG,,
-250794,Wellington DMR,74,ZL2KG,ZL4JY,
+250794,Wellington DMR,74,ZL2SJ,ZL4JY,
 248897,Dunedin DMR,30,ZL4JH,,
 251251,Auckland DMR,66,ZL1JD,,
 249985,Tasman DMR,24,ZL2ASF,,
@@ -273,10 +275,11 @@
 272752,Hawkes Bay DMR,13,ZL2DW,,
 263532,Oamaru DMR,64,ZL4SN,,
 266963,Tauranga DMR,88,ZL1WIN,,
+295454,Taupo DMR,74,ZL2SJ,ZL1KU,
 
 
 # 33cm DMR
-289712,Porirua DMR,74,ZL4JY,ZL2KG,
+289712,Porirua DMR,74,ZL4JY,ZL2SJ,
 290324,Mt Victoria DMR,74,ZL2BRF,ZL3TC,
 
 # 33cm ATV
@@ -305,7 +308,7 @@
 224331,"Te Kapua APRS",,"ZL2CC",,Privately Licenced
 218006,"Hawkes Bay APRS",13,"ZL2AJ","ZL2DW",
 221226,Manawatu  APRS,20,,,
-220125,"Forest Lakes Road APRS",74,"ZL2KG","ZL4SJ",
+220125,"Forest Lakes Road APRS",74,"ZL2SJ","ZL4SJ",
 221323,Nelson Takaka APRS,26,ZL2BCA,ZL2RP,
 244213,Nelson Grampians,26,,,
 221396,"Wairarapa APRS",46,"ZL2BA","ZL4JS",
@@ -316,7 +319,7 @@
 175652,"Timaru APRS",34,"ZL3GL","ZL3OZ",
 228051,"Taumarunui APRS",60,ZL1UTH,ZL1BU,
 224689,"Gisborne APRS",11,"ZL2TRG","ZL2HC",
-234904,Ngaio APRS,74,ZL3TC,ZL2TVM,
+234904,Ngaio APRS,74,ZL2BEZ,ZL3TC,
 242600,Dunedin APRS,30,,,
 249831,Rotorua APRS,33,,,
 209773,"North Shore",29,"ZL1AUW","ZL1TGC",
