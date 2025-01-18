@@ -23,7 +23,9 @@ import requests
 import json
 import logging
 
-from .common import rsmBaseUrl, rsmHeaders
+from time import sleep
+
+from .common import rsmBaseUrl, rsmHeaders, rsmDelay
 
 # Valid Licence Statuses
 LICENCE_STATUSES = ("All",
@@ -165,6 +167,8 @@ def getLicences(page: int = 1, pageSize: int = 200,
     logging.info(response.url)
     response.raise_for_status()
 
+    if rsmDelay: sleep(rsmDelay / 1000) #delay for ratelimiting requests
+
     return response.json()
 
 def getLicence(licenceId: int, gridRefDefault: str = None) -> dict:
@@ -186,6 +190,8 @@ def getLicence(licenceId: int, gridRefDefault: str = None) -> dict:
     response = requests.get(url, headers=rsmHeaders, params=params)
     logging.info(response.url)
     response.raise_for_status()
+
+    if rsmDelay: sleep(rsmDelay / 1000) #delay for ratelimiting requests
 
     return response.json()
 
