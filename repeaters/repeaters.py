@@ -1011,7 +1011,7 @@ def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
             if licenceLocation in sites:
                 site = sites[licenceLocation]
             else:
-                easting,northing = txDetail['summary']['gridReference'].split()
+                northing,easting = txDetail['summary']['gridReference'].split()
                 easting = float(easting)
                 northing = float(northing)
                 site = Site(licenceLocation,
