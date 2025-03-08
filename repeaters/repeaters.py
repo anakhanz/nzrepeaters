@@ -492,7 +492,7 @@ class Licence:
             br = '%02i' % int(self.branch)
         except:
             br = self.branch
-        return '<a href="http://nzart.org.nz/contact/branches/%s">%s</a>' % (br, br)
+        return '<a href="https://nzart.org.nz/branch-details/?branch=%s">%s</a>' % (br, br)
 
     def htmlNote(self):
         """Returns an HTML formatted note including coverage link for digipeaters
