@@ -922,7 +922,7 @@ def readTextCsv(fileName: str) -> dict:
 def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
                    fMin: float, fMax: float,
                    shBeacon: bool, shDigipeater: bool ,shRepeater: bool ,shTvRepeater: bool,
-                   include: str, exclude: str, branch: str) -> list:
+                   include: str, exclude: str, branch: str, noskip: bool) -> list:
     """Gets the licence information from the RSM database API and returns
     the dictionaries below
 
@@ -940,6 +940,7 @@ def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
         include (str): Filter licences to only include those that have this in their name
         exclude (str): Filter licences to exclude those that have this in their name
         branch (str): Filter licences to only include those allocated to this branch
+        noskip (bool): If True do not skip any licences
 
     Returns:
         list: sites     - A list of sites and their associated licences
@@ -966,11 +967,12 @@ def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
         if licenceLocation == 'ALL NEW ZEALAND':
             logging.info('Skipping Licensee No: %d because it has the location "ALL NEW ZEALAND"' % licenceNumber)
             skipping = True
-        elif licenceNumber in list(skip.keys()):
-            skipFreq = float(skip[licenceNumber][S_FREQ])
-            if skipFreq == 0.0 or skipFreq == licenceFrequency:
-                skipping = True
-                logging.info('Skipping Licensee No: %d, frequency %0.4f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
+        elif not noskip:
+            if licenceNumber in list(skip.keys()):
+                skipFreq = float(skip[licenceNumber][S_FREQ])
+                if skipFreq == 0.0 or skipFreq == licenceFrequency:
+                    skipping = True
+                    logging.info('Skipping Licensee No: %d, frequency %0.4f at location %s for reason "%s"' % (licenceNumber, licenceFrequency, licenceLocation, skip[licenceNumber][S_NOTE]))
 
         licenceName = licenceLocation.title()
         licenceBranch = ''
@@ -1038,16 +1040,16 @@ def getLicenceInfo(callsigns: dict, ctcss: dict, info: dict ,skip: dict,
                 licence.setCtcss(ctcss[licenceNumber])
             if licType == T_BEACON and shBeacon:
                 site.addBeacon(licence)
-                licences['%i_%0.4f' % (licenceNumber,licenceFrequency)] = (licence)
+                licences[f'{licenceNumber}_{licenceFrequency:0.4f}'] = (licence)
             elif licType == T_DIGI and shDigipeater:
                 site.addDigipeater(licence)
-                licences[licenceNumber] = (licence)
+                licences[f'{licenceNumber}_{licenceFrequency:0.4f}'] = (licence)
             elif licType == T_REPEATER and shRepeater:
                 site.addRepeater(licence)
-                licences[licenceNumber] = (licence)
+                licences[f'{licenceNumber}_{licenceFrequency:0.4f}'] = (licence)
             elif licType == T_TV and shTvRepeater:
                 site.addTvRepeater(licence)
-                licences[licenceNumber] = (licence)
+                licences[f'{licenceNumber}_{licenceFrequency:0.4f}'] = (licence)
     return sites, licences, licensees
 
 
@@ -2125,7 +2127,11 @@ def main() -> None:
                       dest='datadir',
                       default='data',
                       help='Modify the data folder location from the default')
-
+    parser.add_option('-Z','--noskip',
+                      action='store_true',
+                      dest='noskip',
+                      default=False,
+                      help='Do not use the skip file and include all licences')
     (options, args) = parser.parse_args()
 
     if options.debug:
@@ -2218,7 +2224,8 @@ def main() -> None:
                                               options.beacon,options.digi,
                                               options.repeater,options.tv,
                                               options.include,options.exclude,
-                                              options.branch)
+                                              options.branch,
+                                              options.noskip)
     links = readLinks(links_file,licences,sites)
 
 
