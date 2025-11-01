@@ -298,9 +298,9 @@
 177233,"Hamilton National System Link",81,"ZL1TAT","ZL1THG",
 259631,"Edgecumbe National System",67,"ZL1CAY","ZL1OW",
 259629,"Edgecumbe National System Link",67,"ZL1CAY","ZL1OW",
-177324,Wharite National System,74,ZL2SJ,ZL3TC,
-177319,Wharite National System Linking,74,ZL2SJ,ZL3TC,
-177322,Wharite National System Linking,74,ZL2SJ,ZL3TC,
+177324,Wharite National System,74,ZL2SJ,ZL1RKW,
+177319,Wharite National System Linking,74,ZL2SJ,ZL1RKW,
+177322,Wharite National System Linking,74,ZL2SJ,ZL1RKW,
 232974,Westoprt National System,62,,,
 177648,"Waitomo National System Link",,,,
 177298,"Bay of Islands National System Link",,,,
@@ -431,7 +431,7 @@
 215921,Auckland 2m,66,ZL1JD,ZL1TPH,
 224659,Waikato 2m,81,ZL1THG,ZL1UJG,
 237684,Waipuna 2m,,ZL2WHO,,Privately Licenced
-243021,Hawkins Hill 2m,74,ZL3TC,ZL2BKC,
+243021,Hawkins Hill 2m,74,ZL3TC,ZL4JY,
 241794,Christchurch 2m,05,ZL3RX,ZL3VP,Under Construction
 241800,Greymouth 2m,49,ZL3TY,ZL3ADH,Under Construction
 59682,New Plymouth 2m,27,ZL2BR,ZL2BZH,
@@ -440,18 +440,18 @@
 224660,Waikato 70cm,81,ZL1THG,ZL1UJG,
 239391,Waipuna 70cm,,ZL2WHO,,Privately Licenced
 246787,Waipuna 23cm,74,ZL2WHO,ZL2BKC,
-236082,Hawkins Hill 70cm,74,ZL3TC,ZL2BKC,
+236082,Hawkins Hill 70cm,74,ZL3TC,ZL4JY,
 241793,Christchurch 70cm,05,ZL3RX,ZL3VP,Under Construction
 59679,New Plymouth 70cm,27,ZL2BR,ZL2BZH,
 177985,Lower Hutt 32cm,74,ZL2TAR,ZL2BDI,
 224661,Waikato 23cm,81,ZL1THG,ZL1UJG,
-246419,Hawkins Hill 23cm,74,ZL3TC,ZL2BKC,
+246419,Hawkins Hill 23cm,74,ZL3TC,ZL4JY,
 242651,Lower Hutt 13cm,18,ZL2TVM,ZL2TWS,
 221252,Waikato 12cm,81,ZL1THG,ZL1UJG,
 202076,Muriwai 5cm,74,ZL1TBG,ZL1AVZ,
 246751,Climie 3cm,63,,,
-249395,Colonial Knob 9cm,74,ZL2BKC,ZL3TC,
-253005,Colonial Knob 32cm,74,ZL2BKC,ZL3TC,
+249395,Colonial Knob 9cm,74,ZL3TC,ZL4JY,
+253005,Colonial Knob 32cm,74,ZL3TC,ZL4JY,
 255472,Napier 6m,25,,,
 257826,Napier 2m,25,,,
 250018,Far North 6m,,,,Privately Licenced
